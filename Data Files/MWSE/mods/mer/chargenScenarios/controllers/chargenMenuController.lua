@@ -65,10 +65,12 @@ local function modifyStatReviewMenu(e)
 
     --Add scenario button
     createScenarioButton(parent)
+    --OK button should trigger the scenario to start
     local okButton = menu:findChild("MenuStatReview_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
         if hasCompletedChargen() then
             okButton:forwardEvent(eMouseClick)
+            tes3.runLegacyScript{ script = "RaceCheck" }
             tes3.player.tempData.selectedChargenScenario:start()
         else
             tes3.messageBox("You must complete the character generation process before you can continue.")
@@ -78,24 +80,21 @@ local function modifyStatReviewMenu(e)
 end
 event.register("uiActivated", modifyStatReviewMenu, { filter = "MenuStatReview"})
 
-
-
 --[[
     When the RaceSex menu is opened, override the Ok button
     to trigger the statReviewMenu again
 ]]
 ---@param e uiActivatedEventData
 local function modifyRaceSexMenu(e)
-	if (not e.newlyCreated) then
-		return
-	end
-
-    common.log:debug("Enter RaceSex Menu")
-    local okButton = e.element:findChild("MenuRaceSex_Okbutton")
+    if (not e.newlyCreated) then
+        return
+    end
+    local menu = e.element
     --hide back button
-    e.element:findChild("MenuRaceSex_Backbutton").visible = false
+    menu:findChild("MenuRaceSex_Backbutton").visible = false
+    --OK button should trigger the class menu
+    local okButton = menu:findChild("MenuRaceSex_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        common.log:debug("Clicked ok button, returning to stat review menu")
         --trigger the stat review menu
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosRaceChosen = true
@@ -108,8 +107,6 @@ local function modifyRaceSexMenu(e)
 end
 event.register("uiActivated", modifyRaceSexMenu, { filter = "MenuRaceSex"})
 
-
-
 --[[
     Class has three different menus, we need to override the Ok and back buttons
     for each one
@@ -119,6 +116,7 @@ local function modifyClassChoiceMenu(e)
     if (not e.newlyCreated) then
         return
     end
+
     local menu = e.element
     --Create title and move to top of menu
     local title = menu:createLabel{ text = "Choose Your Class"}
@@ -143,8 +141,11 @@ local function modifyCreateClassMenu(e)
     if (not e.newlyCreated) then
         return
     end
+
+    local menu = e.element
     common.log:debug("Enter CreateClass Menu")
-    local okButton = e.element:findChild("MenuCreateClass_Okbutton")
+    --OK button should trigger the birth sign menu
+    local okButton = menu:findChild("MenuCreateClass_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
         common.log:debug("Clicked ok button, returning to stat review menu")
         --trigger the stat review menu
@@ -164,11 +165,12 @@ local function modifyChooseClassMenu(e)
     if (not e.newlyCreated) then
 		return
 	end
-    common.log:debug("Enter ChooseClass Menu")
-    local okButton = e.element:findChild("MenuChooseClass_Okbutton")
+
+    local menu = e.element
+    --OK button should trigger the birth sign menu
+    local okButton = menu:findChild("MenuChooseClass_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
         common.log:debug("Clicked ok button, returning to stat review menu")
-        --trigger the stat review menu
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosClassChosen = true
         if not tes3.player.tempData.chargenScenariosBirthsignChosen then
@@ -192,10 +194,10 @@ local function modifyBirthSignMenu(e)
 		return
 	end
 
-    common.log:debug("Enter BirthSign Menu")
+    local menu = e.element
     local okButton = e.element:findChild("MenuBirthSign_Okbutton")
     --hide back button
-    e.element:findChild("MenuBirthSign_Backbutton").visible = false
+    menu:findChild("MenuBirthSign_Backbutton").visible = false
     okButton:register("mouseClick", function(eMouseClick)
         common.log:debug("Clicked ok button, returning to stat review menu")
         --trigger the stat review menu
@@ -220,15 +222,24 @@ local function modifyNameMenu(e)
     if (not e.newlyCreated) then
 		return
 	end
+
     local menu = e.element
-    common.log:debug("Enter Name Menu")
+    --Ok button should trigger the statReviewMenu
     local okButton = menu:findChild("MenuName_OkNextbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        common.log:debug("Clicked okNext button, returning to stat review menu")
-        --trigger the stat review menu
-        okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosNameChosen = true
-        scenarioSelector.openScenarioSelector()
+        okButton:forwardEvent(eMouseClick)
+        --If character backgrounds is installed, trigger the perks menu
+        if tes3.player.data.merBackgrounds then
+            common.log:debug("Backgrounds is active, opening perks menu")
+            timer.delayOneFrame(function()
+                event.trigger("CharacterBackgrounds:OpenPerksMenu")
+            end)
+        else
+            common.log:debug("Clicked okNext button, returning to stat review menu")
+            --trigger the stat review menu
+            scenarioSelector.openScenarioSelector()
+        end
     end)
 
     --Prepopulate name option based on player race
@@ -243,6 +254,10 @@ local function modifyNameMenu(e)
                 common.log:debug("Selecting %s", race)
                 textSelect:triggerEvent("mouseClick")
                 raceBlockNames.widget:contentsChanged()
+                local sexButton = menu:findChild("NameGenerator:sexBlock").children[1]
+                if sexButton and tes3.player.object.female then
+                    sexButton:triggerEvent("mouseClick")
+                end
                 local generateButton = okButton.parent.children[1]
                 if generateButton then
                     common.log:debug("Generating a random name")
@@ -254,3 +269,9 @@ local function modifyNameMenu(e)
     end
 end
 event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = -10})
+
+local function openScenarioSelectorOnBackgroundsFinish()
+    common.log:debug("Background selected, opening scenario menu")
+    scenarioSelector.openScenarioSelector()
+end
+event.register("CharacterBackgrounds:OkayMenuClicked", openScenarioSelectorOnBackgroundsFinish)

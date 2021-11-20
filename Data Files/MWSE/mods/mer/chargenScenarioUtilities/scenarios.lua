@@ -64,6 +64,7 @@ if interop then
         locations = {
             locations.shipwreck_01,
             locations.shipwreck_02,
+            locations.shipwreck_03,
         },
         introMessage = "You are the lone survivor of a shipwreck. Cold, wet and hungry, can you make it to shore alive?",
     }

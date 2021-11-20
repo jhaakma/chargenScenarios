@@ -57,6 +57,28 @@ local function sortListAlphabetically(list)
     return sortedList
 end
 
+local function clickedScenario(scenario)
+    local menu = tes3ui.findMenu(menuId)
+    tes3.player.tempData.selectedChargenScenario = scenario
+    local header = menu:findChild(descriptionHeaderID)
+    header.text = scenario.name
+
+    local description = menu:findChild(descriptionID)
+    description.text = scenario.description
+    description:updateLayout()
+
+    local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton"))
+    if not scenario:checkRequirements() then
+        header.color = tes3ui.getPalette("disabled_color")
+        okayButton.widget.state = 2
+        okayButton.disabled = true
+    else
+        header.color = tes3ui.getPalette("header_color")
+        okayButton.widget.state = 1
+        okayButton.disabled = false
+    end
+end
+
 local function populateScenarioList(listBlock, list)
     for _, scenario in ipairs(list) do
         local scenarioButton = listBlock:createButton{
@@ -71,8 +93,8 @@ local function populateScenarioList(listBlock, list)
             scenarioButton.color = tes3ui.getPalette("disabled_color")
             scenarioButton.widget.idle = tes3ui.getPalette("disabled_color")
         end
-        scenarioButton:register("mouseClick", function(e)
-            tes3.player.tempData.selectedChargenScenario = scenario
+        scenarioButton:register("mouseClick", function()
+            clickedScenario(scenario)
         end)
     end
 end
@@ -113,7 +135,7 @@ local function createRandomiseButton(parent, listBlock)
 end
 
 local function createOkButton(parent)
-    local okButton = parent:createButton{ text = "Ok"}
+    local okButton = parent:createButton{ text = "Ok", id = tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton")}
     okButton.alignX = 1.0
     okButton:register("mouseClick", function()
         if tes3.player.tempData.selectedChargenScenario then
@@ -144,6 +166,8 @@ function ScenarioSelector.openScenarioSelector()
 
     menu:updateLayout()
     tes3ui.enterMenuMode(menuId)
+    scenarioListBlock:getContentElement().children[1]:triggerEvent("mouseClick")
+
 end
 
 return ScenarioSelector

@@ -2,7 +2,7 @@ local interop = require("mer.chargenScenarios.interop")
 
 local common = require('mer.chargenScenarios.common')
 require('mer.chargenScenarios.controllers.chargenController')
-require('mer.chargenScenarios.controllers.menuController')
+require('mer.chargenScenarios.controllers.chargenMenuController')
 --Do MCM
 require('mer.chargenScenarios.mcm')
 

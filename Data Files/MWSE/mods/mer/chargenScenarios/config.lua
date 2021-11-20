@@ -1,3 +1,4 @@
+
 local config = {
     modName = "Chargen Scenarios",
     modDescription = [[
@@ -9,24 +10,23 @@ local config = {
         cell = "Imperial Prison Ship"
     },
     chargenLocation = {
-        position = {4200,3965,15520},
-        orientation = {0, 0, 180},
-        cell = "CREL Start"
+        position = {61, 135, 1000},
+        orientation = {0, 0, 340},
+        cell = "Imperial Prison Ship"
     },
     scenarios = {
 
         --default
         {
-            name = "No Scenario",
-            description = "Start the game normally, without a scenario.",
+            name = "Imperial Prisoner (vanilla)",
+            description = "Start the game in the Seyda Neen Census and Excise Office, without a scenario.",
             location = {
-                    position = {61, -135, 24},
-                    orientation = {0, 0, 340},
-                    cell = "Imperial Prison Ship"
+                orientation = {0,0,1.6740349531174},
+                position = {33,-87,194},
+                cell = "Seyda Neen, Census and Excise Office"
             },
             doVanillaChargen = true
         },
-
     }
 }
 

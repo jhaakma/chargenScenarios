@@ -313,6 +313,6 @@ local function runInitializedTests()
     end)
     UnitWind:finish(exitAfterInitialize)
 end
-event.register("initialized", runInitializedTests, { priority = 1000})
+event.register("initialized", runInitializedTests, { priority = exitAfterInitialize and 1000 or -1000 })
 
 

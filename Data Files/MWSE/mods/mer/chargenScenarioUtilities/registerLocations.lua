@@ -7,14 +7,14 @@ local common = require('mer.chargenScenarioUtilities.common')
 local function registerLocation()
     local location = {
         position = {
-            tes3.player.position.x,
-            tes3.player.position.y,
-            tes3.player.position.z
+            math.floor(tes3.player.position.x),
+            math.floor(tes3.player.position.y),
+            math.floor(tes3.player.position.z),
         },
         orientation = {
-            tes3.player.orientation.x,
-            tes3.player.orientation.y,
-            tes3.player.orientation.z
+            math.floor(tes3.player.orientation.x),
+            math.floor(tes3.player.orientation.y),
+            math.floor(tes3.player.orientation.z),
         },
         cell = tes3.player.cell.id
     }
