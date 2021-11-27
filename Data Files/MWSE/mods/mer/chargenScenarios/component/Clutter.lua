@@ -21,7 +21,7 @@
 ---@field chosenItem string @the cached item that was chosen
 
 local common = require("mer.chargenScenarios.common")
-local Requirements = require("mer.chargenScenarios.class.Requirements")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
 
 ---@type ChargenScenariosClutter
 local Clutter = {

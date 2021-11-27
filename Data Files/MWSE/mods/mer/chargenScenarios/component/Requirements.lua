@@ -1,7 +1,7 @@
 ---@class ChargenScenariosRequirementsInput
----@field plugins table<number, string> @A list of required plugins.
----@field classes table<number, string> @A list of required classes.
-
+---@field plugins table<number, string> @A list of required plugins
+---@field classes table<number, string> @A list of required classes
+---@field races table<number, string> @A list of required races
 
 ---@class ChargenScenariosRequirements
 ---@field new function @contructor
@@ -10,6 +10,7 @@
 ---@field check function @checks whether all the requirements are met
 ---@field plugins table<number, string> @the list of plugins that are required
 ---@field classes table<number, string> @the list of classes that are eligible
+---@field races table<number, string> @the list of races that are elegible
 
 local common = require("mer.chargenScenarios.common")
 
@@ -23,6 +24,7 @@ local Requirements = {
         fields = {
             plugins = { type = "table", childType = "string", required = false },
             classes = { type = "table", childType = "string", required = false },
+            races = { type = "table", childType = "string", required = false },
         }
     }
 }
@@ -45,16 +47,28 @@ end
 --Check player has a valid class
 function Requirements:checkClass()
     if self.classes then
-        local playerClass = tes3.player.object.class.id:lower()
+        local playerClass = tes3.player.object.component.id:lower()
         for _, class in ipairs(self.classes) do
             if class:lower() == playerClass then
                 return true
             end
         end
-    else
-        return true
+        return false
     end
-    return false
+    return true
+end
+
+function Requirements:checkRace()
+    if self.races then
+        local playerRace = tes3.player.object.race.id:lower()
+        for _, raceId in ipairs(self.races) do
+            if raceId:lower() == playerRace then
+                return true
+            end
+        end
+        return false
+    end
+    return true
 end
 
 --Check that all required plugins are installed
@@ -65,17 +79,15 @@ function Requirements:checkPlugins()
                 return false
             end
         end
-        return true
-    else
-        return true
     end
-    return false
+    return true
 end
 
 --Check that all requirements are met
 function Requirements:check()
-    return self:checkClass()
-    and self:checkPlugins()
+    return self:checkPlugins()
+    and self:checkClass()
+    and self:checkRace()
 end
 
 return Requirements

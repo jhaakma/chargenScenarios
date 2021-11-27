@@ -18,7 +18,7 @@ local config = {
 
         --default
         {
-            name = "Imperial Prisoner (vanilla)",
+            name = "Vanilla",
             description = "Start the game in the Seyda Neen Census and Excise Office, without a scenario.",
             location = {
                 orientation = {0,0,1.6740349531174},

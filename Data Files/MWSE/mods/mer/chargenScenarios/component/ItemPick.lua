@@ -14,7 +14,7 @@
 ---@field requirements ChargenScenariosRequirements @the requirements for the item pick
 
 local common = require("mer.chargenScenarios.common")
-local Requirements = require("mer.chargenScenarios.class.Requirements")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
 --[[
     For specific items, use "id"
     To pick a random item from a list, use "ids"

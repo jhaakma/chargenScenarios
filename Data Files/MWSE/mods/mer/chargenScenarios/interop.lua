@@ -1,4 +1,4 @@
-local Scenario = require("mer.chargenScenarios.class.Scenario")
+local Scenario = require("mer.chargenScenarios.component.Scenario")
 
 ---@class ChargenScenariosInterop
 ---@field registerScenario function @Register a scenario with the chargen system

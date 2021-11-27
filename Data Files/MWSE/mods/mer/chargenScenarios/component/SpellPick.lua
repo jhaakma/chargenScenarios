@@ -36,7 +36,7 @@ spellEffectSchema = {
 ---@field effects table<number, SpellEffectsTable> @The effects of the spell
 
 local common = require("mer.chargenScenarios.common")
-local Requirements = require("mer.chargenScenarios.class.Requirements")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
 --[[
     For specific spells, use "id"
     To pick a random spell from a list, use "ids"

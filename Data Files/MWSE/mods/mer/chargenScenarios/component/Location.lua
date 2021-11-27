@@ -23,10 +23,10 @@
 ---@field clutter table<number, ChargenScenariosClutter> @the clutter for the location
 
 local common = require("mer.chargenScenarios.common")
-local ItemList = require("mer.chargenScenarios.class.ItemList")
-local ItemPick = require("mer.chargenScenarios.class.ItemPick")
-local Requirements = require("mer.chargenScenarios.class.Requirements")
-local Clutter = require("mer.chargenScenarios.class.Clutter")
+local ItemList = require("mer.chargenScenarios.component.ItemList")
+local ItemPick = require("mer.chargenScenarios.component.ItemPick")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
+local Clutter = require("mer.chargenScenarios.component.Clutter")
 
 ---@type ChargenScenariosLocation
 local Location = {

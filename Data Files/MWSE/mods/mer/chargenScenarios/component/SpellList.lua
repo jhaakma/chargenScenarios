@@ -4,7 +4,7 @@
 ---@field spells table<number, ChargenScenariosSpellPick> @the list of spells to add to the player's inventory
 
 local common = require("mer.chargenScenarios.common")
-local SpellPick = require("mer.chargenScenarios.class.SpellPick")
+local SpellPick = require("mer.chargenScenarios.component.SpellPick")
 --[[
     For specific spells, use "id"
     To pick a random spell from a list, use "ids"

@@ -9,39 +9,37 @@
 ---@field introMessage string @The message to display when a scenario starts. Overwritten by location introMessage.
 ---@field doVanillaChargen boolean @If true, the vanilla chargen will be used.
 
-
 ---@class ChargenScenariosScenario
 ---methods:
----@field new function @constructor
----@field register function @constructs and registers the scenario
----@field getStartingLocation function @returns the starting location for the scenario. If a list of scenarios is provided, picks one at random
----@field moveToLocation function @moves the player to the randomly selected location
----@field checkRequirements function @returns true if the requirements are met, false otherwise
----@field addItems function @adds items to the player's inventory. Overridden by location items
----@field getIntroMessage function @returns the intro message for the scenario. Overridden by location introMessage
----@field doIntroMessage function @displays the intro message for the scenario
----@field addClutter function @adds clutter to the world. Overridden by location clutter
----@field addSpells function @adds spells to the player. Overridden by location spells
----@field start function @Begin the scenario
+---@field new                   function @constructor
+---@field register              function @constructs and registers the scenario
+---@field getStartingLocation   function @returns the starting location for the scenario. If a list of scenarios is provided, picks one at random
+---@field moveToLocation        function @moves the player to the randomly selected location
+---@field checkRequirements     function @returns true if the requirements are met, false otherwise
+---@field addItems              function @adds items to the player's inventory. Overridden by location items
+---@field getIntroMessage       function @returns the intro message for the scenario. Overridden by location introMessage
+---@field doIntroMessage        function @displays the intro message for the scenario
+---@field addClutter            function @adds clutter to the world. Overridden by location clutter
+---@field addSpells             function @adds spells to the player. Overridden by location spells
+---@field start                 function @Begin the scenario
 ---fields:
----@field name string @the name of the scenario
----@field description string @the description of the scenario
----@field requirements ChargenScenariosRequirements @the requirements for the scenario
----@field locations table @the list of locations for the scenario
----@field itemList ChargenScenariosItemList @the list of items for the scenario
----@field spellList ChargenScenariosSpellList @the list of spells given to the player for this scenario. May include abilities, diseases etc
----@field clutter table @the clutter for the scenario
----@field introMessage string @the intro message for the scenario.
----@field doVanillaChargen boolean @whether or not to do the vanilla chargen.
+---@field name                  string @the name of the scenario
+---@field description           string @the description of the scenario
+---@field requirements          ChargenScenariosRequirements @the requirements for the scenario
+---@field locations             table @the list of locations for the scenario
+---@field itemList              ChargenScenariosItemList @the list of items for the scenario
+---@field spellList             ChargenScenariosSpellList @the list of spells given to the player for this scenario. May include abilities, diseases etc
+---@field clutter               table @the clutter for the scenario
+---@field introMessage          string @the intro message for the scenario.
+---@field doVanillaChargen      boolean @whether or not to do the vanilla chargen.
 
-local common = require("mer.chargenScenarios.common")
-local ItemList = require("mer.chargenScenarios.class.ItemList")
-local Location = require("mer.chargenScenarios.class.Location")
-local Requirements = require("mer.chargenScenarios.class.Requirements")
-local SpellPick    = require("mer.chargenScenarios.class.SpellPick")
-local SpellList    = require("mer.chargenScenarios.class.SpellList")
-
-local ItemPick = require("mer.chargenScenarios.class.ItemPick")
+local common       = require("mer.chargenScenarios.common")
+local ItemList     = require("mer.chargenScenarios.component.ItemList")
+local Location     = require("mer.chargenScenarios.component.Location")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
+local SpellPick    = require("mer.chargenScenarios.component.SpellPick")
+local SpellList    = require("mer.chargenScenarios.component.SpellList")
+local ItemPick     = require("mer.chargenScenarios.component.ItemPick")
 
 ---@type ChargenScenariosScenario
 local Scenario = {
@@ -72,18 +70,20 @@ function Scenario:new(data)
     common.validator.validate(scenario, self.schema)
     assert(scenario.location or scenario.locations, "Scenario must have a location or a list of locations")
     --Build
-    do --Locations
+    do--Create Locations
         scenario.locations = scenario.locations or {scenario.location}
         scenario.location = nil
         scenario.locations = common.convertListTypes(scenario.locations, Location)
     end
+    --Convert items to ItemList
     scenario.itemList = scenario.items and ItemList:new(scenario.items)
     scenario.items = nil
+    --Create Requiremeents
     scenario.requirements = Requirements:new(scenario.requirements)
+    --convert spells to spellList
     scenario.spellList = scenario.spells and SpellList:new(scenario.spells)
-    common.log:debug("spellList: %s", scenario.spellList)
+    scenario.spells = nil
     --Create scenario
-
     setmetatable(scenario, self)
     self.__index = self
     return scenario
@@ -176,7 +176,6 @@ function Scenario:addSpells()
         return self.spellList:addSpells()
     end
 end
-
 
 function Scenario:start()
     tes3.findGlobal("CharGenState").value = -1

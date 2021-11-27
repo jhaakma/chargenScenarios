@@ -4,7 +4,7 @@
 ---@field items table<number, ChargenScenariosItemPick> @the list of items to add to the player's inventory
 
 local common = require("mer.chargenScenarios.common")
-local ItemPick = require("mer.chargenScenarios.class.ItemPick")
+local ItemPick = require("mer.chargenScenarios.component.ItemPick")
 --[[
     For specific items, use "id"
     To pick a random item from a list, use "ids"

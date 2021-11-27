@@ -1,5 +1,17 @@
-local Scenario = require "mer.chargenScenarios.class.Scenario"
-local doTest = true
+local UnitWind = include('unitwind.unitwind')
+if not UnitWind then return end
+UnitWind = UnitWind.new{
+    enabled = doTest,
+    highlight = true,
+    afterTest = function()
+        if tes3.player and tes3.player.testPlayerObject then
+            tes3.player = nil
+        end
+    end,
+}
+
+local Scenario = require "mer.chargenScenarios.component.Scenario"
+local doTest = false
 local exitAfterUnits = false
 local exitAfterInitialize = false
 local exitAfterLoaded = false
@@ -17,15 +29,7 @@ local successfulScenarioInput = {
     },
 }
 
-local UnitWind = require('unitwind.unitwind').new{
-    enabled = doTest,
-    highlight = true,
-    afterTest = function()
-        if tes3.player and tes3.player.testPlayerObject then
-            tes3.player = nil
-        end
-    end,
-}
+
 
 UnitWind:start("Chargen Scenarios Unit Tests")
 UnitWind:test("Canary test", function()
@@ -123,7 +127,7 @@ UnitWind:test("A list of locations are registered correctly", function()
     local successfulScenario = Scenario:new(input)
     UnitWind:expect(#successfulScenario.locations).toBe(2)
 end)
-UnitWind:test("getStartingLocation returns the location", function()
+UnitWind:test("Scenario:getStartingLocation returns the location", function()
     local input = table.deepcopy(successfulScenarioInput)
     input.locations = {
         {
@@ -199,14 +203,14 @@ UnitWind:test("Scenario has correct intro message", function()
     local successfulScenario = Scenario:new(input)
     UnitWind:expect(successfulScenario.introMessage).toBe(input.introMessage)
 end)
-UnitWind:test("getIntroMessage returns location.introMessage if it exists", function()
+UnitWind:test("Scenario:getIntroMessage returns location.introMessage if it exists", function()
     local input = table.deepcopy(successfulScenarioInput)
     input.introMessage = "Test scenario intro message"
     input.location.introMessage = "Test location intro message"
     local successfulScenario = Scenario:new(input)
     UnitWind:expect(successfulScenario:getIntroMessage()).toBe(input.location.introMessage)
 end)
-UnitWind:test("getIntroMessage returns the scenario intro message when the location.introMessage is nil", function()
+UnitWind:test("Scenario:getIntroMessage returns the scenario intro message when the location.introMessage is nil", function()
     local input = table.deepcopy(successfulScenarioInput)
     input.introMessage = "Test scenario intro message"
     input.location.introMessage = nil
@@ -257,7 +261,7 @@ UnitWind:test("Scenario:checkRequirements returns true when a valid player class
     UnitWind:expect(successfulScenario:checkRequirements()).toBe(true)
     tes3.player = nil
 end)
-UnitWind:test("Scenario:checkRequirements returns true when an invalid player class is required", function()
+UnitWind:test("Scenario:checkRequirements returns false when an invalid player class is required", function()
     local input = table.deepcopy(successfulScenarioInput)
     ---@type ChargenScenariosRequirementsInput
     input.requirements = {
@@ -268,6 +272,42 @@ UnitWind:test("Scenario:checkRequirements returns true when an invalid player cl
         object = {
             class = {
                 id = "ValidClass",
+            }
+        },
+    }
+    local successfulScenario = Scenario:new(input)
+    UnitWind:expect(successfulScenario:checkRequirements()).toBe(false)
+    tes3.player = nil
+end)
+UnitWind:test("Scenario:checkRequirements returns true when the player race does exist in the race list", function()
+    local input = table.deepcopy(successfulScenarioInput)
+    ---@type ChargenScenariosRequirementsInput
+    input.requirements = {
+        races = { "Dark Elf", "Breton" },
+    }
+    tes3.player = {
+        testPlayerObject = true,
+        object = {
+            race = {
+                id = "Dark Elf",
+            }
+        },
+    }
+    local successfulScenario = Scenario:new(input)
+    UnitWind:expect(successfulScenario:checkRequirements()).toBe(true)
+    tes3.player = nil
+end)
+UnitWind:test("Scenario:checkRequirements returns false when the player race does not exist in the race list", function()
+    local input = table.deepcopy(successfulScenarioInput)
+    ---@type ChargenScenariosRequirementsInput
+    input.requirements = {
+        races = { "Dark Elf", "Breton" },
+    }
+    tes3.player = {
+        testPlayerObject = true,
+        object = {
+            race = {
+                id = "High Elf",
             }
         },
     }
