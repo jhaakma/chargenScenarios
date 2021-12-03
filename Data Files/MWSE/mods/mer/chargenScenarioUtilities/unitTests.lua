@@ -1,7 +1,14 @@
-local UnitWind = include('unitwind.unitwind')
-if not UnitWind then return end
+local Scenario = require "mer.chargenScenarios.component.Scenario"
+local common = require("mer.chargenScenarioUtilities.common")
+
+
+local UnitWind = include('unitwind.unitwind__')
+if not UnitWind then
+    common.log:debug("UnitWind not installed, skipping tests.")
+    return
+end
 UnitWind = UnitWind.new{
-    enabled = doTest,
+    enabled = common.mcmConfig.doTests,
     highlight = true,
     afterTest = function()
         if tes3.player and tes3.player.testPlayerObject then
@@ -9,12 +16,6 @@ UnitWind = UnitWind.new{
         end
     end,
 }
-
-local Scenario = require "mer.chargenScenarios.component.Scenario"
-local doTest = false
-local exitAfterUnits = false
-local exitAfterInitialize = false
-local exitAfterLoaded = false
 
 --Basic scenario with just required fields
 ---@type ChargenScenariosScenarioInput
@@ -28,8 +29,6 @@ local successfulScenarioInput = {
         introMessage = "Test location intro message",
     },
 }
-
-
 
 UnitWind:start("Chargen Scenarios Unit Tests")
 UnitWind:test("Canary test", function()
@@ -62,7 +61,6 @@ UnitWind:test("Scenario has all expected methods", function()
     UnitWind:expect(scenario.addSpells).toBeType("function")
     UnitWind:expect(scenario.start).toBeType("function")
 end)
-
 --name
 UnitWind:log("Testing name")
 UnitWind:test("Scenario has correct name", function()
@@ -78,7 +76,6 @@ UnitWind:test("Scenario:new() fails when name is missing", function()
         Scenario:new(input)
     end).toFail()
 end)
-
 --description
 UnitWind:log("Testing description")
 UnitWind:test("Scenario has correct description", function()
@@ -94,7 +91,6 @@ UnitWind:test("Scenario:new() fails when description is missing", function()
         Scenario:new(input)
     end).toFail()
 end)
-
 --location
 UnitWind:log("Testing location")
 UnitWind:test("A single input location is moved to a list", function()
@@ -172,7 +168,6 @@ UnitWind:test("Scenario:new() fails when location does not have a cell", functio
         Scenario:new(input)
     end).toFail()
 end)
-
 --items
 UnitWind:log("Testing Items")
 UnitWind:test("Scenario has correct itemList", function()
@@ -194,7 +189,6 @@ UnitWind:test("Scenario has correct itemList", function()
     UnitWind:log(input.items[1].id)
     UnitWind:expect(successfulScenario.itemList.items[1].ids[1]).toBe(input.items[1].id)
 end)
-
 --introMessage
 UnitWind:log("Testing Intro Message")
 UnitWind:test("Scenario has correct intro message", function()
@@ -315,10 +309,9 @@ UnitWind:test("Scenario:checkRequirements returns false when the player race doe
     UnitWind:expect(successfulScenario:checkRequirements()).toBe(false)
     tes3.player = nil
 end)
+UnitWind:finish(common.mcmConfig.exitAfterUnitTests)
 
-UnitWind:finish(exitAfterUnits)
-
-
+--Initialised tests
 local function runInitializedTests()
     UnitWind:start("Initialised integration tests")
     --Spells
@@ -351,8 +344,8 @@ local function runInitializedTests()
         local spell2 = successfulScenario.spellList.spells[2]
         UnitWind:expect(spell2.ids[1]).toBe(input.spells[2].id)
     end)
-    UnitWind:finish(exitAfterInitialize)
+    UnitWind:finish(common.mcmConfig.exitAfterInitialize)
 end
-event.register("initialized", runInitializedTests, { priority = exitAfterInitialize and 1000 or -1000 })
+event.register("initialized", runInitializedTests, { priority = common.mcmConfig.exitAfterInitialize and 1000 or -1000 })
 
 

@@ -17,6 +17,8 @@ A set of utilities for Chargen Scenarios.
             isAltDown = true
         },
         locations = {},
-        logLevel = "INFO"
+        logLevel = "INFO",
+        doUnitTests = false,
+        doIntegrationTests = false,
     },
 }
