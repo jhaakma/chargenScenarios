@@ -1,6 +1,7 @@
 local common = require('mer.chargenScenarios.common')
 local scenarioSelector = require('mer.chargenScenarios.controllers.scenarioSelector')
-local scenarioButtonId = tes3ui.registerID('chargenScenariosMenuButton')
+local scenarioLabelId = tes3ui.registerID('chargenScenariosMenuButtonLabel')
+local backgroundLabelId = tes3ui.registerID('chargenScenariosMenuBackgroundLabel')
     --[[
         EnableRaceMenu
         EnableClassMenu
@@ -9,8 +10,61 @@ local scenarioButtonId = tes3ui.registerID('chargenScenariosMenuButton')
         EnableStatReviewMenu
     ]]
 
+
 local function returnToStatsMenu()
     tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
+end
+
+local function createTooltip(name, description)
+    local tooltip = tes3ui.createTooltipMenu()
+    local outerBlock = tooltip:createBlock()
+    outerBlock.flowDirection = "top_to_bottom"
+    outerBlock.paddingTop = 6
+    outerBlock.paddingBottom = 12
+    outerBlock.paddingLeft = 6
+    outerBlock.paddingRight = 6
+    outerBlock.width = 400
+    outerBlock.autoHeight = true
+
+    local header = outerBlock:createLabel{
+        text = name
+    }
+    header.absolutePosAlignX = 0.5
+    header.color = tes3ui.getPalette("header_color")
+
+
+    local descriptionLabel = outerBlock:createLabel{
+        text = description
+    }
+    descriptionLabel.autoHeight = true
+    descriptionLabel.width = 285
+    descriptionLabel.wrapText = true
+
+    tooltip:updateLayout()
+end
+
+local function registerTooltip(block, name, description)
+    local onTooltip = function()
+        createTooltip(name, description)
+    end
+    block:register("help", onTooltip)
+    for _, element in ipairs(block.children) do
+        element:register("help", onTooltip)
+    end
+end
+
+local function createStatsButtonLabel(parent, name)
+    local nameBlock = parent:createBlock()
+    nameBlock.paddingLeft = 5
+    nameBlock.paddingTop = 5
+    nameBlock.autoHeight = true
+    nameBlock.widthProportional = 1.0
+
+    local nameLabel = nameBlock:createLabel{ text = name }
+    nameLabel.text = name
+    nameLabel.wrapText = true
+    nameLabel.widthProportional = 1
+    nameLabel.justifyText = "right"
 end
 
 
@@ -19,7 +73,6 @@ local function createScenarioButton(parent)
     block.widthProportional = 1.0
     block.autoHeight = true
 
-    local scenarioLabel
     local button = block:createButton{ text = "Scenario"}
     button:register("mouseClick", function()
         parent:getTopLevelMenu():destroy()
@@ -27,14 +80,36 @@ local function createScenarioButton(parent)
     end)
 
     local scenarioName = tes3.player.tempData.selectedChargenScenario and tes3.player.tempData.selectedChargenScenario.name or ""
-    scenarioLabel = block:createLabel{
-        id = tes3ui.registerID(scenarioButtonId),
-        text = scenarioName
-    }
-    scenarioLabel.absolutePosAlignX = 1
-    scenarioLabel.absolutePosAlignY = 0.5
+    createStatsButtonLabel(block, scenarioName)
+
+    local scenarioDescription = tes3.player.tempData.selectedChargenScenario and tes3.player.tempData.selectedChargenScenario.description or ""
+    registerTooltip(block, scenarioName, scenarioDescription)
 end
 
+
+
+
+local function createBackgroundButton(parent)
+    local backgroundsInterop = include('mer.characterBackgrounds.interop')
+    if not backgroundsInterop then return end
+    local block = parent:createBlock()
+    block.widthProportional = 1.0
+    block.autoHeight = true
+
+    local button = block:createButton{ text = "Background"}
+    button:register("mouseClick", function()
+        tes3ui.leaveMenuMode()
+        parent:getTopLevelMenu():destroy()
+        timer.delayOneFrame(function()
+            event.trigger("CharacterBackgrounds:OpenPerksMenu")
+        end)
+    end)
+    local background = backgroundsInterop.getCurrentBackground()
+    createStatsButtonLabel(block, background and background:getName() or "")
+    if background then
+        registerTooltip(block, background:getName(), background:getDescription())
+    end
+end
 
 local function hasCompletedChargen()
     return tes3.player.tempData.chargenScenariosNameChosen
@@ -63,7 +138,8 @@ local function modifyStatReviewMenu(e)
     scrollPane.maxHeight = nil
     scrollPane.parent.heightProportional = 1
 
-    --Add scenario button
+    --Add scenario and background button
+    createBackgroundButton(parent)
     createScenarioButton(parent)
     --OK button should trigger the scenario to start
     local okButton = menu:findChild("MenuStatReview_Okbutton")
@@ -272,6 +348,11 @@ event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = 
 
 local function openScenarioSelectorOnBackgroundsFinish()
     common.log:debug("Background selected, opening scenario menu")
-    scenarioSelector.openScenarioSelector()
+    if not tes3.player.tempData.selectedChargenScenario then
+        scenarioSelector.openScenarioSelector()
+    else
+        common.log:debug("Scenario already selected, skipping scenario menu")
+        returnToStatsMenu()
+    end
 end
 event.register("CharacterBackgrounds:OkayMenuClicked", openScenarioSelectorOnBackgroundsFinish)
