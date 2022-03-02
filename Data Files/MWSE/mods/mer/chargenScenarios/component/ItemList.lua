@@ -1,6 +1,6 @@
 ---@class ChargenScenariosItemList
 ---@field new function @constructor
----@field addItems function @Resolves each itemPick and adds it to the player's inventory
+---@field doItems function @Resolves each itemPick and adds it to the player's inventory
 ---@field items table<number, ChargenScenariosItemPick> @the list of items to add to the player's inventory
 
 local common = require("mer.chargenScenarios.common")
@@ -34,11 +34,14 @@ function ItemList:new(data)
     return itemList
 end
 
-function ItemList:addItems()
-    if self.items and #self.items > 0 then
-        for _, item in ipairs(self.items) do
-            if item:checkRequirements() then
-                item:giveToPlayer()
+function ItemList:doItems()
+    if self.items and table.size(self.items) > 0 then
+        mwse.log("Doing items")
+        for _, itemPick in ipairs(self.items) do
+            mwse.log("itemPick %s", itemPick.name)
+            if itemPick:checkRequirements() then
+                mwse.log("requirements met, adding to inventory")
+                itemPick:giveToPlayer()
             end
         end
         return true

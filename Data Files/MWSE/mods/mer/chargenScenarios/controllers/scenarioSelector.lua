@@ -2,7 +2,12 @@ local ScenarioSelector = {}
 local menuId = tes3ui.registerID("Mer_ScenarioSelectorMenu")
 local descriptionHeaderID = tes3ui.registerID("Mer_ScenarioSelectorDescriptionHeader")
 local descriptionID = tes3ui.registerID("Mer_ScenarioSelectorDescription")
-local common = require("mer.chargenScenarios.common")
+local logger = require("mer.chargenScenarios.common").log
+
+--[[
+    ScenarioSelector Menu. UI only, game logic handled
+    by events
+]]
 
 local function createHeading(parent)
     --HEADING
@@ -13,7 +18,6 @@ local function createHeading(parent)
     title.absolutePosAlignX = 0.5
     title.borderTop = 4
     title.borderBottom = 4
-
     return title
 end
 
@@ -45,6 +49,7 @@ local function createScenarioListBlock(parent)
     return scenarioListBlock
 end
 
+
 local function sortListAlphabetically(list)
     local alphabetSort = function(a, b)
         return string.lower(a.name) < string.lower(b.name)
@@ -57,9 +62,9 @@ local function sortListAlphabetically(list)
     return sortedList
 end
 
-local function clickedScenario(scenario)
+local function onClickScenario(scenario)
     local menu = tes3ui.findMenu(menuId)
-    tes3.player.tempData.selectedChargenScenario = scenario
+
     local header = menu:findChild(descriptionHeaderID)
     header.text = scenario.name
 
@@ -79,9 +84,9 @@ local function clickedScenario(scenario)
     end
 end
 
-local function populateScenarioList(listBlock, list)
+local function populateScenarioList(listBlock, list, onScenarioSelected, currentScenario)
     for _, scenario in ipairs(list) do
-        local scenarioButton = listBlock:createButton{
+        local scenarioButton = listBlock:createTextSelect{
             text = scenario.name,
             id = tes3ui.registerID("scenarioButton_" .. scenario.name)
         }
@@ -94,8 +99,15 @@ local function populateScenarioList(listBlock, list)
             scenarioButton.widget.idle = tes3ui.getPalette("disabled_color")
         end
         scenarioButton:register("mouseClick", function()
-            clickedScenario(scenario)
+            onClickScenario(scenario)
+            onScenarioSelected(scenario)
         end)
+        if scenario == currentScenario then
+            timer.frame.delayOneFrame(function()
+                logger:debug("Crurent Scenario exists, triggering mouse click")
+                scenarioButton:triggerEvent("mouseClick")
+            end)
+        end
     end
 end
 
@@ -134,40 +146,43 @@ local function createRandomiseButton(parent, listBlock)
     return randomButton
 end
 
-local function createOkButton(parent)
+local function createOkButton(parent, onOkayButton)
     local okButton = parent:createButton{ text = "Ok", id = tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton")}
     okButton.alignX = 1.0
     okButton:register("mouseClick", function()
-        if tes3.player.tempData.selectedChargenScenario then
-            common.log:debug("Selected scenario: " .. tes3.player.tempData.selectedChargenScenario.name)
-            tes3ui.findMenu(menuId):destroy()
-            --Return to stat review
-            tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
-        end
+        tes3ui.findMenu(menuId):destroy()
+        onOkayButton()
     end)
     return okButton
 end
 
-function ScenarioSelector.openScenarioSelector()
+function ScenarioSelector.createScenarioMenu(e)
+    local scenarioList = sortListAlphabetically(e.scenarioList)
+    local onScenarioSelected = e.onScenarioSelected
+    local onOkayButton = e.onOkayButton
+    local currentScenario = e.currentScenario
+
     local menu = tes3ui.createMenu{ id = menuId, fixedFrame = true }
     local outerBlock = createOuterBlock(menu)
     --outer block
-    local heading = createHeading(outerBlock)
+    createHeading(outerBlock)
     local innerBlock = createInnerBlock(outerBlock)
     --inner block
     local scenarioListBlock = createScenarioListBlock(innerBlock)
-    local scenarioList = sortListAlphabetically(common.registeredScenarios)
-    populateScenarioList(scenarioListBlock, scenarioList)
-    local descriptionBlock = createDescriptionBlock(innerBlock)
+
+    populateScenarioList(scenarioListBlock, scenarioList, onScenarioSelected, currentScenario)
+    createDescriptionBlock(innerBlock)
     --Buttons
     local buttonsBlock = createButtonsBlock(outerBlock)
     createRandomiseButton(buttonsBlock, scenarioListBlock)
-    createOkButton(buttonsBlock)
+    createOkButton(buttonsBlock, onOkayButton)
 
     menu:updateLayout()
     tes3ui.enterMenuMode(menuId)
     scenarioListBlock:getContentElement().children[1]:triggerEvent("mouseClick")
-
 end
 
+
 return ScenarioSelector
+
+

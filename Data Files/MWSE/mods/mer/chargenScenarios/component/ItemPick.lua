@@ -81,8 +81,8 @@ end
 function ItemPick:giveToPlayer()
     local addedItems = {}
     local added = 0
-    while added < item.count or 1 do
-        local pickedItem = item:pick()
+    while added < (self.count or 1) do
+        local pickedItem = self:pick()
         if pickedItem then
             mwse.log("Picked Item: %s", pickedItem)
             table.insert(addedItems, pickedItem)
@@ -99,8 +99,9 @@ end
 
 function ItemPick:checkRequirements()
     if self.requirements and not self.requirements:check() then
-        return
+        return false
     end
+    return true
 end
 
 return ItemPick

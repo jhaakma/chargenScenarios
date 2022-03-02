@@ -1,3 +1,5 @@
+mwse.log("interop!!!!!!!!!!!!!!!!!!!!!!!!")
+
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 
 ---@class ChargenScenariosInterop
@@ -22,5 +24,6 @@ interop.registerScenarios = function(scenarioList)
     end
     return registeredScenarios
 end
+
 
 return interop

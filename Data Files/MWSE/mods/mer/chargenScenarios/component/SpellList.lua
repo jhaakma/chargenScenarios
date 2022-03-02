@@ -1,6 +1,6 @@
 ---@class ChargenScenariosSpellList
 ---@field new function @constructor
----@field addSpells function @Resolves each itemPick and adds it to the player's inventory
+---@field doSpells function @Resolves each itemPick and adds it to the player's inventory
 ---@field spells table<number, ChargenScenariosSpellPick> @the list of spells to add to the player's inventory
 
 local common = require("mer.chargenScenarios.common")
@@ -34,7 +34,12 @@ function SpellList:new(data)
     return spellList
 end
 
-function SpellList:addSpells()
+function SpellList:addSpell(spell)
+    local spellPick = SpellPick:new(spell)
+    table.insert(self.spells, spellPick)
+end
+
+function SpellList:doSpells()
     if self.spells and #self.spells > 0 then
         for _, spell in ipairs(self.spells) do
             common.log:debug("Picking spell")

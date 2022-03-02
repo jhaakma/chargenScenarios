@@ -10,10 +10,10 @@
 ---@class ChargenScenariosLocation
 ---@field new function @constructor
 ---@field moveTo function @move the player to location
----@field addItems function @adds items to the player's inventory
+---@field doItems function @adds items to the player's inventory
 ---@field checkRequirements function @returns true if the requirements are met, false otherwise
 ---@field getIntroMessage function @returns the intro message for the location
----@field addClutter function @adds clutter to the world
+---@field doClutter function @adds clutter to the world
 ---@field position table<number, number> @the position of the location
 ---@field orientation table<number, number> @the orientation of the location
 ---@field cell string @the cell of the location
@@ -72,9 +72,9 @@ function Location:moveTo()
     }
 end
 
-function Location:addItems()
+function Location:doItems()
     if self.items then
-        return self.items:addItems()
+        return self.items:doItems()
     end
 end
 
@@ -87,7 +87,7 @@ function Location:getIntroMessage()
 end
 
 ---@param self ChargenScenariosLocation
-function Location.addClutter(self)
+function Location.doClutter(self)
     if self.clutter and #self.clutter > 0 then
         local placedClutterReferences = {}
         for _, clutter in ipairs(self.clutter) do

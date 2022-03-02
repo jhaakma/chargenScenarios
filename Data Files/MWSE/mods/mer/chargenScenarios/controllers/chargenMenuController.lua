@@ -15,37 +15,34 @@ local function returnToStatsMenu()
     tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
 end
 
-local function createTooltip(name, description)
-    local tooltip = tes3ui.createTooltipMenu()
-    local outerBlock = tooltip:createBlock()
-    outerBlock.flowDirection = "top_to_bottom"
-    outerBlock.paddingTop = 6
-    outerBlock.paddingBottom = 12
-    outerBlock.paddingLeft = 6
-    outerBlock.paddingRight = 6
-    outerBlock.width = 400
-    outerBlock.autoHeight = true
-
-    local header = outerBlock:createLabel{
-        text = name
+local function openScenarioMenu()
+    scenarioSelector.createScenarioMenu{
+        scenarioList = common.registeredScenarios,
+        onScenarioSelected = function(scenario)
+            common.log:debug("Clicked scenario: %s", scenario.name)
+            tes3.player.tempData.selectedChargenScenario = scenario
+        end,
+        onOkayButton = function()
+            common.log:debug("Okay button pressed")
+            if tes3.player.tempData.selectedChargenScenario then
+                --Return to stat review
+                tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
+            else
+                common.log:error("No scenario selected")
+            end
+        end,
+        currentScenario = tes3.player.tempData.selectedChargenScenario
     }
-    header.absolutePosAlignX = 0.5
-    header.color = tes3ui.getPalette("header_color")
-
-
-    local descriptionLabel = outerBlock:createLabel{
-        text = description
-    }
-    descriptionLabel.autoHeight = true
-    descriptionLabel.width = 285
-    descriptionLabel.wrapText = true
-
-    tooltip:updateLayout()
 end
+
+local createTooltip = require("mer.chargenScenarios.util.tooltip")
 
 local function registerTooltip(block, name, description)
     local onTooltip = function()
-        createTooltip(name, description)
+        createTooltip{
+            header = name,
+            text = description
+        }
     end
     block:register("help", onTooltip)
     for _, element in ipairs(block.children) do
@@ -76,7 +73,7 @@ local function createScenarioButton(parent)
     local button = block:createButton{ text = "Scenario"}
     button:register("mouseClick", function()
         parent:getTopLevelMenu():destroy()
-        scenarioSelector.openScenarioSelector()
+        openScenarioMenu()
     end)
 
     local scenarioName = tes3.player.tempData.selectedChargenScenario and tes3.player.tempData.selectedChargenScenario.name or ""
@@ -85,6 +82,7 @@ local function createScenarioButton(parent)
     local scenarioDescription = tes3.player.tempData.selectedChargenScenario and tes3.player.tempData.selectedChargenScenario.description or ""
     registerTooltip(block, scenarioName, scenarioDescription)
 end
+
 
 
 
@@ -105,7 +103,7 @@ local function createBackgroundButton(parent)
         end)
     end)
     local background = backgroundsInterop.getCurrentBackground()
-    createStatsButtonLabel(block, background and background:getName() or "")
+    createStatsButtonLabel(block, background and background:getName() or "None")
     if background then
         registerTooltip(block, background:getName(), background:getDescription())
     end
@@ -289,6 +287,36 @@ end
 event.register("uiActivated", modifyBirthSignMenu, { filter = "MenuBirthSign"})
 
 
+
+local function selectRandomName(menu)
+    local okButton = menu:findChild("MenuName_OkNextbutton")
+    local race = tes3.player.object.race.name
+    common.log:debug("Race: %s", race)
+    for _, textSelect in ipairs(raceBlockNames:getContentElement().children) do
+        common.log:debug(textSelect.text)
+        if string.find(textSelect.text:lower(), race:lower()) then
+            common.log:debug("Selecting %s", race)
+            textSelect:triggerEvent("mouseClick")
+            raceBlockNames.widget:contentsChanged()
+            local sexButton = menu:findChild("NameGenerator:sexBlock").children[1]
+            if sexButton and tes3.player.object.female then
+                sexButton:triggerEvent("mouseClick")
+            end
+            local generateButton = okButton.parent.children[1]
+            if generateButton then
+                common.log:debug("Generating a random name")
+                if tes3.player.object.name:lower() == "player" then
+                    generateButton:triggerEvent("mouseClick")
+                else
+                    local nameFIeld = menu:findChild(tes3ui.registerID("MenuName_NameSpace"))
+                    nameFIeld.text = tes3.player.object.name
+                end
+            end
+            return
+        end
+    end
+end
+
 --[[
     When the name menu is opened, override the Ok button
     to trigger the statReviewMenu again
@@ -303,53 +331,34 @@ local function modifyNameMenu(e)
     --Ok button should trigger the statReviewMenu
     local okButton = menu:findChild("MenuName_OkNextbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        tes3.player.tempData.chargenScenariosNameChosen = true
+
         okButton:forwardEvent(eMouseClick)
         --If character backgrounds is installed, trigger the perks menu
-        if tes3.player.data.merBackgrounds then
+        if tes3.player.data.merBackgrounds and not tes3.player.tempData.chargenScenariosNameChosen then
             common.log:debug("Backgrounds is active, opening perks menu")
             timer.delayOneFrame(function()
                 event.trigger("CharacterBackgrounds:OpenPerksMenu")
             end)
         else
             common.log:debug("Clicked okNext button, returning to stat review menu")
-            --trigger the stat review menu
-            scenarioSelector.openScenarioSelector()
         end
+        tes3.player.tempData.chargenScenariosNameChosen = true
     end)
 
     --Prepopulate name option based on player race
     --if Name Generator mod is installed
+    --Only if no name has been chosen yet
     if raceBlockNames then
-        common.log:debug("Come on man, global variables?")
-        local race = tes3.player.object.race.name
-        common.log:debug("Race: %s", race)
-        for _, textSelect in ipairs(raceBlockNames:getContentElement().children) do
-            common.log:debug(textSelect.text)
-            if string.find(textSelect.text:lower(), race:lower()) then
-                common.log:debug("Selecting %s", race)
-                textSelect:triggerEvent("mouseClick")
-                raceBlockNames.widget:contentsChanged()
-                local sexButton = menu:findChild("NameGenerator:sexBlock").children[1]
-                if sexButton and tes3.player.object.female then
-                    sexButton:triggerEvent("mouseClick")
-                end
-                local generateButton = okButton.parent.children[1]
-                if generateButton then
-                    common.log:debug("Generating a random name")
-                    generateButton:triggerEvent("mouseClick")
-                end
-                return
-            end
-        end
+        selectRandomName(menu)
     end
 end
 event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = -10})
 
+
 local function openScenarioSelectorOnBackgroundsFinish()
     common.log:debug("Background selected, opening scenario menu")
     if not tes3.player.tempData.selectedChargenScenario then
-        scenarioSelector.openScenarioSelector()
+        openScenarioMenu()
     else
         common.log:debug("Scenario already selected, skipping scenario menu")
         returnToStatsMenu()

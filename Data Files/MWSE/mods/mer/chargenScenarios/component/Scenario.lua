@@ -11,27 +11,28 @@
 
 ---@class ChargenScenariosScenario
 ---methods:
----@field new                   function @constructor
----@field register              function @constructs and registers the scenario
----@field getStartingLocation   function @returns the starting location for the scenario. If a list of scenarios is provided, picks one at random
----@field moveToLocation        function @moves the player to the randomly selected location
----@field checkRequirements     function @returns true if the requirements are met, false otherwise
----@field addItems              function @adds items to the player's inventory. Overridden by location items
----@field getIntroMessage       function @returns the intro message for the scenario. Overridden by location introMessage
----@field doIntroMessage        function @displays the intro message for the scenario
----@field addClutter            function @adds clutter to the world. Overridden by location clutter
----@field addSpells             function @adds spells to the player. Overridden by location spells
----@field start                 function @Begin the scenario
+---@field new function @constructor
+---@field register function @constructs and registers the scenario
+---@field addLocation function @adds a location to the scenario
+---@field getStartingLocation function @returns the starting location for the scenario. If a list of scenarios is provided, picks one at random
+---@field moveToLocation function @moves the player to the randomly selected location
+---@field checkRequirements function @returns true if the requirements are met, false otherwise
+---@field doItems function @adds items to the player's inventory. Overridden by location items
+---@field getIntroMessage function @returns the intro message for the scenario. Overridden by location introMessage
+---@field doIntroMessage function @displays the intro message for the scenario
+---@field doClutter function @adds clutter to the world. Overridden by location clutter
+---@field doSpells function @adds spells to the player. Overridden by location spells
+---@field start function @Begin the scenario
 ---fields:
----@field name                  string @the name of the scenario
----@field description           string @the description of the scenario
----@field requirements          ChargenScenariosRequirements @the requirements for the scenario
----@field locations             table @the list of locations for the scenario
----@field itemList              ChargenScenariosItemList @the list of items for the scenario
----@field spellList             ChargenScenariosSpellList @the list of spells given to the player for this scenario. May include abilities, diseases etc
----@field clutter               table @the clutter for the scenario
----@field introMessage          string @the intro message for the scenario.
----@field doVanillaChargen      boolean @whether or not to do the vanilla chargen.
+---@field name string @the name of the scenario
+---@field description string @the description of the scenario
+---@field requirements ChargenScenariosRequirements @the requirements for the scenario
+---@field locations table @the list of locations for the scenario
+---@field itemList ChargenScenariosItemList @the list of items for the scenario
+---@field spellList ChargenScenariosSpellList @the list of spells given to the player for this scenario. May include abilities, diseases etc
+---@field clutter table @the clutter for the scenario
+---@field introMessage string @the intro message for the scenario.
+---@field doVanillaChargen boolean @whether or not to do the vanilla chargen.
 
 local common       = require("mer.chargenScenarios.common")
 local ItemList     = require("mer.chargenScenarios.component.ItemList")
@@ -68,12 +69,13 @@ function Scenario:new(data)
     local scenario = table.deepcopy(data)
     --Validate
     common.validator.validate(scenario, self.schema)
-    assert(scenario.location or scenario.locations, "Scenario must have a location or a list of locations")
     --Build
-    do--Create Locations
+    if scenario.location or scenario.locations then--Create Locations
         scenario.locations = scenario.locations or {scenario.location}
         scenario.location = nil
         scenario.locations = common.convertListTypes(scenario.locations, Location)
+    else
+        scenario.locations = {}
     end
     --Convert items to ItemList
     scenario.itemList = scenario.items and ItemList:new(scenario.items)
@@ -98,8 +100,18 @@ function Scenario:register(data)
     return scenario
 end
 
+---@param locationInput ChargenScenariosLocationInput
+function Scenario:addLocation(locationInput)
+    local location = Location:new(locationInput)
+    table.insert(self.locations, location)
+end
+
+
 ---@return ChargenScenariosLocation
 function Scenario:getStartingLocation()
+    if not self.locations then
+        common.log:error("Scenario %s has no locations", self.name)
+    end
     --Decide starting location once
     if self.decidedLocation then
         return self.decidedLocation
@@ -119,11 +131,17 @@ function Scenario:getStartingLocation()
 end
 
 function Scenario:moveToLocation()
+    if not self.locations then
+        common.log:error("Scenario %s has no locations", self.name)
+    end
     return self:getStartingLocation():moveTo()
 end
 
 --Check that required mods are installed and there is at least one valid location
 function Scenario:checkRequirements()
+    if not self.locations then
+        common.log:error("Scenario %s has no locations", self.name)
+    end
     local hasValidLocation = false
     for _, location in ipairs(self.locations) do
         if location:checkRequirements() then
@@ -133,12 +151,14 @@ function Scenario:checkRequirements()
     return hasValidLocation and self.requirements:check()
 end
 
-function Scenario:addItems()
-    local locationItems = self:getStartingLocation():addItems()
+function Scenario:doItems()
+    local locationItems = self:getStartingLocation():doItems()
     if locationItems then
+        mwse.log("Location items")
         return locationItems
     elseif self.itemList then
-        return self.itemList:addItems()
+        mwse.log("Doing Scenario items")
+        return self.itemList:doItems()
     end
 end
 
@@ -162,30 +182,30 @@ function Scenario:doIntroMessage()
     end
 end
 
-function Scenario:addClutter()
-    local locationAddedClutter = self:getStartingLocation():addClutter()
+function Scenario:doClutter()
+    local locationAddedClutter = self:getStartingLocation():doClutter()
     if locationAddedClutter then
         return locationAddedClutter
     elseif self.clutter then
-        return self.clutter:addClutter()
+        return self.clutter:doClutter()
     end
 end
 
-function Scenario:addSpells()
+function Scenario:doSpells()
     if self.spellList then
-        return self.spellList:addSpells()
+        return self.spellList:doSpells()
     end
 end
 
 function Scenario:start()
     tes3.findGlobal("CharGenState").value = -1
-    self:addClutter()
+    self:doClutter()
     self:moveToLocation()
     timer.start{
         duration = 0.5,
         callback = function()
-            self:addItems()
-            self:addSpells()
+            self:doItems()
+            self:doSpells()
             self:doIntroMessage()
             common.enableControls()
         end,

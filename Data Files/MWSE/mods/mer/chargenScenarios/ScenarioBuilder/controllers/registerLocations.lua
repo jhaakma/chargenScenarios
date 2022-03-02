@@ -1,8 +1,17 @@
 --[[
     To use this
 ]]
-local common = require('mer.chargenScenarioUtilities.common')
-
+local common = require('mer.chargenScenarios.common')
+local function addLocation(locationToAdd, name)
+    common.mcmConfig.locations[name] = locationToAdd
+    common.log:debug("Storing location: %s", name)
+    common.log:debug(json.encode(locationToAdd))
+    common.log:debug("player position: ")
+    common.log:debug(json.encode(tes3.player.position))
+    common.log:debug("player orientation: ")
+    common.log:debug(json.encode(tes3.player.orientation))
+    common.saveConfig()
+end
 
 local function registerLocation()
     local location = {
@@ -35,17 +44,6 @@ local function registerLocation()
                     table = name
                 },
                 callback = function()
-                    local function addLocation(location)
-                        common.mcmConfig.locations[name.name] = location
-                        common.log:debug("Storing location: %s", name.name)
-                        common.log:debug(json.encode(location))
-                        common.log:debug("player position: ")
-                        common.log:debug(json.encode(tes3.player.position))
-                        common.log:debug("player orientation: ")
-                        common.log:debug(json.encode(tes3.player.orientation))
-                        common.saveConfig()
-                    end
-
                     if common.mcmConfig.locations[name.name] then
                         common.messageBox{
                             message = "Location with this id already exists.",
@@ -53,7 +51,7 @@ local function registerLocation()
                                 {
                                     text = "Overwrite",
                                     callback = function()
-                                        addLocation(location)
+                                        addLocation(location, name.name)
                                         tes3ui.leaveMenuMode(menuId)
                                         tes3ui.findMenu(menuId):destroy()
                                     end
@@ -76,7 +74,7 @@ local function registerLocation()
                             }
                         }
                     else
-                        addLocation(location)
+                        addLocation(location, name.name)
                         tes3ui.leaveMenuMode(menuId)
                         tes3ui.findMenu(menuId):destroy()
                     end
@@ -88,19 +86,12 @@ local function registerLocation()
 end
 
 
-local function isKeyPressed(pressed, expected)
-    return pressed.keyCode == expected.keyCode
-    -- and
-    --     not not pressed.isShiftDown == not not expected.isShiftDown and
-    --     not not pressed.isControlDown == not not expected.isControlDown and
-    --     not not pressed.isAltDown == not not expected.isAltDown
-    -- )
-end
+
 
 ---@param e keyDownEventData
 local function onKeyDown(e)
     if common.mcmConfig.registerLocationsEnabled then
-        if isKeyPressed(e, common.mcmConfig.registerLocationsHotKey) then
+        if common.isKeyPressed(e, common.mcmConfig.registerLocationsHotKey) then
             common.messageBox{
                 message = "Register current position/orientation/cell as a starting location?",
                 buttons = {

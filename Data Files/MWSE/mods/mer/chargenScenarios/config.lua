@@ -15,10 +15,9 @@ local config = {
         cell = "Imperial Prison Ship"
     },
     scenarios = {
-
         --default
         {
-            name = "Vanilla",
+            name = "--Vanilla--",
             description = "Start the game in the Seyda Neen Census and Excise Office, without a scenario.",
             location = {
                 orientation = {0,0,1.6740349531174},
@@ -36,7 +35,24 @@ config.defaultConfig = {
     startingLocation = config.defaultLocation,
     startingLocations = {
         vanilla = config.defaultLocation,
-    }
+    },
+    registerLocationsEnabled = false,
+    registerLocationsHotKey = {
+        keyCode = tes3.scanCode.numpadEnter,
+        isShiftDown = true
+    },
+    registerClutterEnabled = false,
+    registerClutterHotKey = {
+        keyCode = tes3.scanCode.e,
+        isAltDown = true
+    },
+    --Testing
+    doTests = false,
+    exitAfterUnitTests = false,
+    exitAfterIntegrationTests = false,
+
+    registeredClutterGroups = {},
+    registeredLocations = {}
 }
 
 return config
