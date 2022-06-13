@@ -150,8 +150,9 @@ Validator.validate = function(object, schema)
                     )
                 end
             end
-        elseif field.default then
+        elseif field.default ~= nil then
             --nil, initialise default
+            assert(type(object) == "table", string.format("Validation failed: %s is not a table.", object))
             object[key] = field.default
         end
     end

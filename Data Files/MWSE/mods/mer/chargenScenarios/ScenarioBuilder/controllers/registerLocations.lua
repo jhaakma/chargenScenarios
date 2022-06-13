@@ -45,7 +45,7 @@ local function registerLocation()
                 },
                 callback = function()
                     if common.mcmConfig.locations[name.name] then
-                        common.messageBox{
+                        tes3ui.showMessageMenu{
                             message = "Location with this id already exists.",
                             buttons = {
                                 {
@@ -92,7 +92,7 @@ end
 local function onKeyDown(e)
     if common.mcmConfig.registerLocationsEnabled then
         if common.isKeyPressed(e, common.mcmConfig.registerLocationsHotKey) then
-            common.messageBox{
+            tes3ui.showMessageMenu{
                 message = "Register current position/orientation/cell as a starting location?",
                 buttons = {
                     {

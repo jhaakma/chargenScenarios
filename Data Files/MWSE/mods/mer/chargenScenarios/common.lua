@@ -23,7 +23,6 @@ function this.modEnabled()
     return this.mcmConfig.enabled == true
 end
 
-this.messageBox = require("mer.chargenScenarios.util.messageBox")
 this.createTooltip = require("mer.chargenScenarios.util.tooltip")
 
 this.isKeyPressed = function(pressed, expected)

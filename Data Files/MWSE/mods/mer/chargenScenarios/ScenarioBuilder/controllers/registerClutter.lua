@@ -64,7 +64,7 @@ local function createClutterGroupPrompt()
         callback = function()
             local name = nameTable.name:lower()
             if common.mcmConfig.registeredClutterGroups[name] then
-                common.messageBox {
+                tes3ui.showMessageMenu{
                     message = 'Clutter Group already exists.',
                     buttons = {
                         {
@@ -118,7 +118,7 @@ local function registerClutterPrompt()
         if currentClutterGroup then
             title = string.format('Current Clutter Group: %s', currentClutterGroup)
         end
-        common.messageBox {
+        tes3ui.showMessageMenu {
             message = title,
             buttons = {
                 {
@@ -143,10 +143,8 @@ local function registerClutterPrompt()
                         selectClutterGroup()
                     end
                 },
-                {
-                    text = 'Cancel'
-                }
-            }
+            },
+            cancels = true
         }
     end
 end
