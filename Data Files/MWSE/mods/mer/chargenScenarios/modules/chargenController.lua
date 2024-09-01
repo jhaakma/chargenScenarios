@@ -1,5 +1,19 @@
 
 local common = require('mer.chargenScenarios.common')
+local logger = common.createLogger("ChargenController")
+local controls = require('mer.chargenScenarios.util.Controls')
+
+local defaultTopics = {
+    "duties",
+    "background",
+	"specific place",
+	"someone in particular",
+	"services",
+	"my trade",
+	"little secret",
+	"latest rumors",
+	"little advice",
+}
 
 local chargenObjects = {
     "CharGen Boat",
@@ -24,46 +38,59 @@ local function disableChargenStuff()
     --Disable chargen objects
     for _, id in ipairs(chargenObjects) do
         local command = string.format('"%s"->Disable', id)
-        tes3.runLegacyScript{ command = command}
+        tes3.runLegacyScript{ command = command} ---@diagnostic disable-line
     end
     --unlock door to census office
-    tes3.runLegacyScript{ command = '"CharGen Door Hall"->Unlock'}
+    tes3.runLegacyScript{ command = '"CharGen Door Hall"->Unlock'} ---@diagnostic disable-line
 end
 
 local function startChargen()
     local weatherController = tes3.worldController.weatherController
     weatherController:switchImmediate(0)
     --Set Chargen State
-    common.log:debug("Setting chargen state to 'start'")
+    logger:debug("Setting chargen state to 'start'")
     tes3.findGlobal("CharGenState").value = 10
     --Disable Controls
-    common.log:debug("Disabling controls")
-    common.disableControls()
+    logger:debug("Disabling controls")
+    controls.disableControls()
     --Disable NPCs
-    common.log:debug("Disabling Vanilla Chargen stuff")
+    logger:debug("Disabling Vanilla Chargen stuff")
     disableChargenStuff()
 
     --Move Player to Chargen Cell
-    common.log:debug("Moving player to chargen cell")
-    tes3.positionCell(common.config.chargenLocation)
+    logger:debug("Moving player to chargen cell")
+    tes3.positionCell(table.copy(
+        common.config.chargenLocation,
+        ---@type tes3.positionCell.params
+        {
+            forceCellChange = true
+        })
+    )
     --Open Stat Review Menu
 
-    --"bk_a1_1_caiuspackage"
+    --Add topics
+    for _, topic in ipairs(defaultTopics) do
+        tes3.addTopic{
+            topic = topic,
+            updateGUI = false
+        }
+    end
 
     timer.start{
         type = timer.simulate,
         duration = 1,
         callback = function()
-            common.log:debug("Opening stat review menu")
+            logger:debug("Opening stat review menu")
             tes3.runLegacyScript{ command = "EnableRaceMenu"}
         end
     }
+
 end
 
 ---@param e loadedEventData
 local function startChargenOnLoad(e)
     if common.modEnabled() and e.newGame then
-        common.log:debug("Starting Chargen")
+        logger:debug("Starting Chargen")
         startChargen()
     end
 end
@@ -72,6 +99,7 @@ event.register("loaded", startChargenOnLoad)
 --[[
     Prevent vanilla chargen scripts from running,
 ]]
+---@type string[]
 local chargenScripts = {
     "CharGen",
     "CharGen_ring_keley",
@@ -95,12 +123,14 @@ local chargenScripts = {
     "CharGenWalkNPC",
 }
 
-local function setVanillaChargenScriptOnLoad()
-    if common.modEnabled() then
-        common.log:debug("Overriding Chargen Scripts")
-        for _, script in pairs(chargenScripts) do
-            mwse.overrideScript(script, function() end)
+local function blockChargenScripts()
+    if common.config.mcm.enabled then
+        logger:debug("Overriding Chargen Scripts")
+        for _, scriptId in pairs(chargenScripts) do
+            mwse.overrideScript(scriptId, function()
+                mwscript.stopScript{script = scriptId} ---@diagnostic disable-line
+            end)
         end
     end
 end
-event.register("load", setVanillaChargenScriptOnLoad)
+blockChargenScripts()

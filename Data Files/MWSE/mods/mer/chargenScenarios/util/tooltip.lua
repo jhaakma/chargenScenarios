@@ -1,4 +1,9 @@
-return function(e)
+---@class ChargenScenarios.Tooltip
+local Tooltip = {}
+
+---Create a tooltip with the given text
+---@param e string|{header: string, text: string}
+function Tooltip.createTooltip(e)
     local thisHeader, thisLabel
     if type(e) == "string" then
         thisLabel = e
@@ -35,3 +40,5 @@ return function(e)
 
     tooltip:updateLayout()
 end
+
+return Tooltip

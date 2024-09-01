@@ -1,6 +1,6 @@
 local UnitWind = include('unitwind.unitwind')
 local common = require "mer.chargenScenarios.common"
-local mcmConfig = common.mcmConfig
+local mcmConfig = common.config.mcm
 if UnitWind then
     return UnitWind.new{
         enabled = mcmConfig.doTests,

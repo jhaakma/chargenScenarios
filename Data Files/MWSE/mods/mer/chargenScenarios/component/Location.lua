@@ -1,61 +1,71 @@
----@class ChargenScenariosLocationInput
+---@class (exact) ChargenScenariosLocationInput
 ---@field position table<number, number> @The position where the player will be spawned
----@field rotation table<number, number> @The rotation where the player will be spawned
----@field cell string @The cell where the player will be spawned
----@field items table<number, ChargenScenariosItemPickInput> @The items to add to the player's inventory. Overrwrites items defined in parent scenario
----@field requirements ChargenScenariosRequirementsInput @The requirements that need to be met for this location to be used
----@field introMessage string @The message to display when a scenario starts this location is used. Overwrites introMessage defined in parent scenario
----@field clutter table<number, ChargenScenariosClutterInput> @The clutter to add to the world. Overwrites clutter defined in parent scenario
-
----@class ChargenScenariosLocation
----@field new function @constructor
----@field moveTo function @move the player to location
----@field doItems function @adds items to the player's inventory
----@field checkRequirements function @returns true if the requirements are met, false otherwise
----@field getIntroMessage function @returns the intro message for the location
----@field doClutter function @adds clutter to the world
----@field position table<number, number> @the position of the location
----@field orientation table<number, number> @the orientation of the location
----@field cell string @the cell of the location
----@field items ChargenScenariosItemList @the list of items that will be added to player inventory for this location
----@field requirements ChargenScenariosRequirements @the requirements for the location
----@field introMessage string @the intro message for the location
----@field clutter table<number, ChargenScenariosClutter> @the clutter for the location
+---@field orientation number @The orientation where the player will be spawned
+---@field cell? string @The cell where the player will be spawned. Nil for exteriors
+---@field items? table<number, ChargenScenariosItemPickInput> @The items to add to the player's inventory. Overrwrites items defined in parent scenario
+---@field requirements? ChargenScenariosRequirementsInput @The requirements that need to be met for this location to be used
+---@field onStart? fun(self: ChargenScenariosLocation):string @Callback triggered when a scenario starts at this location
+---@field clutter nil|string[]|ChargenScenariosClutterInput[] @The clutter for the location
 
 local common = require("mer.chargenScenarios.common")
+local logger = common.createLogger("Location")
+local Validator = require("mer.chargenScenarios.util.validator")
 local ItemList = require("mer.chargenScenarios.component.ItemList")
 local ItemPick = require("mer.chargenScenarios.component.ItemPick")
 local Requirements = require("mer.chargenScenarios.component.Requirements")
-local Clutter = require("mer.chargenScenarios.component.Clutter")
+local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 
----@type ChargenScenariosLocation
+
+---@class ChargenScenariosLocation : ChargenScenariosLocationInput
+---@field items? ChargenScenariosItemList
+---@field requirements ChargenScenariosRequirements
+---@field clutterList? ChargenScenariosClutterList
 local Location = {
+    registeredLocations = {},
     --input schema, not identical to final object structure
     schema = {
         name = "Location",
         fields = {
             position = { type = "table", childType = "number", required = true },
-            orientation = { type = "table", childType = "number", required = true },
-            cell = { type = "string", required = true },
+            orientation = { type = "number", required = true },
+            cell = { type = "string", required = false },
             items = { type = "table", childType = ItemPick.schema, required = false },
             requirements = { type = Requirements.schema, required = false },
-            introMessage = { type = "string", required = false },
-            clutter = { type = "table", childType = Clutter.schema, required = false },
+            onStart = { type = "function", required = false, default = function() end },
         }
     }
 }
+
+---Register a location that can be used in multiple scenarios
+---@param id string @The id of the location
+---@param locationData ChargenScenariosLocationInput @The location data
+function Location.register(id, locationData)
+    local location = Location:new(locationData)
+    Location.registeredLocations[id] = location
+    return location
+end
+
+function Location.get(id)
+    return Location.registeredLocations[id]
+end
 
 --Constructor
 ---@param data ChargenScenariosLocationInput
 ---@return ChargenScenariosLocation
 function Location:new(data)
-    local location = table.deepcopy(data)
     --Validate
-    common.validator.validate(location, self.schema)
-    --Build
-    self.items = location.items and ItemList:new(location.items)
-    self.requirements = Requirements:new(location.requirements)
-    self.clutter = common.convertListTypes(self.clutter, Clutter)
+    Validator.validate(data, self.schema)
+
+    ---@type ChargenScenariosLocation
+    local location = {
+        position = data.position,
+        orientation = data.orientation,
+        cell = data.cell,
+        items = data.items and ItemList:new(data.items),
+        requirements = Requirements:new(data.requirements),
+        onStart = data.onStart,
+        clutterList = data.clutter and ClutterList:new(data.clutter),
+    }
     --Create Location
     setmetatable(location, self)
     self.__index = self
@@ -63,11 +73,13 @@ function Location:new(data)
 end
 
 function Location:moveTo()
-    common.log:debug("Moving to location: %s\n %s", self.cell, json.encode(self.position))
+    logger:debug("Moving to location: %s\n %s", self.cell, json.encode(self.position))
     return tes3.positionCell{
         reference = tes3.player,
         position = self.position,
-        orientation = self.orientation,
+        orientation = {
+            0, 0, self.orientation
+        },
         cell = self.cell
     }
 end
@@ -81,25 +93,18 @@ end
 function Location:checkRequirements()
     return self.requirements:check()
 end
-
-function Location:getIntroMessage()
-    return self.introMessage
+function Location:doIntro()
+    if self.onStart then
+        return self.onStart(self)
+    end
 end
 
 ---@param self ChargenScenariosLocation
 function Location.doClutter(self)
-    if self.clutter and #self.clutter > 0 then
-        local placedClutterReferences = {}
-        for _, clutter in ipairs(self.clutter) do
-            if clutter:checkRequirements() then
-                local item = clutter:place()
-                if item then
-                    table.insert(placedClutterReferences, item)
-                end
-            end
-        end
-        return placedClutterReferences
+    if self.clutterList then
+        return self.clutterList:doClutter()
     end
 end
+
 
 return Location

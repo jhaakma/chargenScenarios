@@ -1,25 +1,17 @@
 ---@class ChargenScenariosRequirementsInput
----@field plugins table<number, string> @A list of required plugins
----@field classes table<number, string> @A list of required classes
----@field races table<number, string> @A list of required races
+---@field plugins? table<number, string> @A list of required plugins
+---@field classes? table<number, string> @A list of required classes
+---@field races? table<number, string> @A list of required races
 
----@class ChargenScenariosRequirements
----@field new function @contructor
----@field addPlugin function @Add a new plugin requirement
----@field addClass function @Add a new class requirement
----@field addRace function @Add a new race requirement
----@field checkPlugins function @checks whether all the required plugins are loaded
----@field checkClass function @checks whether the player is one of the eligible classes
----@field checkRace function @checks whether the player is one of the eligible races
----@field check function @checks whether all the requirements are met
----@field plugins table<number, string> @the array of plugins that are required
----@field classes table<string, boolean> @the dictionary of classes that are eligible
----@field races table<string, boolean> @the dictionary of races that are elegible
 
 --[[
     Represents a set of requirements for a scenario or location.
 ]]
----@type ChargenScenariosRequirements
+---@class ChargenScenariosRequirements
+---@field plugins? table<number, string> @the array of plugins that are required
+---@field classes? table<string, boolean> @the dictionary of classes that are eligible
+---@field races? table<string, boolean> @the dictionary of races that are elegible
+---@field excludedPlugins? table<number, string> @the array of plugins that are excluded
 local Requirements = {
     schema = {
         name = "Requirements",
@@ -59,7 +51,8 @@ local function addRequirement(self, requirementType, value)
     local requirementTypes = {
         plugins = true,
         classes = true,
-        races = true
+        races = true,
+        excludedPlugins = true
     }
     assert(type(requirementType) == "string", "requirementType must be a string")
     assert(requirementTypes[requirementType],
@@ -81,10 +74,25 @@ function Requirements:addRace(race)
     addRequirement(self, "races", race)
 end
 
+function Requirements:addExcludedPlugin(plugin)
+    addRequirement(self, "excludedPlugins", plugin)
+end
+
 function Requirements:checkPlugins()
     if self.plugins and #self.plugins > 0 then
         for _, plugin in ipairs(self.plugins) do
             if not tes3.isModActive(plugin) then
+                return false
+            end
+        end
+    end
+    return true
+end
+
+function Requirements:checkExcludedPlugins()
+    if self.excludedPlugins and #self.excludedPlugins > 0 then
+        for _, plugin in ipairs(self.excludedPlugins) do
+            if tes3.isModActive(plugin) then
                 return false
             end
         end
@@ -110,8 +118,24 @@ end
 
 function Requirements:check()
     return self:checkPlugins()
+    and self:checkExcludedPlugins()
     and self:checkClass()
     and self:checkRace()
 end
+
+function Requirements:getDescription()
+    local description = {"Requirements: "}
+    if self.plugins and #self.plugins > 0 then
+        table.insert(description, string.format("- Plugins: %s", table.concat(self.plugins, ", ")))
+    end
+    if self.races and table.size(self.races) > 0 then
+        table.insert(description, string.format("- Race: %s", table.concat(table.keys(self.races), ", ")))
+    end
+    if self.classes and table.size(self.classes) > 0 then
+        table.insert(description, string.format("- Class: %s", table.concat(table.keys(self.classes), ", ")))
+    end
+    return #description > 1 and table.concat(description, "\n") or ""
+end
+
 
 return Requirements

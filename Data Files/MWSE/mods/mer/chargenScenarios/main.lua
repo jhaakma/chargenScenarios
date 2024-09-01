@@ -1,13 +1,20 @@
+local enabled = true
+if not enabled then
+    return
+end
+
+
 local common = require('mer.chargenScenarios.common')
-local interop = require("mer.chargenScenarios.interop")
-require('mer.chargenScenarios.controllers.chargenController')
-require('mer.chargenScenarios.controllers.chargenMenuController')
+local logger = common.createLogger("main")
 --Do MCM
 require('mer.chargenScenarios.mcm')
-for _, scenario in ipairs(common.config.scenarios) do
-    --Register scenarios
-    interop.registerScenario(scenario)
-end
+
+event.register("initialized", function()
+    common.initAll("mer\\chargenScenarios\\integrations")
+    common.initAll("mer\\chargenScenarios\\modules")
+    logger:info("Initialized v^%s", common.getVersion())
+end)
+
 
 --Run Unit tests
 require('mer.chargenScenarios.test.unitTests')

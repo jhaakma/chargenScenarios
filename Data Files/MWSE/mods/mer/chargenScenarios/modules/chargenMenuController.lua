@@ -1,45 +1,37 @@
 local common = require('mer.chargenScenarios.common')
-local scenarioSelector = require('mer.chargenScenarios.controllers.scenarioSelector')
-local scenarioLabelId = tes3ui.registerID('chargenScenariosMenuButtonLabel')
-local backgroundLabelId = tes3ui.registerID('chargenScenariosMenuBackgroundLabel')
-    --[[
-        EnableRaceMenu
-        EnableClassMenu
-        EnableBirthMenu
-        EnableNameMenu
-        EnableStatReviewMenu
-    ]]
-
+local logger = common.createLogger("chargenMenuController")
+local scenarioSelector = require('mer.chargenScenarios.component.ScenarioSelector')
+local Scenario = require("mer.chargenScenarios.component.Scenario")
+local Tooltip = require("mer.chargenScenarios.util.Tooltip")
 
 local function returnToStatsMenu()
-    tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
+    tes3.runLegacyScript{ command = "EnableStatReviewMenu"} ---@diagnostic disable-line
 end
 
 local function openScenarioMenu()
     scenarioSelector.createScenarioMenu{
-        scenarioList = common.registeredScenarios,
+        scenarioList = Scenario.registeredScenarios,
         onScenarioSelected = function(scenario)
-            common.log:debug("Clicked scenario: %s", scenario.name)
+            logger:debug("Clicked scenario: %s", scenario.name)
             tes3.player.tempData.selectedChargenScenario = scenario
         end,
         onOkayButton = function()
-            common.log:debug("Okay button pressed")
+            logger:debug("Okay button pressed")
             if tes3.player.tempData.selectedChargenScenario then
                 --Return to stat review
-                tes3.runLegacyScript{ command = "EnableStatReviewMenu"}
+                tes3.runLegacyScript{ command = "EnableStatReviewMenu"} ---@diagnostic disable-line
             else
-                common.log:error("No scenario selected")
+                logger:error("No scenario selected")
             end
         end,
         currentScenario = tes3.player.tempData.selectedChargenScenario
     }
 end
 
-local createTooltip = require("mer.chargenScenarios.util.tooltip")
 
 local function registerTooltip(block, name, description)
     local onTooltip = function()
-        createTooltip{
+        Tooltip.createTooltip{
             header = name,
             text = description
         }
@@ -144,7 +136,7 @@ local function modifyStatReviewMenu(e)
     okButton:register("mouseClick", function(eMouseClick)
         if hasCompletedChargen() then
             okButton:forwardEvent(eMouseClick)
-            tes3.runLegacyScript{ script = "RaceCheck" }
+            tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
             tes3.player.tempData.selectedChargenScenario:start()
         else
             tes3.messageBox("You must complete the character generation process before you can continue.")
@@ -173,7 +165,7 @@ local function modifyRaceSexMenu(e)
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosRaceChosen = true
         if not tes3.player.tempData.chargenScenariosClassChosen then
-            tes3.runLegacyScript{ command = "EnableClassMenu"}
+            tes3.runLegacyScript{ command = "EnableClassMenu"} ---@diagnostic disable-line
         else
             returnToStatsMenu()
         end
@@ -217,16 +209,16 @@ local function modifyCreateClassMenu(e)
     end
 
     local menu = e.element
-    common.log:debug("Enter CreateClass Menu")
+    logger:debug("Enter CreateClass Menu")
     --OK button should trigger the birth sign menu
     local okButton = menu:findChild("MenuCreateClass_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        common.log:debug("Clicked ok button, returning to stat review menu")
+        logger:debug("Clicked ok button, returning to stat review menu")
         --trigger the stat review menu
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosClassChosen = true
         if not tes3.player.tempData.chargenScenariosBirthsignChosen then
-            tes3.runLegacyScript{ command = "EnableBirthMenu"}
+            tes3.runLegacyScript{ command = "EnableBirthMenu"} ---@diagnostic disable-line
         else
             returnToStatsMenu()
         end
@@ -244,11 +236,11 @@ local function modifyChooseClassMenu(e)
     --OK button should trigger the birth sign menu
     local okButton = menu:findChild("MenuChooseClass_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        common.log:debug("Clicked ok button, returning to stat review menu")
+        logger:debug("Clicked ok button, returning to stat review menu")
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosClassChosen = true
         if not tes3.player.tempData.chargenScenariosBirthsignChosen then
-            tes3.runLegacyScript{ command = "EnableBirthMenu"}
+            tes3.runLegacyScript{ command = "EnableBirthMenu"} ---@diagnostic disable-line
         else
             returnToStatsMenu()
         end
@@ -273,12 +265,12 @@ local function modifyBirthSignMenu(e)
     --hide back button
     menu:findChild("MenuBirthSign_Backbutton").visible = false
     okButton:register("mouseClick", function(eMouseClick)
-        common.log:debug("Clicked ok button, returning to stat review menu")
+        logger:debug("Clicked ok button, returning to stat review menu")
         --trigger the stat review menu
         okButton:forwardEvent(eMouseClick)
         tes3.player.tempData.chargenScenariosBirthsignChosen = true
         if not tes3.player.tempData.chargenScenariosNameChosen then
-            tes3.runLegacyScript{ command = "EnableNameMenu"}
+            tes3.runLegacyScript{ command = "EnableNameMenu"} ---@diagnostic disable-line
         else
             returnToStatsMenu()
         end
@@ -291,11 +283,11 @@ event.register("uiActivated", modifyBirthSignMenu, { filter = "MenuBirthSign"})
 local function selectRandomName(menu)
     local okButton = menu:findChild("MenuName_OkNextbutton")
     local race = tes3.player.object.race.name
-    common.log:debug("Race: %s", race)
+    logger:debug("Race: %s", race)
     for _, textSelect in ipairs(raceBlockNames:getContentElement().children) do
-        common.log:debug(textSelect.text)
+        logger:debug(textSelect.text)
         if string.find(textSelect.text:lower(), race:lower()) then
-            common.log:debug("Selecting %s", race)
+            logger:debug("Selecting %s", race)
             textSelect:triggerEvent("mouseClick")
             raceBlockNames.widget:contentsChanged()
             local sexButton = menu:findChild("NameGenerator:sexBlock").children[1]
@@ -304,7 +296,7 @@ local function selectRandomName(menu)
             end
             local generateButton = okButton.parent.children[1]
             if generateButton then
-                common.log:debug("Generating a random name")
+                logger:debug("Generating a random name")
                 if tes3.player.object.name:lower() == "player" then
                     generateButton:triggerEvent("mouseClick")
                 else
@@ -335,12 +327,12 @@ local function modifyNameMenu(e)
         okButton:forwardEvent(eMouseClick)
         --If character backgrounds is installed, trigger the perks menu
         if tes3.player.data.merBackgrounds and not tes3.player.tempData.chargenScenariosNameChosen then
-            common.log:debug("Backgrounds is active, opening perks menu")
+            logger:debug("Backgrounds is active, opening perks menu")
             timer.delayOneFrame(function()
                 event.trigger("CharacterBackgrounds:OpenPerksMenu")
             end)
         else
-            common.log:debug("Clicked okNext button, returning to stat review menu")
+            logger:debug("Clicked okNext button, returning to stat review menu")
         end
         tes3.player.tempData.chargenScenariosNameChosen = true
     end)
@@ -356,11 +348,11 @@ event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = 
 
 
 local function openScenarioSelectorOnBackgroundsFinish()
-    common.log:debug("Background selected, opening scenario menu")
+    logger:debug("Background selected, opening scenario menu")
     if not tes3.player.tempData.selectedChargenScenario then
         openScenarioMenu()
     else
-        common.log:debug("Scenario already selected, skipping scenario menu")
+        logger:debug("Scenario already selected, skipping scenario menu")
         returnToStatsMenu()
     end
 end

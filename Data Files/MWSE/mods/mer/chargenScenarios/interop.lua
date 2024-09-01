@@ -1,11 +1,6 @@
-mwse.log("interop!!!!!!!!!!!!!!!!!!!!!!!!")
-
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 
 ---@class ChargenScenariosInterop
----@field registerScenario function @Register a scenario with the chargen system
-
----@type ChargenScenariosInterop
 local interop = {}
 
 ---@param data ChargenScenariosScenarioInput
@@ -24,6 +19,5 @@ interop.registerScenarios = function(scenarioList)
     end
     return registeredScenarios
 end
-
 
 return interop

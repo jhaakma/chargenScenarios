@@ -1,6 +1,6 @@
 local Scenario = require "mer.chargenScenarios.component.Scenario"
 local common = require "mer.chargenScenarios.common"
-local mcmConfig = common.mcmConfig
+local mcmConfig = common.config.mcm
 if not mcmConfig.doTests then return end
 local Tester = require("mer.chargenScenarios.test.Tester")
 if not Tester then return end
@@ -12,7 +12,7 @@ local successfulScenarioInput = {
     description = "Test scenario description",
     location = {
         position = { 0, 0, 0 },
-        orientation = { 0, 0, 0 },
+        orientation = 0,
         cell = "West Gash Region",
         introMessage = "Test location intro message",
     },

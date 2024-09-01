@@ -1,3 +1,7 @@
+local common = require("mer.chargenScenarios.common")
+local Requirements = require("mer.chargenScenarios.component.Requirements")
+local Validator = require("mer.chargenScenarios.util.validator")
+
 ---@class ChargenScenariosClutterInput
 ---@field id string @The id of the clutter object.
 ---@field ids table<number, string> @The list of clutter object ids. If used instead of 'id', one will be chosen at random from this list.
@@ -8,58 +12,37 @@
 ---@field requirements ChargenScenariosRequirementsInput @The requirements for the clutter object.
 
 ---@class ChargenScenariosClutter
----@field new function @constructor
----@field getObject function @picks an item from the list and returns its object
----@field checkRequirements function @returns true if the requirements are met, false otherwise
----@field place function @Places the object in the world
 ---@field ids table<number, string> @the list of item ids the clutter is chosen from
 ---@field position table<number, number> @the position where the clutter will be placed
 ---@field orientation table<number, number> @the orientation where the clutter will be placed
 ---@field cell string @the cell where the clutter will be placed
 ---@field scale number @the scale the clutter will be placed at
 ---@field requirements ChargenScenariosRequirements @the requirements for the clutter
----@field chosenItem string @the cached item that was chosen
-
-local common = require("mer.chargenScenarios.common")
-local Requirements = require("mer.chargenScenarios.component.Requirements")
-
----@type ChargenScenariosClutter
-local Clutter = {
-    schema = {
-        name = "Clutter",
-        fields = {
-            id = { type = "string", required = false },
-            ids = { type = "table", childType = "string", required = false },
-            position = { type = "table", childType = "number", required = true },
-            orientation = { type = "table", childType = "number", required = true },
-            cell = { type = "string", required = true },
-            scale = { type = "number",  required = false},
-            requirements = { type = Requirements.schema, required = false },
-        }
-    }
-}
+---@field chosenItem? tes3object @the cached item that was chosen
+local Clutter = {}
 
 --Constructor
 ---@param data ChargenScenariosClutterInput
 ---@return ChargenScenariosClutter
 function Clutter:new(data)
-    local clutter = table.deepcopy(data)
     ---Validate
-    common.validator.validate(clutter, self.schema)
-    assert(clutter.id or clutter.ids, "Scenario must have an id or a list of ids")
-    --Build
-    do --ids
-        clutter.ids = clutter.ids or {clutter.id}
-        clutter.id = nil
-    end
-    clutter.requirements = Requirements:new(clutter.requirements)
-    --Create Clutter
+    assert(data.id or data.ids, "Scenario must have an id or a list of ids")
+
+    ---@type ChargenScenariosClutter
+    local clutter = {
+        ids = data.id and {data.id} or data.ids,
+        position = data.position,
+        orientation = data.orientation,
+        cell = data.cell,
+        scale = data.scale,
+        requirements = Requirements:new(data.requirements)
+    }
     self.__index = self
     table.insert(common.registeredClutters, clutter)
     return clutter
 end
 
----@return tes3object
+---@return tes3object|nil
 function Clutter:getObject()
     if self.chosenItem then
         return self.chosenItem
@@ -89,17 +72,19 @@ end
 
 function Clutter:place()
     if self:checkRequirements() then
-        local obj = self:getObject()
-        local reference = tes3.createReference{
-            object = obj,
-            position = self.position,
-            orientation = self.orientation,
-            cell = self.cell
-        }
-        if self.scale then
-            reference.scale = self.scale
+        local obj = self:getObject() --[[@as tes3misc]]
+        if obj then
+            local reference = tes3.createReference{
+                object = obj,
+                position = self.position,
+                orientation = self.orientation,
+                cell = self.cell
+            }
+            if self.scale then
+                reference.scale = self.scale
+            end
+            return reference
         end
-        return reference
     end
 end
 

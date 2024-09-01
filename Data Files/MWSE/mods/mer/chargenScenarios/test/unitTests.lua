@@ -1,7 +1,7 @@
 
 local Scenario = require "mer.chargenScenarios.component.Scenario"
 local common = require "mer.chargenScenarios.common"
-local mcmConfig = common.mcmConfig
+local mcmConfig = common.config.mcm
 if not mcmConfig.doTests then return end
 local Tester = require("mer.chargenScenarios.test.Tester")
 if not Tester then return end
@@ -42,11 +42,9 @@ Tester:test("Scenario has all expected methods", function()
     Tester:expect(scenario).NOT.toBe(nil)
     Tester:expect(scenario.addLocation).toBeType("function")
     Tester:expect(scenario.getStartingLocation).toBeType("function")
-    Tester:expect(scenario.getIntroMessage).toBeType("function")
     Tester:expect(scenario.doItems).toBeType("function")
     Tester:expect(scenario.checkRequirements).toBeType("function")
     Tester:expect(scenario.moveToLocation).toBeType("function")
-    Tester:expect(scenario.doIntroMessage).toBeType("function")
     Tester:expect(scenario.doClutter).toBeType("function")
     Tester:expect(scenario.doSpells).toBeType("function")
     Tester:expect(scenario.start).toBeType("function")
@@ -97,6 +95,7 @@ Tester:test("A single input location is moved to a list", function()
     local successfulScenario = Scenario:new(input)
     Tester:expect(#successfulScenario.locations).toBe(1)
 end)
+
 Tester:test("A location added using :addLocation is registered correctly", function()
     local input = table.deepcopy(successfulScenarioInput)
     input.location = nil
@@ -144,7 +143,7 @@ Tester:test("Scenario:getStartingLocation returns the location", function()
         },
     }
     local successfulScenario = Scenario:new(input)
-    local location = successfulScenario:getStartingLocation()
+    local location = successfulScenario:getStartingLocation() --[[@as ChargenScenariosLocation]]
     Tester:expect(location).NOT.toBe(nil)
     Tester:expect(location.cell).toBe(input.locations[1].cell)
     Tester:expect(location:getIntroMessage()).toBe(input.locations[1].introMessage)

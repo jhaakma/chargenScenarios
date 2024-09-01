@@ -1,7 +1,7 @@
 local common = require('mer.chargenScenarios.common')
 local config = require('mer.chargenScenarios.config')
 local modName = "Chargen Scenario Builder"
-local mcmConfig = common.mcmConfig
+local mcmConfig = common.config.mcm
 --MCM MENU
 local this = {}
 
@@ -37,32 +37,11 @@ local function createSettingsPage(template)
         variable = mwse.mcm.createTableVariable{ id = "registerClutterHotKey", table = mcmConfig},
         allowCombinations = true,
     }
-
-
 end
 
 local function createDevOptionsPage(template)
     local devOptions = template:createSideBarPage("Development Options")
     devOptions.description = "Tools for debugging etc."
-
-    devOptions:createDropdown{
-        label = "Log Level",
-        description = "Set the logging level for common.log:debug. Keep on INFO unless you are debugging.",
-        options = {
-            { label = "TRACE", value = "TRACE"},
-            { label = "DEBUG", value = "DEBUG"},
-            { label = "INFO", value = "INFO"},
-            { label = "ERROR", value = "ERROR"},
-            { label = "NONE", value = "NONE"},
-        },
-        variable = mwse.mcm.createTableVariable{
-            id = "logLevel",
-            table = mcmConfig
-        },
-        callback = function(self)
-            common.log:setLogLevel(self.variable.value)
-        end
-    }
 
     --Testing
     devOptions:createOnOffButton{

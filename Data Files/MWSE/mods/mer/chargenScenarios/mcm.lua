@@ -1,11 +1,11 @@
 local common = require('mer.chargenScenarios.common')
+local logger = common.createLogger("mcm")
 local config = common.config
 local modName = config.modName
-local mcmConfig = common.mcmConfig
 
 local function registerModConfig()
     local template = mwse.mcm.createTemplate{ name = modName }
-    template:saveOnClose(modName, mcmConfig)
+    template:saveOnClose(modName, config.mcm)
     template:register()
 
     local settings = template:createSideBarPage("Settings")
@@ -17,13 +17,13 @@ local function registerModConfig()
         description = "Turn off to revert to vanilla character generation.",
         variable = mwse.mcm.createTableVariable{
             id = 'enabled',
-            table = mcmConfig
+            table = config.mcm
         }
     }
 
     settings:createDropdown{
         label = "Log Level",
-        description = "Set the logging level for common.log:debug. Keep on INFO unless you are debugging.",
+        description = "Set the logging level for all Loggers.",
         options = {
             { label = "TRACE", value = "TRACE"},
             { label = "DEBUG", value = "DEBUG"},
@@ -31,14 +31,14 @@ local function registerModConfig()
             { label = "ERROR", value = "ERROR"},
             { label = "NONE", value = "NONE"},
         },
-        variable = mwse.mcm.createTableVariable{
-            id = "logLevel",
-            table = mcmConfig
-        },
+        variable =  mwse.mcm.createTableVariable{ id = "logLevel", table = config.mcm},
         callback = function(self)
-            common.log:setLogLevel(self.variable.value)
+            for _, logger in pairs(common.loggers) do
+                logger:setLogLevel(self.variable.value)
+            end
         end
     }
+
 
 end
 event.register("modConfigReady", registerModConfig)

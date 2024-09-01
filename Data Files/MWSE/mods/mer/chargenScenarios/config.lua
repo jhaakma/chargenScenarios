@@ -1,4 +1,5 @@
 
+---@class ChargenScenariosScenario.Config
 local config = {
     modName = "Chargen Scenarios",
     modDescription = [[
@@ -14,22 +15,13 @@ local config = {
         orientation = {0, 0, 340},
         cell = "Imperial Prison Ship"
     },
-    scenarios = {
-        --default
-        {
-            name = "--Vanilla--",
-            description = "Start the game in the Seyda Neen Census and Excise Office, without a scenario.",
-            location = {
-                orientation = {0,0,1.6740349531174},
-                position = {33,-87,194},
-                cell = "Seyda Neen, Census and Excise Office"
-            },
-            doVanillaChargen = true
-        },
-    }
+
 }
 
-config.defaultConfig = {
+config.metadata = toml.loadMetadata("Chargen Scenarios") --[[@as MWSE.Metadata]]
+
+---@class ChargenScenariosMcmConfig
+local mcmDefault = {
     enabled = true,
     logLevel = "INFO",
     startingLocation = config.defaultLocation,
@@ -51,8 +43,16 @@ config.defaultConfig = {
     exitAfterUnitTests = false,
     exitAfterIntegrationTests = false,
 
+    --- The list of registered clutter groups
     registeredClutterGroups = {},
-    registeredLocations = {}
 }
+
+
+---@type ChargenScenariosMcmConfig
+config.mcm = mwse.loadConfig(config.metadata.package.name, mcmDefault)
+
+config.save = function()
+    mwse.saveConfig(config.metadata.package.name, config.mcm)
+end
 
 return config

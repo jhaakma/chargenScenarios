@@ -2,7 +2,8 @@ local ScenarioSelector = {}
 local menuId = tes3ui.registerID("Mer_ScenarioSelectorMenu")
 local descriptionHeaderID = tes3ui.registerID("Mer_ScenarioSelectorDescriptionHeader")
 local descriptionID = tes3ui.registerID("Mer_ScenarioSelectorDescription")
-local logger = require("mer.chargenScenarios.common").log
+local common = require("mer.chargenScenarios.common")
+local logger = common.createLogger("ScenarioSelector")
 
 --[[
     ScenarioSelector Menu. UI only, game logic handled
@@ -64,49 +65,57 @@ end
 
 local function onClickScenario(scenario)
     local menu = tes3ui.findMenu(menuId)
-
+    if not menu then return end
     local header = menu:findChild(descriptionHeaderID)
     header.text = scenario.name
 
     local description = menu:findChild(descriptionID)
-    description.text = scenario.description
-    description:updateLayout()
+    description.text = string.format("%s\n\n%s", scenario.description,
+        scenario.requirements:getDescription())
 
     local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton"))
     if not scenario:checkRequirements() then
         header.color = tes3ui.getPalette("disabled_color")
         okayButton.widget.state = 2
         okayButton.disabled = true
+
     else
         header.color = tes3ui.getPalette("header_color")
         okayButton.widget.state = 1
         okayButton.disabled = false
     end
+
+
+    description:updateLayout()
 end
 
 local function populateScenarioList(listBlock, list, onScenarioSelected, currentScenario)
     for _, scenario in ipairs(list) do
-        local scenarioButton = listBlock:createTextSelect{
-            text = scenario.name,
-            id = tes3ui.registerID("scenarioButton_" .. scenario.name)
-        }
-        scenarioButton.autoHeight = true
-        scenarioButton.layoutWidthFraction = 1.0
-        scenarioButton.paddingAllSides = 2
-        scenarioButton.borderAllSides = 2
-        if not scenario:checkRequirements() then
-            scenarioButton.color = tes3ui.getPalette("disabled_color")
-            scenarioButton.widget.idle = tes3ui.getPalette("disabled_color")
-        end
-        scenarioButton:register("mouseClick", function()
-            onClickScenario(scenario)
-            onScenarioSelected(scenario)
-        end)
-        if scenario == currentScenario then
-            timer.frame.delayOneFrame(function()
-                logger:debug("Crurent Scenario exists, triggering mouse click")
-                scenarioButton:triggerEvent("mouseClick")
+        if scenario:hasValidLocation() then
+            local scenarioButton = listBlock:createTextSelect{
+                text = scenario.name,
+                id = tes3ui.registerID("scenarioButton_" .. scenario.name)
+            }
+            scenarioButton.autoHeight = true
+            scenarioButton.layoutWidthFraction = 1.0
+            scenarioButton.paddingAllSides = 2
+            scenarioButton.borderAllSides = 2
+            if not scenario:checkRequirements() then
+                scenarioButton.color = tes3ui.getPalette("disabled_color")
+                scenarioButton.widget.idle = tes3ui.getPalette("disabled_color")
+            end
+            scenarioButton:register("mouseClick", function()
+                onClickScenario(scenario)
+                onScenarioSelected(scenario)
             end)
+            if scenario == currentScenario then
+                timer.frame.delayOneFrame(function()
+                    logger:debug("Crurent Scenario exists, triggering mouse click")
+                    scenarioButton:triggerEvent("mouseClick")
+                end)
+            end
+        else
+            logger:warn("Scenario %s has no valid locations", scenario.name)
         end
     end
 end
@@ -157,7 +166,7 @@ local function createOkButton(parent, onOkayButton)
 end
 
 function ScenarioSelector.createScenarioMenu(e)
-    local scenarioList = sortListAlphabetically(e.scenarioList)
+    local scenarioList = sortListAlphabetically(table.values(e.scenarioList))
     local onScenarioSelected = e.onScenarioSelected
     local onOkayButton = e.onOkayButton
     local currentScenario = e.currentScenario

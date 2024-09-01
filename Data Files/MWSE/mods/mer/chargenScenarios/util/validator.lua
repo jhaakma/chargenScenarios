@@ -1,10 +1,9 @@
 local Validator = {}
-local doDebug = false
-local function log(message, ...)
-    if doDebug then
-        mwse.log("[Validator] " .. message, ...)
-    end
-end
+
+local logger = require("logging.logger").new{
+    name = string.format("Validator"),
+    logLevel = "INFO"
+}
 
 local FieldSchema = {
     name = "FieldSchema",
@@ -46,7 +45,7 @@ local function getTypeStrings(str)
 end
 
 
-Validator.validate = function(object, schema)
+function Validator.validate(object, schema)
     assert(object, "Validation failed: No object provided.")
     assert(schema, "Validation failed: No schema provided.")
 
@@ -158,6 +157,7 @@ Validator.validate = function(object, schema)
     end
     return true
 end
+
 Validator.validate(SchemaSchema, SchemaSchema)
 
 return Validator

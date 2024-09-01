@@ -1,75 +1,68 @@
-local this  = {}
-this.config = require("mer.chargenScenarios.config")
-this.validator = require("mer.chargenScenarios.util.validator")
-local modName = this.config.modName
-this.mcmConfig = mwse.loadConfig(this.config.modName, this.config.defaultConfig)---@type "table"
-this.saveConfig = function()
-    mwse.saveConfig(this.config.modName, this.mcmConfig)
-end
+
+---@class ChargenScenarios.Common
+local common  = {}
+common.config = require("mer.chargenScenarios.config")
 
 ---@type table<number, ChargenScenariosScenario>
-this.registeredScenarios = {}
+common.registeredScenarios = {}
 
-local logLevel = this.mcmConfig.logLevel
-mwse.log("Setting up Logger with name %s", modName)
-local logger = require("logging.logger")
+local MWSELogger = require("logging.logger")
+---@type table<string, mwseLogger>
+common.loggers = {}
+function common.createLogger(serviceName)
+    local logger = MWSELogger.new{
+        name = string.format("%s - %s",
+            common.config.metadata.package.name, serviceName),
+        logLevel = common.config.mcm.logLevel,
+        includeTimestamp = true,
+    }
+    common.loggers[serviceName] = logger
+    return logger
+end
+local logger = common.createLogger("common")
 
-this.log = logger.new{
-    name = modName,
-    logLevel = logLevel
-}
-
-function this.modEnabled()
-    return this.mcmConfig.enabled == true
+function common.modEnabled()
+    return common.config.mcm.enabled == true
 end
 
-this.createTooltip = require("mer.chargenScenarios.util.tooltip")
-
-this.isKeyPressed = function(pressed, expected)
-    return (
-        pressed.keyCode == expected.keyCode
-         and not not pressed.isShiftDown == not not expected.isShiftDown
-         and not not pressed.isControlDown == not not expected.isControlDown
-         and not not pressed.isAltDown == not not expected.isAltDown
-         and not not pressed.isSuperDown == not not expected.isSuperDown
-    )
+---@return string #The version of the mod
+function common.getVersion()
+    return common.config.metadata.package.version
 end
 
-local function setControlsDisabled(state)
-    tes3.mobilePlayer.controlsDisabled = state
-    tes3.mobilePlayer.jumpingDisabled = state
-    tes3.mobilePlayer.attackDisabled = state
-    tes3.mobilePlayer.magicDisabled = state
-    tes3.mobilePlayer.mouseLookDisabled = state
-end
-function this.disableControls()
-    setControlsDisabled(true)
-end
-
-function this.enableControls()
-    tes3.runLegacyScript{command = "EnableInventoryMenu"}
-    tes3.runLegacyScript{ command = "EnablePlayerControls" }
-    tes3.runLegacyScript{ command = "EnablePlayerJumping" }
-    tes3.runLegacyScript{ command = "EnablePlayerViewSwitch" }
-    tes3.runLegacyScript{ command = "EnableVanityMode" }
-    tes3.runLegacyScript{ command = "EnablePlayerFighting" }
-    tes3.runLegacyScript{ command = "EnablePlayerMagic" }
-    tes3.runLegacyScript{ command = "EnableStatsMenu" }
-    tes3.runLegacyScript{ command = "EnableMagicMenu" }
-    tes3.runLegacyScript{ command = "EnableMapMenu" }
-    tes3.runLegacyScript{ command = "EnablePlayerLooking" }
+local function isLuaFile(file) return file:sub(-4, -1) == ".lua" end
+local function isInitFile(file) return file == "init.lua" end
+function common.initAll(path)
+    path = "Data Files/MWSE/mods/" .. path .. "/"
+    for file in lfs.dir(path) do
+        if isLuaFile(file) and not isInitFile(file) then
+            logger:debug("Executing file: %s", file)
+            dofile(path .. file)
+        end
+    end
 end
 
-function this.convertListTypes(list, classType)
+---@class ChargenScenariosClass
+---@field new fun(self: any, data: table)
+---@field get fun(id: string):any
+
+---@param list table a list of constructor data
+---@param classType ChargenScenariosClass a class object with a new() method
+---@return table|nil #a list of constructed objects
+function common.convertListTypes(list, classType)
     if list == nil then
         return nil
     end
     local newList = {}
     for _, item in ipairs(list) do
-        local newItem = classType:new(item)
-        table.insert(newList, newItem)
+        if classType.get and type(item) == "string" then
+            item = classType.get(item)
+        else
+            item = classType:new(item)
+        end
+        table.insert(newList, item)
     end
     return newList
 end
 
-return this
+return common
