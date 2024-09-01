@@ -1,4 +1,5 @@
 ---@class (exact) ChargenScenariosLocationInput
+---@field name string? @The name of the location, required for scenarios where you can choose the location
 ---@field position table<number, number> @The position where the player will be spawned
 ---@field orientation number @The orientation where the player will be spawned
 ---@field cell? string @The cell where the player will be spawned. Nil for exteriors
@@ -58,6 +59,7 @@ function Location:new(data)
 
     ---@type ChargenScenariosLocation
     local location = {
+        name = data.name,
         position = data.position,
         orientation = data.orientation,
         cell = data.cell,
@@ -106,5 +108,19 @@ function Location.doClutter(self)
     end
 end
 
+--Checks name, then cell, then region
+function Location:getName()
+    if self.name then
+        return self.name
+    end
+    if self.cell then
+        return self.cell
+    end
+    local cell = tes3.getCell{ id = self.cell }
+    if cell and cell.region then
+        return cell.region.name
+    end
+    return "Unknown Location"
+end
 
 return Location

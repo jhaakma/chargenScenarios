@@ -123,12 +123,26 @@ function ItemPick:giveToPlayer()
                 count = 1,
                 playSound = false,
             }
-            if pickedItem.enchantCapacity then
-                local isBoots = pickedItem.objectType == tes3.objectType.armor and pickedItem.slot == tes3.armorSlot.boots
-                local isShoes = pickedItem.objectType == tes3.objectType.clothing and pickedItem.slot == tes3.clothingSlot.shoes
-                local isHelmet = pickedItem.objectType == tes3.objectType.armor and pickedItem.slot == tes3.armorSlot.helmet
-                local blockBeast = tes3.player.object.race.isBeast and (isBoots or isShoes or isHelmet)
-                if not blockBeast then
+
+            local equippableTypes = {
+                [tes3.objectType.armor] = true,
+                [tes3.objectType.clothing] = true,
+                [tes3.objectType.weapon] = true,
+            }
+
+            if equippableTypes[pickedItem.objectType] then
+                local beastBlocked = {
+                    [tes3.objectType.armor] = {
+                        [tes3.armorSlot.boots] = true,
+                        [tes3.armorSlot.helmet] = true,
+                    },
+                    [tes3.objectType.clothing] = {
+                        [tes3.clothingSlot.shoes] = true,
+                    }
+                }
+                local blockedForBeasts = beastBlocked[pickedItem.objectType]
+                    and beastBlocked[pickedItem.objectType][pickedItem.slot]
+                if not (tes3.player.object.race.isBeast and blockedForBeasts) then
                     tes3.equip{
                         item = pickedItem,
                         reference = tes3.player,

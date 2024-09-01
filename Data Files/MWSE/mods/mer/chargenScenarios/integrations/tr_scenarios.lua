@@ -1,8 +1,10 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 
+---@type ChargenScenariosScenarioInput[]
 local scenarios = {
     {
+        id = "oldEbonheartAlley",
         name = "Old Ebonheart Alley",
         description = "You are playing dice in an alley in Old Ebonheart.",
         location = {
@@ -27,6 +29,7 @@ local scenarios = {
         }
     },
     {
+        id = "firewatchCollege",
         name = "College of Firewatch",
         description = "You are a student at the College of Firewatch.",
         location = {
@@ -47,6 +50,7 @@ local scenarios = {
         }
     },
     {
+        id = "caravanGuard",
         name = "Caravan Guard",
         description = "You are guarding a caravan in Arvud.",
         location = {
@@ -67,6 +71,7 @@ local scenarios = {
         }
     },
     {
+        id = "kemelZeRuins",
         name = "Kemel-Ze Ruins",
         description = "You are exploring the ruins of Kemel-Ze.",
         location = {
@@ -91,6 +96,7 @@ local scenarios = {
         },
     },
     {
+        id = "dreynimSpa",
         name = "Dreynim Spa",
         description = "You are on holiday at Dreynim Spa.",
         location = {
@@ -116,6 +122,7 @@ local scenarios = {
         },
     },
     {
+        id = "arrivingInNivalis",
         name = "Arriving in Nivalis",
         description = "You have just arrived at the Imperial settlement of Nivalis.",
         location = {
@@ -141,6 +148,7 @@ local scenarios = {
         },
     },
     {
+        id = "sadasPlantation",
         name = "Sadas Plantation",
         description = "You are a slave working on the Sadas Plantation.",
         location = {
@@ -165,10 +173,11 @@ local scenarios = {
             },
         },
         requirements = {
-            races = {"Argonian", "Khajiit"}
+            races = {"Argonian", "Khajiit"},
         },
     },
     {
+        id = "workingOnTheDocks",
         name = "Working on the Docks",
         description = "You are a dock worker in Andothren.",
         location = {
@@ -198,6 +207,7 @@ local scenarios = {
         },
     },
     {
+        id = "fishingAtDragonheadPoint",
         name = "Fishing at Dragonhead Point",
         description = "You are fishing at Dragonhead Point.",
         location = {
@@ -238,8 +248,13 @@ local scenarios = {
 }
 
 for _, scenario in ipairs(scenarios) do
-    scenario.requirements = {
-        plugins = {"TR_Mainland.esm"}
-    }
+    if not scenario.requirements then
+        scenario.requirements = {}
+    end
+    if not scenario.requirements.plugins then
+        scenario.requirements.plugins = {}
+    end
+    table.insert(scenario.requirements.plugins, "TR_Mainland.esm")
+
     Scenario:register(scenario)
 end

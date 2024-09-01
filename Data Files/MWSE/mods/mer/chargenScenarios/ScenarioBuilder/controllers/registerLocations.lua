@@ -2,13 +2,14 @@
     To use this
 ]]
 local common = require('mer.chargenScenarios.common')
-local logger = common.createLogger("registerLocations")
 local Controls = require("mer.chargenScenarios.util.Controls")
-local Location = require("mer.chargenScenarios.component.Location")
 
+local logger = require("mer.chargenScenarios.ScenarioBuilder.luaLogger").new{
+    outputFile = "chargenScenariosLocations.txt",
+}
 
 local luaLocationTemplate = [[
-    ["${id}"] = {
+    { --${name}
         position = {${posx}, ${posy}, ${posz}},
         orientation =${orz},
         cell = "${cell}"
@@ -17,19 +18,18 @@ local luaLocationTemplate = [[
 
 
 local function addLocation(locationToAdd, name)
-    logger:info("Location: ")
     local locationString = luaLocationTemplate:
-        gsub("${id}", name):
+        gsub("${name}", name):
         gsub("${posx}", locationToAdd.position[1]):
         gsub("${posy}", locationToAdd.position[2]):
         gsub("${posz}", locationToAdd.position[3]):
-        gsub("${orz}", locationToAdd.orientation[3])
+        gsub("${orz}", locationToAdd.orientation)
     if tes3.player.cell.isInterior then
         locationString = locationString:gsub("${cell}", locationToAdd.cell.id)
     else
         locationString = locationString:gsub("${cell}", "nil")
     end
-    mwse.log(locationString)
+    logger:info("\n" .. locationString)
 end
 
 local function registerLocation()
@@ -39,11 +39,7 @@ local function registerLocation()
             math.floor(tes3.player.position.y),
             math.floor(tes3.player.position.z),
         },
-        orientation = {
-            math.floor(tes3.player.orientation.x),
-            math.floor(tes3.player.orientation.y),
-            math.floor(tes3.player.orientation.z),
-        },
+        orientation = math.floor(tes3.player.orientation.z),
         cell = tes3.player.cell
     }
     timer.delayOneFrame(function()
@@ -53,8 +49,8 @@ local function registerLocation()
         menu.alignX = 0.5 ---@diagnostic disable-line
         menu.alignY = 0 ---@diagnostic disable-line
         menu.autoHeight = true
-        local t = { name = ""}
-        mwse.mcm.createTextField(
+        local t = { name = tes3.player.cell.name }
+        local textField = mwse.mcm.createTextField(
             menu,
             {
                 label = "Enter name of location:",
@@ -63,43 +59,13 @@ local function registerLocation()
                     table = t
                 },
                 callback = function()
-                    if Location.get(t.name) then
-                        tes3ui.showMessageMenu{
-                            message = "Location with this id already exists.",
-                            buttons = {
-                                {
-                                    text = "Overwrite",
-                                    callback = function()
-                                        addLocation(location, t.name)
-                                        tes3ui.leaveMenuMode()
-                                        tes3ui.findMenu(menuId):destroy()
-                                    end
-                                },
-                                {
-                                    text = "Rename",
-                                    callback = function()
-                                        tes3ui.leaveMenuMode()
-                                        tes3ui.findMenu(menuId):destroy()
-                                        registerLocation()
-                                    end,
-                                },
-                                {
-                                    text = "Cancel",
-                                    callback = function()
-                                        tes3ui.leaveMenuMode()
-                                        tes3ui.findMenu(menuId):destroy()
-                                    end
-                                }
-                            }
-                        }
-                    else
-                        addLocation(location, t.name)
-                        tes3ui.leaveMenuMode()
-                        tes3ui.findMenu(menuId):destroy()
-                    end
+                    addLocation(location, t.name)
+                    tes3ui.leaveMenuMode()
+                    tes3ui.findMenu(menuId):destroy()
                 end
             }
         )
+        tes3ui.acquireTextInput(textField.elements.inputField)
         tes3ui.enterMenuMode(menuId)
     end)
 end

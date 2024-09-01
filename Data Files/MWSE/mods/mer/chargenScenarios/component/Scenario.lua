@@ -12,29 +12,30 @@ local Clutter = require("mer.chargenScenarios.component.Clutter")
 local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 
 ---@class ChargenScenariosScenarioInput
----@field name string @The name of the Scenario. Will be displayed in the scenario selection menu.
----@field description string @The description of the Scenario. Will be displayed in the scenario selection menu.
----@field location nil|string|ChargenScenariosLocationInput @The location of the scenario. If used instead of 'locations', this location will be used for the scenario.
----@field locations nil|string[]|ChargenScenariosLocationInput[] @A list of locations. If used instead of 'location', one from this list will be randomly selected for the scenario.
----@field items nil|ChargenScenariosItemPickInput[] @A list of items that will be added to the player's inventory.
----@field spells nil|ChargenScenariosSpellPickInput[] @A list of spells that will be added to the player
----@field requirements nil|ChargenScenariosRequirementsInput @The requirements that need to be met for this scenario to be used.
----@field clutter nil|string|ChargenScenariosClutterInput[] @The clutter for the location. Can be a list of clutter data or a cluterList ID
----@field onStart nil|fun(self: ChargenScenariosScenario) @Callback triggered when a scenario starts.
----@field doVanillaChargen nil|boolean @If true, the vanilla chargen will be used.
+---@field id string A unique ID for the scenario
+---@field name string The name of the Scenario. Will be displayed in the scenario selection menu.
+---@field description string The description of the Scenario. Will be displayed in the scenario selection menu.
+---@field location nil|string|ChargenScenariosLocationInput The location of the scenario. If used instead of 'locations', this location will be used for the scenario.
+---@field locations nil|string[]|ChargenScenariosLocationInput[] A list of locations. If used instead of 'location', one from this list will be randomly selected for the scenario.
+---@field items nil|ChargenScenariosItemPickInput[] A list of items that will be added to the player's inventory.
+---@field spells nil|ChargenScenariosSpellPickInput[] A list of spells that will be added to the player
+---@field requirements nil|ChargenScenariosRequirementsInput The requirements that need to be met for this scenario to be used.
+---@field clutter nil|string|ChargenScenariosClutterInput[] The clutter for the location. Can be a list of clutter data or a cluterList ID
+---@field onStart nil|fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
+
 
 ---@class (exact) ChargenScenariosScenario
----@field name string @the name of the scenario
----@field description string @the description of the scenario
----@field requirements ChargenScenariosRequirements @the requirements for the scenario
----@field locations ChargenScenariosLocation[] @the list of locations for the scenario
----@field itemList? ChargenScenariosItemList @the list of items for the scenario
----@field spellList? ChargenScenariosSpellList @the list of spells given to the player for this scenario. May include abilities, diseases etc
----@field clutterList? ChargenScenariosClutterList @the clutter for the location
----@field onStart? fun(self: ChargenScenariosScenario) @Callback triggered when a scenario starts.
----@field doVanillaChargen boolean @whether or not to do the vanilla chargen.
----@field decidedLocation? ChargenScenariosLocation @the location that was decided for this scenario
----@field registeredScenarios table<string, ChargenScenariosScenario> @the list of registered scenarios
+---@field id string A unique ID for hte scenario
+---@field name string the name of the scenario
+---@field description string the description of the scenario
+---@field requirements ChargenScenariosRequirements the requirements for the scenario
+---@field locations ChargenScenariosLocation[] the list of locations for the scenario
+---@field itemList? ChargenScenariosItemList the list of items for the scenario
+---@field spellList? ChargenScenariosSpellList the list of spells given to the player for this scenario. May include abilities, diseases etc
+---@field clutterList? ChargenScenariosClutterList the clutter for the location
+---@field onStart? fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
+---@field decidedLocation? ChargenScenariosLocation the index of the location that was decided for this scenario
+---@field registeredScenarios table<string, ChargenScenariosScenario> the list of registered scenarios
 local Scenario = {
     registeredScenarios = {},
 }
@@ -56,6 +57,7 @@ function Scenario:new(data)
     end
 
     local scenario = {
+        id = data.id,
         name = data.name,
         description = data.description,
         requirements = Requirements:new(data.requirements),
@@ -64,7 +66,6 @@ function Scenario:new(data)
         spellList = data.spells and SpellList:new(data.spells),
         clutterList = clutter,
         onStart = data.onStart,
-        doVanillaChargen = data.doVanillaChargen,
     }
     --Create scenario
     setmetatable(scenario, { __index = Scenario })
@@ -82,7 +83,7 @@ end
 function Scenario:register(data)
     local scenario = self:new(data)
     logger:debug("Adding %s to scenario list", scenario.name)
-    Scenario.registeredScenarios[scenario.name] = scenario
+    Scenario.registeredScenarios[scenario.id] = scenario
     return scenario
 end
 
@@ -115,6 +116,16 @@ function Scenario:getStartingLocation()
     end
     self.decidedLocation = table.choice(validLocations)
     return self.decidedLocation
+end
+
+function Scenario:getValidLocations()
+    local validLocations = {}
+    for _, location in pairs(self.locations) do
+        if location:checkRequirements() then
+            table.insert(validLocations, location)
+        end
+    end
+    return validLocations
 end
 
 --- Move the player to the starting location

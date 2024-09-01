@@ -2,6 +2,7 @@ local ScenarioSelector = {}
 local menuId = tes3ui.registerID("Mer_ScenarioSelectorMenu")
 local descriptionHeaderID = tes3ui.registerID("Mer_ScenarioSelectorDescriptionHeader")
 local descriptionID = tes3ui.registerID("Mer_ScenarioSelectorDescription")
+local locationDropdownBlockID = tes3ui.registerID("Mer_ScenarioSelectorLocationDropdownBlock")
 local common = require("mer.chargenScenarios.common")
 local logger = common.createLogger("ScenarioSelector")
 
@@ -16,6 +17,7 @@ local function createHeading(parent)
         id = tes3ui.registerID("Mer_ScenarioSelectorMenu_heading"),
         text = "Select your Scenario:"
     }
+    title.color = tes3ui.getPalette("header_color")
     title.absolutePosAlignX = 0.5
     title.borderTop = 4
     title.borderBottom = 4
@@ -42,7 +44,7 @@ local function createScenarioListBlock(parent)
     local scenarioListBlock = parent:createVerticalScrollPane{
         id = tes3ui.registerID("scenarioListBlock")
     }
-    scenarioListBlock.layoutHeightFraction = 1.0
+    scenarioListBlock.heightProportional = 1.0
     scenarioListBlock.minWidth = 300
     scenarioListBlock.autoWidth = true
     scenarioListBlock.paddingAllSides = 4
@@ -63,7 +65,9 @@ local function sortListAlphabetically(list)
     return sortedList
 end
 
+---@param scenario ChargenScenariosScenario
 local function onClickScenario(scenario)
+    logger:debug("Clicked Scenario %s", scenario.name)
     local menu = tes3ui.findMenu(menuId)
     if not menu then return end
     local header = menu:findChild(descriptionHeaderID)
@@ -74,7 +78,10 @@ local function onClickScenario(scenario)
         scenario.requirements:getDescription())
 
     local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton"))
-    if not scenario:checkRequirements() then
+
+    local scenarioValid = scenario:checkRequirements()
+
+    if not scenarioValid then
         header.color = tes3ui.getPalette("disabled_color")
         okayButton.widget.state = 2
         okayButton.disabled = true
@@ -85,6 +92,72 @@ local function onClickScenario(scenario)
         okayButton.disabled = false
     end
 
+    local locationDropdownBlock = menu:findChild(locationDropdownBlockID)
+    locationDropdownBlock:destroyChildren()
+
+    local validLocations = scenario:getValidLocations()
+    if scenarioValid and #validLocations > 1 then
+
+        local button = locationDropdownBlock:createButton{ text = "Location: " .. scenario:getStartingLocation():getName()}
+        button:register("mouseClick", function()
+            local selectLocationMenu = tes3ui.createMenu{ id = tes3ui.registerID("Mer_SelectLocationMenu"), fixedFrame = true }
+            tes3ui.enterMenuMode(selectLocationMenu.id)
+            local outerBlock = selectLocationMenu:createBlock()
+            outerBlock.flowDirection = "top_to_bottom"
+            outerBlock.autoHeight = true
+            outerBlock.autoWidth = true
+
+            local heading = outerBlock:createLabel{ text = "Select Location:"}
+            heading.color = tes3ui.getPalette("header_color")
+
+            local currentLocationText = outerBlock:createLabel{ text = scenario:getStartingLocation():getName()}
+
+            local locationListBlock = outerBlock:createVerticalScrollPane{}
+            local rowHeight = 23
+            locationListBlock.minHeight = math.clamp(#validLocations * rowHeight, rowHeight*2, rowHeight*14)
+            locationListBlock.minWidth = 300
+            locationListBlock.autoWidth = true
+            locationListBlock.paddingAllSides = 4
+            locationListBlock.borderRight = 6
+
+            for _, location in ipairs(validLocations) do
+                local locationButton = locationListBlock:createTextSelect{
+                    text = location:getName(),
+                    id = tes3ui.registerID("locationButton_" .. location:getName())
+                }
+                locationButton.autoHeight = true
+                locationButton.widthProportional = 1.0
+                locationButton.paddingAllSides = 2
+                locationButton.borderAllSides = 2
+                locationButton:register("mouseClick", function()
+                    scenario.decidedLocation = location
+                    currentLocationText.text = location:getName()
+                    button.text = "Location: " .. location:getName()
+                end)
+            end
+
+            local buttonsBlock = outerBlock:createBlock()
+            buttonsBlock.flowDirection = "left_to_right"
+            buttonsBlock.widthProportional = 1.0
+            buttonsBlock.autoHeight = true
+
+            --randomise button
+            local randomButton = buttonsBlock:createButton{ text = "Random"}
+            randomButton:register("mouseClick", function()
+                local index = math.random(#validLocations)
+                local list = locationListBlock:getContentElement().children
+                list[index]:triggerEvent("mouseClick")
+            end)
+
+            --okay button
+            local okayButton = buttonsBlock:createButton{ text = "Ok"}
+            okayButton:register("mouseClick", function()
+                selectLocationMenu:destroy()
+            end)
+
+            selectLocationMenu:updateLayout()
+        end)
+    end
 
     description:updateLayout()
 end
@@ -120,10 +193,11 @@ local function populateScenarioList(listBlock, list, onScenarioSelected, current
     end
 end
 
+---@param parent tes3uiElement
 local function createDescriptionBlock(parent)
     local descriptionBlock = parent:createThinBorder()
-    descriptionBlock.layoutHeightFraction = 1.0
-    descriptionBlock.width = 300
+    descriptionBlock.heightProportional = 1.0
+    descriptionBlock.width = 350
     descriptionBlock.borderRight = 10
     descriptionBlock.flowDirection = "top_to_bottom"
     descriptionBlock.paddingAllSides = 10
@@ -133,6 +207,14 @@ local function createDescriptionBlock(parent)
 
     local descriptionText = descriptionBlock:createLabel{id = descriptionID, text = ""}
     descriptionText.wrapText = true
+    descriptionText.heightProportional = 1.0
+
+
+    local locationDropdownBlock = descriptionBlock:createBlock{ id = locationDropdownBlockID}
+    locationDropdownBlock.autoHeight = true
+    locationDropdownBlock.widthProportional = 1.0
+    locationDropdownBlock.childAlignX = 0.5
+
     return descriptionText
 end
 
