@@ -4,15 +4,8 @@ local scenarioSelector = require('mer.chargenScenarios.component.ScenarioSelecto
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 local Tooltip = require("mer.chargenScenarios.util.Tooltip")
 local backgroundsInterop = include('mer.characterBackgrounds.interop')
-
----@return ChargenScenariosScenario?
-local function getSelectedScenario()
-    return tes3.player.tempData.selectedChargenScenario
-end
-
-local function setScenario(scenario)
-    tes3.player.tempData.selectedChargenScenario = scenario
-end
+local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
+local Controls = require("mer.chargenScenarios.util.Controls")
 
 local function nameChosen()
     return tes3.player.tempData.chargenScenariosNameChosen
@@ -46,41 +39,32 @@ local function setClassChosen()
     tes3.player.tempData.chargenScenariosClassChosen = true
 end
 
-local characterBackgroundsConfig = include("mer.characterBackgrounds.config")
-local function characterBackgroundsActive()
-    return backgroundsInterop
-        and characterBackgroundsConfig
-        and characterBackgroundsConfig.mcm.enableBackgrounds
-end
+local function hasCompletedChargen()
+    for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+        if not chargenMenu:getCompleted() then
+            return false
+        end
+    end
 
-local function openScenarioMenu()
-    scenarioSelector.createScenarioMenu{
-        scenarioList = Scenario.registeredScenarios,
-        onScenarioSelected = function(scenario)
-            logger:debug("Clicked scenario: %s", scenario.name)
-            setScenario(scenario)
-        end,
-        onOkayButton = function()
-            logger:debug("Okay button pressed")
-            if getSelectedScenario() then
-                --Return to stat review
-                tes3.runLegacyScript{ command = "EnableStatReviewMenu"} ---@diagnostic disable-line
-            else
-                logger:error("No scenario selected")
-            end
-        end,
-        currentScenario = getSelectedScenario()
-    }
+    return nameChosen()
+        and raceChosen()
+        and birthsignChosen()
+        and classChosen()
 end
 
 local function returnToStatsMenu()
-    local selectedScenario = getSelectedScenario()
-    if selectedScenario and not selectedScenario:checkRequirements() then
-        tes3.messageBox("Scenario Requirements no longer met. Please select again.")
-        openScenarioMenu()
-    else
-        tes3.runLegacyScript{ command = "EnableStatReviewMenu"} ---@diagnostic disable-line
+    --Check each chargen menu is still valid
+    for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+
+        if chargenMenu:isActive() then
+            if not (chargenMenu:validate() and chargenMenu:getCompleted()) then
+                logger:debug("Returning to chargen menu %s", chargenMenu.id)
+                chargenMenu:createMenu()
+                return
+            end
+        end
     end
+    tes3.runLegacyScript{ command = "EnableStatReviewMenu"} ---@diagnostic disable-line
 end
 
 local function registerTooltip(block, name, description)
@@ -110,56 +94,36 @@ local function createStatsButtonLabel(parent, name)
     nameLabel.justifyText = "right"
 end
 
-
-local function createScenarioButton(parent)
+---@param parent tes3uiElement
+---@param chargenMenu ChargenScenarios.ChargenMenu
+local function createChargenMenuButton(parent, chargenMenu)
     local block = parent:createBlock()
     block.widthProportional = 1.0
     block.autoHeight = true
 
-    local button = block:createButton{ text = "Scenario"}
+    local button = block:createButton{ text = chargenMenu.buttonLabel}
     button:register("mouseClick", function()
         parent:getTopLevelMenu():destroy()
-        openScenarioMenu()
-    end)
-
-    local scenario = getSelectedScenario()
-    local scenarioName = scenario and scenario.name or ""
-    createStatsButtonLabel(block, scenarioName)
-
-    local scenarioDescription = scenario and scenario.description or ""
-    registerTooltip(block, scenarioName, scenarioDescription)
-end
-
-
-local function createBackgroundButton(parent)
-
-    if not characterBackgroundsActive() then return end
-    local block = parent:createBlock()
-    block.widthProportional = 1.0
-    block.autoHeight = true
-
-    local button = block:createButton{ text = "Background"}
-    button:register("mouseClick", function()
         tes3ui.leaveMenuMode()
-        parent:getTopLevelMenu():destroy()
-        timer.delayOneFrame(function()
-            event.trigger("CharacterBackgrounds:OpenPerksMenu")
-        end)
+        chargenMenu:createMenu()
     end)
-    local background = backgroundsInterop.getCurrentBackground()
-    createStatsButtonLabel(block, background and background:getName() or "None")
-    if background then
-        registerTooltip(block, background:getName(), background:getDescription())
+
+    createStatsButtonLabel(block, chargenMenu:getButtonValue())
+    local tooltip = chargenMenu.getTooltip and chargenMenu:getTooltip()
+    if tooltip then
+        registerTooltip(block, tooltip.header, tooltip.description)
     end
 end
 
-local function hasCompletedChargen()
-    return nameChosen()
-        and raceChosen()
-        and birthsignChosen()
-        and classChosen()
-        and getSelectedScenario()
+local function startGame()
+    for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+        chargenMenu:onStart()
+    end
+    tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
+    tes3.findGlobal("CharGenState").value = -1
+    Controls.enableControls()
 end
+
 
 --MenuStatReview_Okbutton
 --MenuStatReview_BackButton
@@ -181,25 +145,21 @@ local function modifyStatReviewMenu(e)
     scrollPane.parent.heightProportional = 1
 
     --Add scenario and background button
-    createBackgroundButton(parent)
-    createScenarioButton(parent)
+    for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+        createChargenMenuButton(parent, chargenMenu)
+    end
+    --createBackgroundButton(parent)
+    --createScenarioButton(parent)
     --OK button should trigger the scenario to start
     local okButton = menu:findChild("MenuStatReview_Okbutton")
     okButton:register("mouseClick", function(eMouseClick)
-        local scenario = getSelectedScenario()
-        if scenario and hasCompletedChargen() then
-            if not scenario:checkRequirements() then
-                tes3.messageBox("Scenario Requirements no longer met. Please select again.")
-                menu:destroy()
-                openScenarioMenu()
-            else
-                okButton:forwardEvent(eMouseClick)
-                tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
-                scenario:start()
-            end
-        else
-            tes3.messageBox("You must complete the character generation process before you can continue.")
+        if hasCompletedChargen() then
+            okButton:forwardEvent(eMouseClick)
+            startGame()
+            return
         end
+        logger:error("Scenario not selected or chargen not complete")
+        tes3.messageBox("You must complete the character generation process before you can continue.")
     end)
     menu:updateLayout()
 end
@@ -222,9 +182,8 @@ local function modifyRaceSexMenu(e)
 
     --override OK button
     local okButton = menu:findChild("MenuRaceSex_Okbutton")
-    okButton:register("mouseClick", function(eMouseClick)
+    okButton:register("mouseClick", function()
         menu:destroy()
-
         setRaceChosen()
         if not classChosen() then
             tes3.runLegacyScript{ command = "EnableClassMenu"} ---@diagnostic disable-line
@@ -291,8 +250,8 @@ event.register("uiActivated", modifyCreateClassMenu, { filter = "MenuCreateClass
 ---@param e uiActivatedEventData
 local function modifyChooseClassMenu(e)
     if (not e.newlyCreated) then
-		return
-	end
+        return
+    end
 
     local menu = e.element
     --OK button should trigger the birth sign menu
@@ -319,8 +278,8 @@ event.register("uiActivated", modifyChooseClassMenu, { filter = "MenuChooseClass
 ---@param e uiActivatedEventData
 local function modifyBirthSignMenu(e)
     if (not e.newlyCreated) then
-		return
-	end
+        return
+    end
 
     local menu = e.element
     local okButton = e.element:findChild("MenuBirthSign_Okbutton")
@@ -377,29 +336,35 @@ end
 ---@param e uiActivatedEventData
 local function modifyNameMenu(e)
     if (not e.newlyCreated) then
-		return
-	end
-
+        return
+    end
+    logger:debug("Modifying name menu")
     local menu = e.element
     --Ok button should trigger the statReviewMenu
     local okButton = menu:findChild("MenuName_OkNextbutton")
     okButton:register("mouseClick", function(eMouseClick)
 
+        logger:debug("Clicked name menu OK button")
         okButton:forwardEvent(eMouseClick)
 
-        --If character backgrounds is installed, trigger the perks menu
+        --If we've already changed name before, go straight back to stats menu
         if nameChosen() then
+            logger:debug("Name previously chosen, returning to stats menu")
             returnToStatsMenu()
-        elseif characterBackgroundsActive() then
-            logger:debug("Backgrounds is active, opening perks menu")
-            timer.delayOneFrame(function()
-                event.trigger("CharacterBackgrounds:OpenPerksMenu")
-            end)
-        else
-            logger:debug("Backgrounds not active, going to scenario menu")
-            openScenarioMenu()
+        else --find the next chargen menu to open
+            setNameChosen()
+            logger:debug("Name not previously chosen, opening next chargen menu")
+            for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+                logger:debug("- Checking %s", chargenMenu.id)
+                if chargenMenu:isActive() then
+                    logger:debug("Opening chargen menu %s", chargenMenu.id)
+                    chargenMenu:createMenu()
+                    return
+                end
+            end
         end
-        setNameChosen()
+        logger:warn("No chargen menu to open, returning to stats menu")
+        returnToStatsMenu()
     end)
 
     --Prepopulate name option based on player race
@@ -411,14 +376,3 @@ local function modifyNameMenu(e)
 end
 event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = -10})
 
-
-local function openScenarioSelectorOnBackgroundsFinish()
-    logger:debug("Background selected, opening scenario menu")
-    if not getSelectedScenario() then
-        openScenarioMenu()
-    else
-        logger:debug("Scenario already selected, skipping scenario menu")
-        returnToStatsMenu()
-    end
-end
-event.register("CharacterBackgrounds:OkayMenuClicked", openScenarioSelectorOnBackgroundsFinish)
