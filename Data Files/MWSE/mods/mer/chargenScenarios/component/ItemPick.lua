@@ -5,12 +5,14 @@
 ---@field count? number The number of items to add. Default is 1
 ---@field requirements? ChargenScenariosRequirementsInput The requirements for the item
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
-
+---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
+---@field pickBestForClass? boolean If true, the item will be picked from the ids list based on the player's class rather than randomly
 
 local common = require("mer.chargenScenarios.common")
 local logger = common.createLogger("ItemPick")
 local Requirements = require("mer.chargenScenarios.component.Requirements")
 local Validator = require("mer.chargenScenarios.util.validator")
+local GearManager = require("mer.chargenScenarios.component.GearManager")
 --[[
     For specific items, use "id"
     To pick a random item from a list, use "ids"
@@ -22,6 +24,8 @@ local Validator = require("mer.chargenScenarios.util.validator")
 ---@field count number the number of items to add to the player's inventory
 ---@field requirements? ChargenScenariosRequirements the requirements for the item pick
 ---@field noDuplicates? boolean if true, the same item will not be added if it is already in the player's inventory
+---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
+---@field pickBestForClass? boolean If true, the item will be picked from the ids list based on the player's class rather than randomly
 local ItemPick = {
     schema = {
         name = "ItemPick",
@@ -47,7 +51,9 @@ function ItemPick:new(data)
         alternative = data.alternative,
         count = data.count or 1,
         requirements = data.requirements and Requirements:new(data.requirements),
-        noDuplicates = data.noDuplicates
+        noDuplicates = data.noDuplicates,
+        noSlotDuplicates = data.noSlotDuplicates,
+        pickBestForClass = data.pickBestForClass,
     }
 
     --go through ids and remove any where the object doesn't exist
@@ -92,15 +98,71 @@ function ItemPick:pick()
     end
 
     --Pick an item
-    local item
-    if self.ids then
-        while item == nil do
-            item = table.choice(validItems)
+    if not self.ids then return nil end
+
+    local pickedItem
+    if self.pickBestForClass then
+        pickedItem = GearManager.getBestItemForClass(validItems)
+    else
+        while pickedItem == nil do
+            pickedItem = table.choice(validItems)
         end
     end
-    return item
+    return pickedItem
 end
 
+local function isBlockedByBeasts(item)
+    local beastBlocked = {
+        [tes3.objectType.armor] = {
+            [tes3.armorSlot.boots] = true,
+            [tes3.armorSlot.helmet] = true,
+        },
+        [tes3.objectType.clothing] = {
+            [tes3.clothingSlot.shoes] = true,
+        }
+    }
+    return beastBlocked[item.objectType]
+        and beastBlocked[item.objectType][item.slot]
+end
+
+local function playerRaceCanEquip(item)
+    return not (tes3.player.object.race.isBeast and isBlockedByBeasts(item))
+end
+
+---@param item tes3object|tes3misc|tes3clothing|tes3armor
+local function isEquippableType(item)
+    return item.objectType == tes3.objectType.armor
+        or item.objectType == tes3.objectType.clothing
+        or item.objectType == tes3.objectType.weapon
+end
+
+local function playerCanEquip(item)
+    return isEquippableType(item)
+        and playerRaceCanEquip(item)
+end
+
+
+
+---Check if the player has an item of the same type and slot/weapontype
+---@param item tes3clothing|tes3armor|tes3weapon
+local function playerHasSameItemType(item)
+    if not isEquippableType(item) then return false end
+    local player = tes3.player
+    for _, stack in pairs(player.object.inventory) do
+        if stack.object.objectType == item.objectType then
+            if item.objectType == tes3.objectType.armor or item.objectType == tes3.objectType.clothing then
+                if stack.object.slot == item.slot then
+                    return true
+                end
+            elseif item.objectType == tes3.objectType.weapon then
+                if stack.object.type == item.type then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
 
 function ItemPick:giveToPlayer()
     local addedItems = {}
@@ -116,39 +178,24 @@ function ItemPick:giveToPlayer()
 
         if self.noDuplicates and tes3.player.object.inventory:contains(pickedItem) then
             logger:debug("Player already has item, skipping")
+        elseif self.noSlotDuplicates and playerHasSameItemType(pickedItem) then
+            logger:debug("Player already has item of same type, skipping")
         else
+            logger:debug("Adding item to player inventory")
             tes3.addItem{
                 reference = tes3.player,
                 item = pickedItem,
                 count = 1,
                 playSound = false,
             }
-
-            local equippableTypes = {
-                [tes3.objectType.armor] = true,
-                [tes3.objectType.clothing] = true,
-                [tes3.objectType.weapon] = true,
-            }
-
-            if equippableTypes[pickedItem.objectType] then
-                local beastBlocked = {
-                    [tes3.objectType.armor] = {
-                        [tes3.armorSlot.boots] = true,
-                        [tes3.armorSlot.helmet] = true,
-                    },
-                    [tes3.objectType.clothing] = {
-                        [tes3.clothingSlot.shoes] = true,
-                    }
+            local doEquip = playerCanEquip(pickedItem)
+            if doEquip then
+                logger:debug("Equipping item")
+                tes3.equip{
+                    item = pickedItem,
+                    reference = tes3.player,
+                    playSound = false,
                 }
-                local blockedForBeasts = beastBlocked[pickedItem.objectType]
-                    and beastBlocked[pickedItem.objectType][pickedItem.slot]
-                if not (tes3.player.object.race.isBeast and blockedForBeasts) then
-                    tes3.equip{
-                        item = pickedItem,
-                        reference = tes3.player,
-                        playSound = false,
-                    }
-                end
             end
         end
         added = added + 1

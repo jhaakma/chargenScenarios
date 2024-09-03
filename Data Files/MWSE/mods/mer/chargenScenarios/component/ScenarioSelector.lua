@@ -248,11 +248,13 @@ local function createOkButton(parent, onOkayButton)
 end
 
 function ScenarioSelector.createScenarioMenu(e)
+    logger:debug("Creating Scenario Selector Menu")
     local scenarioList = sortListAlphabetically(table.values(e.scenarioList))
     local onScenarioSelected = e.onScenarioSelected
     local onOkayButton = e.onOkayButton
     local currentScenario = e.currentScenario
 
+    logger:debug("- Creating menu")
     local menu = tes3ui.createMenu{ id = menuId, fixedFrame = true }
     local outerBlock = createOuterBlock(menu)
     --outer block
@@ -261,6 +263,7 @@ function ScenarioSelector.createScenarioMenu(e)
     --inner block
     local scenarioListBlock = createScenarioListBlock(innerBlock)
 
+    logger:debug("- Populating Scenario List")
     populateScenarioList(scenarioListBlock, scenarioList, onScenarioSelected, currentScenario)
     createDescriptionBlock(innerBlock)
     --Buttons
@@ -268,8 +271,11 @@ function ScenarioSelector.createScenarioMenu(e)
     createRandomiseButton(buttonsBlock, scenarioListBlock)
     createOkButton(buttonsBlock, onOkayButton)
 
+    logger:debug("- Updating Layout")
     menu:updateLayout()
+    logger:debug("- Entering Menu Mode")
     tes3ui.enterMenuMode(menuId)
+    logger:debug("- Clicking the first scenario")
     scenarioListBlock:getContentElement().children[1]:triggerEvent("mouseClick")
 end
 

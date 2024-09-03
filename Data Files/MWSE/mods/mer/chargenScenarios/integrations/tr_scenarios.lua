@@ -1,5 +1,20 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
+local GearManager = require("mer.chargenScenarios.component.GearManager")
+
+local boots = { ids = GearManager.gearLists.boots, noSlotDuplicates = true, pickBestForClass = true}
+local cuirass = { ids = GearManager.gearLists.cuirass, noSlotDuplicates = true, pickBestForClass = true}
+local leftGauntlets = { ids = GearManager.gearLists.leftGauntlet, noSlotDuplicates = true, pickBestForClass = true}
+local rightGauntlets = { ids = GearManager.gearLists.rightGauntlet, noSlotDuplicates = true, pickBestForClass = true}
+local greaves = { ids = GearManager.gearLists.greaves, noSlotDuplicates = true, pickBestForClass = true}
+local leftPauldrons = { ids = GearManager.gearLists.leftPauldron, noSlotDuplicates = true, pickBestForClass = true}
+local rightPauldrons = { ids = GearManager.gearLists.rightPauldron, noSlotDuplicates = true, pickBestForClass = true}
+local helms = { ids = GearManager.gearLists.helm, noSlotDuplicates = true, pickBestForClass = true}
+local shields = { ids = GearManager.gearLists.shield, noSlotDuplicates = true, pickBestForClass = true}
+local weapons = { ids = GearManager.gearLists.weapon, noSlotDuplicates = true, pickBestForClass = true}
+local hoods = { ids = GearManager.gearLists.hood, noSlotDuplicates = true, pickBestForClass = true}
+local robes = { ids = GearManager.gearLists.robe, noSlotDuplicates = true, pickBestForClass = true}
+
 
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
@@ -26,6 +41,8 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            weapons,
+            hoods,
         }
     },
     {
@@ -47,6 +64,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            robes,
         }
     },
     {
@@ -61,13 +79,10 @@ local scenarios = {
             {
                 id = "T_De_Guarskin_Cuirass_01",
                 count = 1,
-                noDuplicates = true,
+                noSlotDuplicates = true,
             },
-            {
-                id = "chitin spear",
-                count = 1,
-                noDuplicates = true,
-            },
+            weapons,
+            boots,
         }
     },
     {
@@ -93,6 +108,8 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            cuirass,
+            boots
         },
     },
     {
@@ -143,8 +160,9 @@ local scenarios = {
 
                 id = "T_Imp_ColFur_Boots_01",
                 count = 1,
-                noDuplicates = true,
+                noSlotDuplicates = true,
             },
+            weapons
         },
     },
     {
@@ -242,7 +260,10 @@ local scenarios = {
                 id = "AB_w_CookKnifeBone",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            weapons,
+            boots,
+            cuirass
         },
     },
 }

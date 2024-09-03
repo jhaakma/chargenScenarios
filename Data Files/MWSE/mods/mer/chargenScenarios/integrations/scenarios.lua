@@ -1,5 +1,6 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
+local GearManager = require("mer.chargenScenarios.component.GearManager")
 
 local booze = {
     "potion_local_brew_01",
@@ -28,6 +29,18 @@ local excludesOaabShipwreck = {
     excludedPlugins = {"OAAB - Shipwrecks.ESP"},
 }
 
+local boots = { ids = GearManager.gearLists.boots, noSlotDuplicates = true, pickBestForClass = true}
+local cuirass = { ids = GearManager.gearLists.cuirass, noSlotDuplicates = true, pickBestForClass = true}
+local leftGauntlets = { ids = GearManager.gearLists.leftGauntlet, noSlotDuplicates = true, pickBestForClass = true}
+local rightGauntlets = { ids = GearManager.gearLists.rightGauntlet, noSlotDuplicates = true, pickBestForClass = true}
+local greaves = { ids = GearManager.gearLists.greaves, noSlotDuplicates = true, pickBestForClass = true}
+local leftPauldrons = { ids = GearManager.gearLists.leftPauldron, noSlotDuplicates = true, pickBestForClass = true}
+local rightPauldrons = { ids = GearManager.gearLists.rightPauldron, noSlotDuplicates = true, pickBestForClass = true}
+local helms = { ids = GearManager.gearLists.helm, noSlotDuplicates = true, pickBestForClass = true}
+local shields = { ids = GearManager.gearLists.shield, noSlotDuplicates = true, pickBestForClass = true}
+local weapons = { ids = GearManager.gearLists.weapon, noSlotDuplicates = true, pickBestForClass = true}
+local hoods = { ids = GearManager.gearLists.hood, noSlotDuplicates = true, pickBestForClass = true}
+local robes = { ids = GearManager.gearLists.robe, noSlotDuplicates = true, pickBestForClass = true}
 
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
@@ -61,7 +74,11 @@ local scenarios = {
                     "ingred_ruby_01"
                 },
                 count = 2
-            }
+            },
+            hoods,
+            weapons,
+            boots,
+            cuirass
         }
     },
     {
@@ -80,8 +97,9 @@ local scenarios = {
             {
                 id = "chitin spear",
                 count = 1,
-                noDuplicates = true,
-            }
+                noSlotDuplicates = true,
+            },
+            weapons,
         }
     },
 
@@ -99,14 +117,18 @@ local scenarios = {
                 count = 3
             },
             {
-                id = "chitin short bow",
+                id = "long bow",
                 count = 1,
-                noDuplicates = true,
+                noSlotDuplicates = true,
             },
             {
                 id = "chitin arrow",
-                count = 30
-            }
+                count = 30,
+            },
+            boots,
+            greaves,
+            leftGauntlets,
+            rightGauntlets,
         }
     },
     {
@@ -125,7 +147,7 @@ local scenarios = {
             {
                 id = "slave_bracer_right",
                 count = 1,
-                noDuplicates = true,
+                noSlotDuplicates = true,
             },
         },
         requirements = requiresBeastRace,
@@ -153,7 +175,10 @@ local scenarios = {
                     "ingred_bc_ampoule_pod"
                 },
                 count = 4
-            }
+            },
+            hoods,
+            weapons,
+            boots,
         },
         onStart = function(self)
             tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
@@ -340,7 +365,12 @@ local scenarios = {
                 id = "probe_apprentice_01",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            hoods,
+            weapons,
+            boots,
+            cuirass,
+            rightGauntlets,
         },
     },
     {
@@ -384,11 +414,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "common_robe_03",
-                count = 1,
-                noDuplicates = true,
-            },
+            robes
         },
     },
     {
@@ -428,19 +454,15 @@ local scenarios = {
         },
         items = {
             {
-                id = "iron_greaves",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "AB_w_IronRapier",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
                 id = "p_restore_health_s",
                 count = 4,
-            }
+            },
+            boots,
+            helms,
+            cuirass,
+            leftGauntlets,
+            rightGauntlets,
+            weapons
         }
     },
     {
@@ -603,7 +625,9 @@ local scenarios = {
             {
                 ids = booze,
                 count = 2
-            }
+            },
+            weapons,
+            cuirass,
         }
     },
     {
@@ -632,7 +656,9 @@ local scenarios = {
                 id = "ashfall_woodaxe",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            weapons,
+            boots,
         },
     },
     {
@@ -684,12 +710,14 @@ local scenarios = {
             {
                 id = "common_robe_01",
                 count = 1,
-                noDuplicates = true,
+                noSlotDuplicates = true,
             },
             {
                 id = "ingred_muck_01",
                 count = 2
-            }
+            },
+            hoods,
+            robes,
         }
     },
     {
@@ -718,14 +746,11 @@ local scenarios = {
         end,
         items = {
             {
-                id = "iron dagger",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
                 id = "gold_001",
-                count = 30, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
-            }
+                count = 50, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
+            },
+            hoods,
+            weapons,
         }
     },
     {
@@ -745,7 +770,8 @@ local scenarios = {
             {
                 id = "ingred_moon_sugar_01",
                 count = 2
-            }
+            },
+            weapons,
         }
     },
     {
@@ -787,7 +813,8 @@ local scenarios = {
                 id = "AB_w_CookKnifeBone",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            weapons,
         }
     },
     {
@@ -836,8 +863,9 @@ local scenarios = {
             },
             {
                 id = "gold_001",
-                count = 10
+                count = 70
             },
+            {id = "silver dagger",}
         },
         onStart = function(self)
             tes3.messageBox("You are awakened by a noise from the other room.")
@@ -871,7 +899,11 @@ local scenarios = {
             {
                 id = "gold_001",
                 count = 10
-            }
+            },
+            {id = "expensive_pants_03", noDuplicates = true},
+            {id = "extravagant_shirt_02", noDuplicates = true},
+            {id = "expensive_shoes_02", noDuplicates = true},
+            weapons,
         },
         onStart = function()
             local songController = include("mer.bardicInspiration.controllers.songController")

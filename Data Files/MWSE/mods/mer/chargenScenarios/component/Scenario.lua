@@ -199,7 +199,6 @@ end
 
 --- Start the scenario
 function Scenario:start()
-    tes3.findGlobal("CharGenState").value = -1
     self:doClutter()
     self:moveToLocation()
     timer.start{
@@ -208,7 +207,6 @@ function Scenario:start()
             self:doItems()
             self:doSpells()
             self:doIntro()
-            Controls.enableControls()
         end
     }
 end

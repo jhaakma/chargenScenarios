@@ -18,16 +18,12 @@ local menus = {
             return background and background:getName() or "None"
         end,
         createMenu = function(self)
-            timer.delayOneFrame(function()
-                logger:debug("Creating character backgrounds menu")
-                event.trigger("CharacterBackgrounds:OpenPerksMenu")
-                local function callback()
+            backgroundsInterop.openMenu{
+                okCallback = function()
                     logger:debug("Backgrounds menu closed, calling okCallback")
-                    event.unregister("CharacterBackgrounds:OkayMenuClicked", callback)
                     self:okCallback()
                 end
-                event.register("CharacterBackgrounds:OkayMenuClicked", callback)
-            end)
+            }
         end,
         isActive = function(self)
             return backgroundsInterop
