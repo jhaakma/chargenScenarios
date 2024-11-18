@@ -1,5 +1,6 @@
 local common = require('mer.chargenScenarios.common')
 local logger = common.createLogger("mcm")
+local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
 local config = common.config
 local modName = config.modName
 
@@ -39,6 +40,20 @@ local function registerModConfig()
         end
     }
 
+    --A page for enabling/disabling each registered menu
+    local menuSettings = template:createSideBarPage("Menu Settings")
+    menuSettings.description = "Enable or disable each menu."
+
+    for _, menu in pairs(ChargenMenu.registeredMenus) do
+        menuSettings:createYesNoButton{
+            label = menu.name,
+            description = string.format("Enable the %s menu.", menu.buttonLabel),
+            variable = mwse.mcm.createTableVariable{
+                id = menu:getMcmId(),
+                table = config.mcm,
+            }
+        }
+    end
 
 end
-event.register("modConfigReady", registerModConfig)
+event.register("initialized", registerModConfig, { priority = -500})

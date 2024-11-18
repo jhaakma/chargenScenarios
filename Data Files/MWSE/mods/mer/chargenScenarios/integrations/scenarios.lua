@@ -1,6 +1,5 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
-local GearManager = require("mer.chargenScenarios.component.GearManager")
 
 local booze = {
     "potion_local_brew_01",
@@ -29,19 +28,6 @@ local excludesOaabShipwreck = {
     excludedPlugins = {"OAAB - Shipwrecks.ESP"},
 }
 
-local boots = { ids = GearManager.gearLists.boots, noSlotDuplicates = true, pickBestForClass = true}
-local cuirass = { ids = GearManager.gearLists.cuirass, noSlotDuplicates = true, pickBestForClass = true}
-local leftGauntlets = { ids = GearManager.gearLists.leftGauntlet, noSlotDuplicates = true, pickBestForClass = true}
-local rightGauntlets = { ids = GearManager.gearLists.rightGauntlet, noSlotDuplicates = true, pickBestForClass = true}
-local greaves = { ids = GearManager.gearLists.greaves, noSlotDuplicates = true, pickBestForClass = true}
-local leftPauldrons = { ids = GearManager.gearLists.leftPauldron, noSlotDuplicates = true, pickBestForClass = true}
-local rightPauldrons = { ids = GearManager.gearLists.rightPauldron, noSlotDuplicates = true, pickBestForClass = true}
-local helms = { ids = GearManager.gearLists.helm, noSlotDuplicates = true, pickBestForClass = true}
-local shields = { ids = GearManager.gearLists.shield, noSlotDuplicates = true, pickBestForClass = true}
-local weapons = { ids = GearManager.gearLists.weapon, noSlotDuplicates = true, pickBestForClass = true}
-local hoods = { ids = GearManager.gearLists.hood, noSlotDuplicates = true, pickBestForClass = true}
-local robes = { ids = GearManager.gearLists.robe, noSlotDuplicates = true, pickBestForClass = true}
-
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
     {
@@ -53,6 +39,9 @@ local scenarios = {
             position = {33,-87,194},
             cell = "Seyda Neen, Census and Excise Office"
         },
+        onStart = function(self)
+            tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
+        end
     },
     {
         id = "hidingFromTheLaw",
@@ -75,10 +64,6 @@ local scenarios = {
                 },
                 count = 2
             },
-            hoods,
-            weapons,
-            boots,
-            cuirass
         }
     },
     {
@@ -99,7 +84,6 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
-            weapons,
         }
     },
 
@@ -125,10 +109,6 @@ local scenarios = {
                 id = "chitin arrow",
                 count = 30,
             },
-            boots,
-            greaves,
-            leftGauntlets,
-            rightGauntlets,
         }
     },
     {
@@ -176,9 +156,6 @@ local scenarios = {
                 },
                 count = 4
             },
-            hoods,
-            weapons,
-            boots,
         },
         onStart = function(self)
             tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
@@ -366,11 +343,6 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            hoods,
-            weapons,
-            boots,
-            cuirass,
-            rightGauntlets,
         },
     },
     {
@@ -414,7 +386,6 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            robes
         },
     },
     {
@@ -457,12 +428,6 @@ local scenarios = {
                 id = "p_restore_health_s",
                 count = 4,
             },
-            boots,
-            helms,
-            cuirass,
-            leftGauntlets,
-            rightGauntlets,
-            weapons
         }
     },
     {
@@ -626,8 +591,6 @@ local scenarios = {
                 ids = booze,
                 count = 2
             },
-            weapons,
-            cuirass,
         }
     },
     {
@@ -639,36 +602,54 @@ local scenarios = {
             orientation = 349,
         },
         items = {
-            {
-                ids = cookingPots,
-                count = 1
-            },
+            { ids = cookingPots },
             {
                 id = "ashfall_firewood",
-                count = 5
+                count = 4
             },
             {
                 id = "ashfall_tent_base_m",
-                count = 1,
                 noDuplicates = true,
             },
             {
                 id = "ashfall_woodaxe",
-                count = 1,
                 noDuplicates = true,
             },
-            weapons,
-            boots,
+            {
+                id = "ingred_hound_meat_01",
+                count = 3
+            },
+            { id = "ashfall_flintsteel" },
         },
     },
     {
         id= "commoner",
         name = "Commoner",
-        description = "You are working as a commoner in the Andus Tradehouse in Maar Gan.",
-        location = {
-            position = {29, -384, -386},
-            orientation = 0,
-            cell = "Maar Gan, Andus Tradehouse"
+        description = "You are working as a commoner in a tradehouse, Serving drinks and clearing tables.",
+        locations = {
+            {
+                position = { 29, -384, -386 },
+                orientation = 0,
+                cell = "Maar Gan, Andus Tradehouse"
+            },
+            { --Gnisis, Madach Tradehouse
+                position = {-57, 280, -125},
+                orientation =-2,
+                cell = "Gnisis, Madach Tradehouse"
+            },
+            { --Suran, Suran Tradehouse
+                position = {4, 240, 519},
+                orientation =0,
+                cell = "Suran, Suran Tradehouse"
+            },
+            { --Bodrum, Varalaryn Tradehouse
+                position = {413, -1613, -379},
+                orientation =0,
+                cell = "Bodrum, Varalaryn Tradehouse",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
         },
         items = {
             {
@@ -716,8 +697,6 @@ local scenarios = {
                 id = "ingred_muck_01",
                 count = 2
             },
-            hoods,
-            robes,
         }
     },
     {
@@ -749,8 +728,6 @@ local scenarios = {
                 id = "gold_001",
                 count = 50, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
             },
-            hoods,
-            weapons,
         }
     },
     {
@@ -771,16 +748,17 @@ local scenarios = {
                 id = "ingred_moon_sugar_01",
                 count = 2
             },
-            weapons,
         }
     },
     {
         id = "fishing",
         name = "Fishing",
         description = "You are fishing in the waters of Hla Oad.",
-        location ={
-            position = {-48464, -38956, 211},
-            orientation =-2,
+        locations = {
+            {
+                position = {-48464, -38956, 211},
+                orientation =-2,
+            },
         },
         items = {
             {
@@ -814,7 +792,6 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            weapons,
         }
     },
     {
@@ -903,7 +880,6 @@ local scenarios = {
             {id = "expensive_pants_03", noDuplicates = true},
             {id = "extravagant_shirt_02", noDuplicates = true},
             {id = "expensive_shoes_02", noDuplicates = true},
-            weapons,
         },
         onStart = function()
             local songController = include("mer.bardicInspiration.controllers.songController")

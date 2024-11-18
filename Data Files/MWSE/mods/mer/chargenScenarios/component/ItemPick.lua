@@ -20,6 +20,7 @@ local GearManager = require("mer.chargenScenarios.component.GearManager")
 
 ---@class ChargenScenariosItemPick
 ---@field ids table<number, string> the list of item ids the item pick is chosen from
+---@field resolvedItems? table<tes3object|tes3misc|tes3clothing|tes3armor, number> the resolved items and their counts
 ---@field alternative? string the item id to use if none of the ids are valid
 ---@field count number the number of items to add to the player's inventory
 ---@field requirements? ChargenScenariosRequirements the requirements for the item pick
@@ -142,7 +143,6 @@ local function playerCanEquip(item)
 end
 
 
-
 ---Check if the player has an item of the same type and slot/weapontype
 ---@param item tes3clothing|tes3armor|tes3weapon
 local function playerHasSameItemType(item)
@@ -164,9 +164,52 @@ local function playerHasSameItemType(item)
     return false
 end
 
+
 function ItemPick:giveToPlayer()
-    local addedItems = {}
+    self:resolveItems()
+    for item, count in pairs(self.resolvedItems) do
+        if self.noDuplicates and tes3.player.object.inventory:contains(item) then
+            logger:debug("Player already has item, skipping %s", item)
+        elseif self.noSlotDuplicates and playerHasSameItemType(item) then
+            logger:debug("Player already has item of same type, skipping %s", item)
+        else
+            logger:debug("Adding item to player inventory: %s", item)
+            tes3.addItem{
+                reference = tes3.player,
+                item = item,
+                count = count,
+                playSound = false,
+            }
+            local doEquip = playerCanEquip(item)
+            if doEquip then
+                logger:debug("Equipping item: %s", item)
+                tes3.equip{
+                    item = item,
+                    reference = tes3.player,
+                    playSound = false,
+                    bypassEquipEvents = true,
+                }
+            end
+        end
+    end
+end
+
+---Reset the resolved items
+function ItemPick:reset()
+    self.resolvedItems = nil
+end
+
+---Resolves the ids into items. Call before using self.resolvedItems
+function ItemPick:resolveItems()
+    if self.resolvedItems then
+        return self.resolvedItems
+    end
+    self.resolvedItems = {}
     local added = 0
+    --If there's only one item in the list, then add them all at once
+    --If there's multiple items, pick and add one at a time
+    local hasMultipleItems = #self.ids > 1
+    local numAddedPerLoop = hasMultipleItems and 1 or self.count
     while added < (self.count or 1) do
         local pickedItem = self:pick()
         if not pickedItem then
@@ -174,34 +217,14 @@ function ItemPick:giveToPlayer()
             break
         end
         logger:debug("Picked Item: %s", pickedItem)
-        table.insert(addedItems, pickedItem)
 
-        if self.noDuplicates and tes3.player.object.inventory:contains(pickedItem) then
-            logger:debug("Player already has item, skipping")
-        elseif self.noSlotDuplicates and playerHasSameItemType(pickedItem) then
-            logger:debug("Player already has item of same type, skipping")
-        else
-            logger:debug("Adding item to player inventory")
-            tes3.addItem{
-                reference = tes3.player,
-                item = pickedItem,
-                count = 1,
-                playSound = false,
-            }
-            local doEquip = playerCanEquip(pickedItem)
-            if doEquip then
-                logger:debug("Equipping item")
-                tes3.equip{
-                    item = pickedItem,
-                    reference = tes3.player,
-                    playSound = false,
-                }
-            end
-        end
-        added = added + 1
+        self.resolvedItems[pickedItem] = self.resolvedItems[pickedItem]
+            and (self.resolvedItems[pickedItem] + numAddedPerLoop)
+            or numAddedPerLoop
+        added = added + numAddedPerLoop
     end
-    return addedItems
 end
+
 
 function ItemPick:checkRequirements()
     if self.requirements and not self.requirements:check() then

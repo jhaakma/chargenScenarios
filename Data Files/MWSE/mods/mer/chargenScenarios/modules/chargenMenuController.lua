@@ -1,9 +1,6 @@
 local common = require('mer.chargenScenarios.common')
 local logger = common.createLogger("chargenMenuController")
-local scenarioSelector = require('mer.chargenScenarios.component.ScenarioSelector')
-local Scenario = require("mer.chargenScenarios.component.Scenario")
 local Tooltip = require("mer.chargenScenarios.util.Tooltip")
-local backgroundsInterop = include('mer.characterBackgrounds.interop')
 local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
 local Controls = require("mer.chargenScenarios.util.Controls")
 
@@ -40,12 +37,13 @@ local function setClassChosen()
 end
 
 local function hasCompletedChargen()
+    --Check registered menus
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-        if not chargenMenu:getCompleted() then
+        if chargenMenu:isActive() and chargenMenu:isEnabled() and not chargenMenu:getCompleted() then
             return false
         end
     end
-
+    --Check vanilla menus
     return nameChosen()
         and raceChosen()
         and birthsignChosen()
@@ -55,8 +53,7 @@ end
 local function returnToStatsMenu()
     --Check each chargen menu is still valid
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-
-        if chargenMenu:isActive() then
+        if chargenMenu:isActive() and chargenMenu:isEnabled() then
             if not (chargenMenu:validate() and chargenMenu:getCompleted()) then
                 logger:debug("Returning to chargen menu %s", chargenMenu.id)
                 chargenMenu:createMenu()
@@ -117,7 +114,9 @@ end
 
 local function startGame()
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-        chargenMenu:onStart()
+        if chargenMenu.id == "scenarioMenu" or chargenMenu:isActive() and chargenMenu:isEnabled() then
+            chargenMenu:onStart()
+        end
     end
     tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
     tes3.findGlobal("CharGenState").value = -1
@@ -146,7 +145,9 @@ local function modifyStatReviewMenu(e)
 
     --Add scenario and background button
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-        createChargenMenuButton(parent, chargenMenu)
+        if chargenMenu:isActive() and chargenMenu:isEnabled() then
+            createChargenMenuButton(parent, chargenMenu)
+        end
     end
     --createBackgroundButton(parent)
     --createScenarioButton(parent)
@@ -356,7 +357,7 @@ local function modifyNameMenu(e)
             logger:debug("Name not previously chosen, opening next chargen menu")
             for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
                 logger:debug("- Checking %s", chargenMenu.id)
-                if chargenMenu:isActive() then
+                if chargenMenu:isActive() and chargenMenu:isEnabled() then
                     logger:debug("Opening chargen menu %s", chargenMenu.id)
                     chargenMenu:createMenu()
                     return

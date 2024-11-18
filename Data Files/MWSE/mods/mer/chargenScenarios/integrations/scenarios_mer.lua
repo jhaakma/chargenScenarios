@@ -1,5 +1,5 @@
 --[[
-    Scenarioss specific to other Merlord Mods
+    Scenarios specific to other Merlord Mods
 ]]
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")

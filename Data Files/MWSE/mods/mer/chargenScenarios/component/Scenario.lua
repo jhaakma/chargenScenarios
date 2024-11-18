@@ -204,8 +204,8 @@ function Scenario:start()
     timer.start{
         duration = 1,
         callback = function()
-            self:doItems()
             self:doSpells()
+            self:doItems()
             self:doIntro()
         end
     }

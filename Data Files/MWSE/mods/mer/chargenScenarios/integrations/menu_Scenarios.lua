@@ -1,18 +1,62 @@
-local ScenarioSelector = {}
+
+local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
+local Scenario = require("mer.chargenScenarios.component.Scenario")
+
+---@class ChargenScenarios.ScenarioMenu
+local ScenarioMenu = {}
+
 local menuId = tes3ui.registerID("Mer_ScenarioSelectorMenu")
 local descriptionHeaderID = tes3ui.registerID("Mer_ScenarioSelectorDescriptionHeader")
 local descriptionID = tes3ui.registerID("Mer_ScenarioSelectorDescription")
 local locationDropdownBlockID = tes3ui.registerID("Mer_ScenarioSelectorLocationDropdownBlock")
 local common = require("mer.chargenScenarios.common")
-local logger = common.createLogger("ScenarioSelector")
+local logger = common.createLogger("ScenarioMenu")
 
---[[
-    ScenarioSelector Menu. UI only, game logic handled
-    by events
-]]
+--Register the Menu
+
+---@type ChargenScenarios.ChargenMenu.config
+local menu = {
+    id = "scenarioMenu",
+    name = "Chargen Scenarios",
+    priority = -1000,
+    buttonLabel= "Scenarios",
+    getButtonValue = function(self)
+        local scenario = self.getSelectedScenario()
+        return scenario and scenario.name or "None"
+    end,
+    createMenu = function(self)
+        ScenarioMenu.createScenarioMenu{
+            scenarioList = Scenario.registeredScenarios,
+            onScenarioSelected = function(scenario)
+                logger:debug("Clicked scenario: %s", scenario.name)
+                self.setSelectedScenario(scenario)
+            end,
+            onOkayButton = function()
+                self:okCallback()
+            end,
+            currentScenario = self.getSelectedScenario()
+        }
+    end,
+    validate = function(self)
+        local scenario = self.getSelectedScenario()
+        return scenario and scenario:checkRequirements()
+    end,
+    onStart = function(self)
+        local scenario = self.getSelectedScenario()
+        if not scenario then
+            scenario = Scenario.registeredScenarios.vanilla
+        end
+
+        if scenario then
+            logger:debug("Starting scenario: %s", scenario.name)
+            scenario:start()
+        end
+    end
+}
+ChargenMenu.register(menu)
+
 
 local function createHeading(parent)
-    --HEADING
     local title = parent:createLabel{
         id = tes3ui.registerID("Mer_ScenarioSelectorMenu_heading"),
         text = "Select your Scenario:"
@@ -247,7 +291,7 @@ local function createOkButton(parent, onOkayButton)
     return okButton
 end
 
-function ScenarioSelector.createScenarioMenu(e)
+function ScenarioMenu.createScenarioMenu(e)
     logger:debug("Creating Scenario Selector Menu")
     local scenarioList = sortListAlphabetically(table.values(e.scenarioList))
     local onScenarioSelected = e.onScenarioSelected
@@ -280,6 +324,6 @@ function ScenarioSelector.createScenarioMenu(e)
 end
 
 
-return ScenarioSelector
+return ScenarioMenu
 
 

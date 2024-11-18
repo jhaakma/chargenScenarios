@@ -66,8 +66,6 @@ local function startChargen()
             forceCellChange = true
         })
     )
-    --Open Stat Review Menu
-
     --Add topics
     for _, topic in ipairs(defaultTopics) do
         tes3.addTopic{
