@@ -254,5 +254,6 @@ for _, scenario in ipairs(scenarios) do
     end
     table.insert(scenario.requirements.plugins, "TR_Mainland.esm")
 
+    scenario.hideIfInvalid = true
     Scenario:register(scenario)
 end

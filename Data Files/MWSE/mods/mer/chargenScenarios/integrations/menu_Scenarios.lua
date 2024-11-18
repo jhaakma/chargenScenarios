@@ -156,9 +156,14 @@ local function onClickScenario(scenario)
 
             local currentLocationText = outerBlock:createLabel{ text = scenario:getStartingLocation():getName()}
 
-            local locationListBlock = outerBlock:createVerticalScrollPane{}
+            local locationListBlock =outerBlock:createVerticalScrollPane{}
+
             local rowHeight = 23
-            locationListBlock.minHeight = math.clamp(#validLocations * rowHeight, rowHeight*2, rowHeight*14)
+            local maxEntries = 10
+
+            locationListBlock.minHeight = math.clamp(#validLocations * rowHeight, rowHeight*2, rowHeight*maxEntries) + 4
+            locationListBlock.maxHeight = locationListBlock.minHeight
+            locationListBlock.autoHeight = false
             locationListBlock.minWidth = 300
             locationListBlock.autoWidth = true
             locationListBlock.paddingAllSides = 4
@@ -206,15 +211,19 @@ local function onClickScenario(scenario)
     description:updateLayout()
 end
 
+---@param listBlock tes3uiElement
+---@param list ChargenScenariosScenario[]
+---@param onScenarioSelected fun(scenario: ChargenScenariosScenario)
+---@param currentScenario ChargenScenariosScenario
 local function populateScenarioList(listBlock, list, onScenarioSelected, currentScenario)
     for _, scenario in ipairs(list) do
-        if scenario:hasValidLocation() then
+        if scenario:isVisible() then
             local scenarioButton = listBlock:createTextSelect{
                 text = scenario.name,
                 id = tes3ui.registerID("scenarioButton_" .. scenario.name)
             }
             scenarioButton.autoHeight = true
-            scenarioButton.layoutWidthFraction = 1.0
+            scenarioButton.widthProportional = 1.0
             scenarioButton.paddingAllSides = 2
             scenarioButton.borderAllSides = 2
             if not scenario:checkRequirements() then
@@ -232,7 +241,7 @@ local function populateScenarioList(listBlock, list, onScenarioSelected, current
                 end)
             end
         else
-            logger:warn("Scenario %s has no valid locations", scenario.name)
+            logger:warn("Scenario %s is hidden or has no valid locations", scenario.name)
         end
     end
 end

@@ -23,17 +23,12 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 ---@field clutter nil|string|ChargenScenariosClutterInput[] The clutter for the location. Can be a list of clutter data or a cluterList ID
 ---@field onStart nil|fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
 
-
----@class (exact) ChargenScenariosScenario
----@field id string A unique ID for hte scenario
----@field name string the name of the scenario
----@field description string the description of the scenario
+---@class (exact) ChargenScenariosScenario : ChargenScenariosScenarioInput
 ---@field requirements ChargenScenariosRequirements the requirements for the scenario
 ---@field locations ChargenScenariosLocation[] the list of locations for the scenario
 ---@field itemList? ChargenScenariosItemList the list of items for the scenario
 ---@field spellList? ChargenScenariosSpellList the list of spells given to the player for this scenario. May include abilities, diseases etc
 ---@field clutterList? ChargenScenariosClutterList the clutter for the location
----@field onStart? fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
 ---@field decidedLocation? ChargenScenariosLocation the index of the location that was decided for this scenario
 ---@field registeredScenarios table<string, ChargenScenariosScenario> the list of registered scenarios
 local Scenario = {
@@ -156,6 +151,12 @@ function Scenario:hasValidLocation()
     end
     logger:warn("No valid locations for scenario %s", self.name)
     return false
+end
+
+function Scenario:isVisible()
+    return self:hasValidLocation()
+        and self.requirements:checkPlugins()
+        and self.requirements:checkExcludedPlugins()
 end
 
 --- Add the items for this scenario to the player's inventory

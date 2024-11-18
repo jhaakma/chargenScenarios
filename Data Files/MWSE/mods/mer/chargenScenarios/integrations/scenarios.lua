@@ -379,6 +379,63 @@ local scenarios = {
                 name = "Sadrith Mora",
                 cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"
             },
+
+            { --Akamora, Guild of Mages
+                position = {78, -447, -382},
+                orientation =-1,
+                cell = "Akamora, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Almas Thirr, Guild of Mages
+                position = {222, -215, -62},
+                orientation =-3,
+                cell = "Almas Thirr, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+
+
+            { --Andothren, Guild of Mages
+                position = {7847, 4297, 15203},
+                orientation =0,
+                cell = "Andothren, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+
+
+            { --Firewatch, Guild of Mages
+                position = {5188, 2511, 10842},
+                orientation =-2,
+                cell = "Firewatch, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+
+
+            { --Helnim, Guild of Mages
+                position = {4730, 3631, 12660},
+                orientation =2,
+                cell = "Helnim, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+
+
+            { --Old Ebonheart, Guild of Mages
+                position = {4295, 4496, 15234},
+                orientation =2,
+                cell = "Old Ebonheart, Guild of Mages",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
         },
         items = {
             {

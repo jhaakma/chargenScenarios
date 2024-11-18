@@ -1,17 +1,13 @@
 ---@class ChargenScenariosRequirementsInput
 ---@field plugins? table<number, string> @A list of required plugins
+---@field excludedPlugins? table<number, string> @the array of plugins that are excluded
 ---@field classes? table<number, string> @A list of required classes
 ---@field races? table<number, string> @A list of required races
-
 
 --[[
     Represents a set of requirements for a scenario or location.
 ]]
----@class ChargenScenariosRequirements
----@field plugins? table<number, string> @the array of plugins that are required
----@field classes? table<string, boolean> @the dictionary of classes that are eligible
----@field races? table<string, boolean> @the dictionary of races that are elegible
----@field excludedPlugins? table<number, string> @the array of plugins that are excluded
+---@class ChargenScenariosRequirements : ChargenScenariosRequirementsInput
 local Requirements = {
     schema = {
         name = "Requirements",
@@ -77,6 +73,7 @@ end
 function Requirements:addExcludedPlugin(plugin)
     addRequirement(self, "excludedPlugins", plugin)
 end
+
 
 function Requirements:checkPlugins()
     if self.plugins and #self.plugins > 0 then
