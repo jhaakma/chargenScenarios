@@ -330,6 +330,28 @@ local function selectRandomName(menu)
     end
 end
 
+local function onNameSelected()
+    --If we've already changed name before, go straight back to stats menu
+    if nameChosen() then
+        logger:debug("Name previously chosen, returning to stats menu")
+        returnToStatsMenu()
+    else --find the next chargen menu to open
+        setNameChosen()
+        logger:debug("Name not previously chosen, opening next chargen menu")
+        for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
+            logger:debug("- Checking %s", chargenMenu.id)
+            if chargenMenu:isActive() and chargenMenu:isEnabled() then
+                logger:debug("Opening chargen menu %s", chargenMenu.id)
+                chargenMenu:createMenu()
+                return
+            end
+        end
+    end
+    logger:warn("No chargen menu to open, returning to stats menu")
+    returnToStatsMenu()
+end
+
+
 --[[
     When the name menu is opened, override the Ok button
     to trigger the statReviewMenu again
@@ -347,33 +369,30 @@ local function modifyNameMenu(e)
 
         logger:debug("Clicked name menu OK button")
         okButton:forwardEvent(eMouseClick)
-
-        --If we've already changed name before, go straight back to stats menu
-        if nameChosen() then
-            logger:debug("Name previously chosen, returning to stats menu")
-            returnToStatsMenu()
-        else --find the next chargen menu to open
-            setNameChosen()
-            logger:debug("Name not previously chosen, opening next chargen menu")
-            for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-                logger:debug("- Checking %s", chargenMenu.id)
-                if chargenMenu:isActive() and chargenMenu:isEnabled() then
-                    logger:debug("Opening chargen menu %s", chargenMenu.id)
-                    chargenMenu:createMenu()
-                    return
-                end
-            end
-        end
-        logger:warn("No chargen menu to open, returning to stats menu")
-        returnToStatsMenu()
+        onNameSelected()
     end)
 
     --Prepopulate name option based on player race
     --if Name Generator mod is installed
     --Only if no name has been chosen yet
+    ---@diagnostic disable-next-line: undefined-global
     if raceBlockNames then
         selectRandomName(menu)
     end
+
+    local function onKeyDown(e)
+        if e.keyCode == tes3.scanCode.enter then
+            onNameSelected()
+            event.unregister("keyDown", onKeyDown)
+        end
+    end
+    ---@param e keyDownEventData
+    event.register("keyDown", onKeyDown)
+
+    okButton:register("destroy", function()
+        event.unregister("keyDown", onKeyDown)
+    end)
+
 end
 event.register("uiActivated", modifyNameMenu, { filter = "MenuName", priority = -10})
 
