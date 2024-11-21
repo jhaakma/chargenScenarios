@@ -113,12 +113,12 @@ local function createChargenMenuButton(parent, chargenMenu)
 end
 
 local function startGame()
+    tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
         if chargenMenu.id == "scenarioMenu" or chargenMenu:isActive() and chargenMenu:isEnabled() then
             chargenMenu:onStart()
         end
     end
-    tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
     tes3.findGlobal("CharGenState").value = -1
     Controls.enableControls()
 end
@@ -183,8 +183,8 @@ local function modifyRaceSexMenu(e)
 
     --override OK button
     local okButton = menu:findChild("MenuRaceSex_Okbutton")
-    okButton:register("mouseClick", function()
-        menu:destroy()
+    okButton:registerBefore("mouseClick", function()
+        --menu:destroy()
         setRaceChosen()
         if not classChosen() then
             tes3.runLegacyScript{ command = "EnableClassMenu"} ---@diagnostic disable-line
@@ -386,7 +386,7 @@ local function modifyNameMenu(e)
             event.unregister("keyDown", onKeyDown)
         end
     end
-    ---@param e keyDownEventData
+
     event.register("keyDown", onKeyDown)
 
     okButton:register("destroy", function()

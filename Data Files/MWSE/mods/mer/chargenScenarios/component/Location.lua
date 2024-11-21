@@ -2,7 +2,7 @@
 ---@field name string? @The name of the location, required for scenarios where you can choose the location
 ---@field position table<number, number> @The position where the player will be spawned
 ---@field orientation number @The orientation where the player will be spawned
----@field cell? string @The cell where the player will be spawned. Nil for exteriors
+---@field cellId? string @The cell where the player will be spawned. Nil for exteriors
 ---@field items? table<number, ChargenScenariosItemPickInput> @The items to add to the player's inventory. Overrwrites items defined in parent scenario
 ---@field requirements? ChargenScenariosRequirementsInput @The requirements that need to be met for this location to be used
 ---@field onStart? fun(self: ChargenScenariosLocation):string @Callback triggered when a scenario starts at this location
@@ -29,7 +29,7 @@ local Location = {
         fields = {
             position = { type = "table", childType = "number", required = true },
             orientation = { type = "number", required = true },
-            cell = { type = "string", required = false },
+            cellId = { type = "string", required = false },
             items = { type = "table", childType = ItemPick.schema, required = false },
             requirements = { type = Requirements.schema, required = false },
             onStart = { type = "function", required = false, default = function() end },
@@ -62,7 +62,7 @@ function Location:new(data)
         name = data.name,
         position = data.position,
         orientation = data.orientation,
-        cell = data.cell,
+        cellId = data.cellId,
         items = data.items and ItemList:new(data.items),
         requirements = Requirements:new(data.requirements),
         onStart = data.onStart,
@@ -75,14 +75,14 @@ function Location:new(data)
 end
 
 function Location:moveTo()
-    logger:debug("Moving to location: %s\n %s", self.cell, json.encode(self.position))
+    logger:debug("Moving to location: %s\n %s", self.cellId, json.encode(self.position))
     return tes3.positionCell{
         reference = tes3.player,
         position = self.position,
         orientation = {
             0, 0, self.orientation
         },
-        cell = self.cell
+        cell = self.cellId
     }
 end
 
@@ -92,9 +92,19 @@ function Location:doItems()
     end
 end
 
-function Location:checkRequirements()
+function Location:isValid()
     return self.requirements:check()
+        and self:checkCellValid()
 end
+
+function Location:checkCellValid()
+    if self.cellId then
+        return tes3.getCell{ id = self.cellId } ~= nil
+    else
+        return tes3.getCell{ position = self.position } ~= nil
+    end
+end
+
 function Location:doIntro()
     if self.onStart then
         return self.onStart(self)
@@ -113,10 +123,10 @@ function Location:getName()
     if self.name then
         return self.name
     end
-    if self.cell then
-        return self.cell
+    if self.cellId then
+        return self.cellId
     end
-    local cell = tes3.getCell{ id = self.cell }
+    local cell = tes3.getCell{ position = self.position }
     if cell and cell.region then
         return cell.region.name
     end

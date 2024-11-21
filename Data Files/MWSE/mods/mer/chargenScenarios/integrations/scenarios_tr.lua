@@ -13,7 +13,7 @@ local scenarios = {
         location = {
             position = {61567, -150436, 1024},
             orientation = 0,
-            cell = "Old Ebonheart, Alley"
+            cellId = "Old Ebonheart, Alley"
         },
         items = {
             {
@@ -38,7 +38,7 @@ local scenarios = {
         location = {
             position = {5718, 3587, 12401},
             orientation = 0,
-            cell = "Firewatch, College"
+            cellId = "Firewatch, College"
         },
         items = {
             {
@@ -204,45 +204,6 @@ local scenarios = {
             },
         },
     },
-    {
-        id = "fishingAtDragonheadPoint",
-        name = "Fishing at Dragonhead Point",
-        description = "You are fishing at Dragonhead Point.",
-        location = {
-            position = {330424, -29432, 784},
-            orientation = 0,
-        },
-        items = {
-            {
-                id = "T_Rga_FishingSpear_01",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "misc_de_fishing_pole",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "mer_meat_cod",
-                alternative = "T_IngFood_FishCod_01",
-                count = 2,
-            },
-            {
-                id = "mer_bug_spinner2",
-                count = 1,
-            },
-            {
-                id = "mer_fish_cod",
-                count = 1,
-            },
-            {
-                id = "AB_w_CookKnifeBone",
-                count = 1,
-                noDuplicates = true,
-            },
-        },
-    },
 }
 
 for _, scenario in ipairs(scenarios) do
@@ -253,7 +214,5 @@ for _, scenario in ipairs(scenarios) do
         scenario.requirements.plugins = {}
     end
     table.insert(scenario.requirements.plugins, "TR_Mainland.esm")
-
-    scenario.hideIfInvalid = true
     Scenario:register(scenario)
 end

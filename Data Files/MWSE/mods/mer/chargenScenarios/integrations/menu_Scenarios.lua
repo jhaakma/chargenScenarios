@@ -241,7 +241,7 @@ local function populateScenarioList(listBlock, list, onScenarioSelected, current
                 end)
             end
         else
-            logger:warn("Scenario %s is hidden or has no valid locations", scenario.name)
+            logger:debug("Scenario %s is hidden or has no valid locations", scenario.name)
         end
     end
 end

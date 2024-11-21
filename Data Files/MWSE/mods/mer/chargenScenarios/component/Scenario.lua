@@ -99,12 +99,7 @@ function Scenario:getStartingLocation()
     if self.decidedLocation then
         return self.decidedLocation
     end
-    local validLocations = {}
-    for _, location in ipairs(self.locations) do
-        if location:checkRequirements() then
-            table.insert(validLocations, location)
-        end
-    end
+    local validLocations = self:getValidLocations()
     if #validLocations == 0 then
         logger:error("No valid locations for scenario %s", self.name)
         return nil
@@ -116,7 +111,7 @@ end
 function Scenario:getValidLocations()
     local validLocations = {}
     for _, location in pairs(self.locations) do
-        if location:checkRequirements() then
+        if location:isValid() then
             table.insert(validLocations, location)
         end
     end
@@ -144,13 +139,7 @@ function Scenario:hasValidLocation()
         logger:error("Scenario %s has no locations", self.name)
         return false
     end
-    for _, location in ipairs(self.locations) do
-        if location:checkRequirements() then
-            return true
-        end
-    end
-    logger:warn("No valid locations for scenario %s", self.name)
-    return false
+    return #self:getValidLocations() > 0
 end
 
 function Scenario:isVisible()
@@ -159,14 +148,77 @@ function Scenario:isVisible()
         and self.requirements:checkExcludedPlugins()
 end
 
+function Scenario:addAndEquipCommonClothing()
+    local items = {
+        {
+            id = "common_pants_01",
+            objectType = tes3.objectType.clothing,
+            slot = tes3.clothingSlot.pants,
+        },
+        {
+            id = "common_shoes_01",
+            objectType = tes3.objectType.clothing,
+            slot = tes3.clothingSlot.shoes,
+            alt = {
+                objectType = tes3.objectType.armor,
+                slot = tes3.armorSlot.boots
+            }
+        },
+        {
+            id = "common_shirt_01",
+            objectType = tes3.objectType.clothing,
+            slot = tes3.clothingSlot.shirt,
+        }
+    }
+
+    for _, item in ipairs(items) do
+        local hasItem = tes3.getEquippedItem{
+            actor = tes3.player,
+            objectType = item.objectType,
+            slot = item.slot
+        }
+        if not hasItem and item.alt then
+            hasItem = tes3.getEquippedItem{
+                actor = tes3.player,
+                objectType = item.alt.objectType,
+                slot = item.alt.slot
+            }
+        end
+
+        if not hasItem then
+            local item = tes3.getObject(item.id)
+            local canEquip = true
+            if tes3.player.object.race.isBeast then
+                canEquip = item.isUsableByBeasts ~= false
+            end
+            if canEquip then
+                logger:debug("Equipping deafult %s to player", item.id)
+                tes3.addItem{
+                    reference = tes3.player,
+                    item = item.id
+                }
+                tes3.equip{
+                    item = item,
+                    reference = tes3.player,
+                }
+            else
+                logger:debug("Beast - cannot equip %s", item.id)
+            end
+        end
+    end
+end
+
 --- Add the items for this scenario to the player's inventory
 function Scenario:doItems()
     local locationItems = self:getStartingLocation():doItems()
+    local didItems
     if locationItems then
-        return locationItems
+        didItems = locationItems
     elseif self.itemList then
-        return self.itemList:doItems()
+        didItems = self.itemList:doItems()
     end
+    self:addAndEquipCommonClothing()
+    return didItems
 end
 
 --- Do the location and scenario callbacks

@@ -37,7 +37,7 @@ local scenarios = {
         location = {
             orientation = 2,
             position = {33,-87,194},
-            cell = "Seyda Neen, Census and Excise Office"
+            cellId = "Seyda Neen, Census and Excise Office"
         },
         onStart = function(self)
             tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
@@ -84,6 +84,10 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
+            {
+                id = "gold_001",
+                count = 25,
+            },
         }
     },
 
@@ -109,6 +113,11 @@ local scenarios = {
                 id = "chitin arrow",
                 count = 30,
             },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
         }
     },
     {
@@ -128,6 +137,11 @@ local scenarios = {
                 id = "slave_bracer_right",
                 count = 1,
                 noSlotDuplicates = true,
+            },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
             },
         },
         requirements = requiresBeastRace,
@@ -156,6 +170,10 @@ local scenarios = {
                 },
                 count = 4
             },
+            {
+                id = "gold_001",
+                count = 25,
+            },
         },
         onStart = function(self)
             tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
@@ -169,157 +187,157 @@ local scenarios = {
             { --Andalen Ancestral Tomb
                 position = {878, -1008, 258},
                 orientation =-1,
-                cell = "Andalen Ancestral Tomb"
+                cellId = "Andalen Ancestral Tomb"
             },
             { --Andalor Ancestral Tomb
                 position = {3065, 2881, 386},
                 orientation =-2,
-                cell = "Andalor Ancestral Tomb"
+                cellId = "Andalor Ancestral Tomb"
             },
             { --Andas Ancestral Tomb
                 position = {763, -542, -702},
                 orientation =-1,
-                cell = "Andas Ancestral Tomb"
+                cellId = "Andas Ancestral Tomb"
             },
             { --Andavel Ancestral Tomb
                 position = {-5194, -601, 2050},
                 orientation =-4,
-                cell = "Andavel Ancestral Tomb"
+                cellId = "Andavel Ancestral Tomb"
             },
             { --Andrethi Ancestral Tomb
                 position = {2617, 1182, -894},
                 orientation =-2,
-                cell = "Andrethi Ancestral Tomb"
+                cellId = "Andrethi Ancestral Tomb"
             },
             { --Andules Ancestral Tomb
                 position = {-900, 26, 257},
                 orientation =0,
-                cell = "Andules Ancestral Tomb"
+                cellId = "Andules Ancestral Tomb"
             },
             { --Aran Ancestral Tomb
                 position = {-2353, 5163, -190},
                 orientation =3,
-                cell = "Aran Ancestral Tomb"
+                cellId = "Aran Ancestral Tomb"
             },
             { --Arethan Ancestral Tomb
                 position = {-737, 1530, -30},
                 orientation =-1,
-                cell = "Arethan Ancestral Tomb"
+                cellId = "Arethan Ancestral Tomb"
             },
             { --Arys Ancestral Tomb
                 position = {12802, -4140, -702},
                 orientation =-1,
-                cell = "Arys Ancestral Tomb"
+                cellId = "Arys Ancestral Tomb"
             },
             { --Baram Ancestral Tomb
                 position = {-2533, 248, 1442},
                 orientation =-4,
-                cell = "Baram Ancestral Tomb"
+                cellId = "Baram Ancestral Tomb"
             },
             { --Dareleth Ancestral Tomb
                 position = {3802, -3038, 1602},
                 orientation =-2,
-                cell = "Dareleth Ancestral Tomb"
+                cellId = "Dareleth Ancestral Tomb"
             },
             { --Dreloth Ancestral Tomb
                 position = {0, 1907, 130},
                 orientation =3,
-                cell = "Dreloth Ancestral Tomb"
+                cellId = "Dreloth Ancestral Tomb"
             },
             { --Drinith Ancestral Tomb
                 position = {-300, -4552, 2722},
                 orientation =-4,
-                cell = "Drinith Ancestral Tomb"
+                cellId = "Drinith Ancestral Tomb"
             },
             { --Falas Ancestral Tomb
                 position = {-2705, -1280, 1282},
                 orientation =1,
-                cell = "Falas Ancestral Tomb"
+                cellId = "Falas Ancestral Tomb"
             },
             { --Helan Ancestral Tomb
                 position = {-1776, 380, 258},
                 orientation =1,
-                cell = "Helan Ancestral Tomb"
+                cellId = "Helan Ancestral Tomb"
             },
             { --Heran Ancestral Tomb
                 position = {-17, 2755, 258},
                 orientation =3,
-                cell = "Heran Ancestral Tomb"
+                cellId = "Heran Ancestral Tomb"
             },
             { --Hlaalu Ancestral Tomb
                 position = {-249, 1261, 386},
                 orientation =3,
-                cell = "Hlaalu Ancestral Tomb"
+                cellId = "Hlaalu Ancestral Tomb"
             },
             { --Hlervi Ancestral Tomb
                 position = {3202, -876, 1058},
                 orientation =-2,
-                cell = "Hlervi Ancestral Tomb"
+                cellId = "Hlervi Ancestral Tomb"
             },
             { --Hlervu Ancestral Tomb
                 position = {9, 2544, -510},
                 orientation =3,
-                cell = "Hlervu Ancestral Tomb"
+                cellId = "Hlervu Ancestral Tomb"
             },
             { --Indalen Ancestral Tomb
                 position = {-487, -97, 2466},
                 orientation =3,
-                cell = "Indalen Ancestral Tomb"
+                cellId = "Indalen Ancestral Tomb"
             },
             { --Lleran Ancestral Tomb
                 position = {995, -958, 98},
                 orientation =0,
-                cell = "Lleran Ancestral Tomb"
+                cellId = "Lleran Ancestral Tomb"
             },
             { --Norvayn Ancestral Tomb
                 position = {-1156, -1793, 1666},
                 orientation =1,
-                cell = "Norvayn Ancestral Tomb"
+                cellId = "Norvayn Ancestral Tomb"
             },
             { --Releth Ancestral Tomb
                 position = {2690, 901, 386},
                 orientation =-2,
-                cell = "Releth Ancestral Tomb"
+                cellId = "Releth Ancestral Tomb"
             },
             { --Rethandus Ancestral Tomb
                 position = {-3160, -100, 1410},
                 orientation =-4,
-                cell = "Rethandus Ancestral Tomb"
+                cellId = "Rethandus Ancestral Tomb"
             },
             { --Sadryn Ancestral Tomb
                 position = {703, -639, 34},
                 orientation =0,
-                cell = "Sadryon Ancestral Tomb"
+                cellId = "Sadryon Ancestral Tomb"
             },
             { --Samarys Ancestral Tomb
                 position = {-2272, 992, 258},
                 orientation =1,
-                cell = "Samarys Ancestral Tomb"
+                cellId = "Samarys Ancestral Tomb"
             },
             { --Sandas Ancestral Tomb
                 position = {1660, 7, 258},
                 orientation =-2,
-                cell = "Sandas Ancestral Tomb"
+                cellId = "Sandas Ancestral Tomb"
             },
             { --Sarys Ancestral Tomb
                 position = {7028, 4415, 14914},
                 orientation =-2,
-                cell = "Sarys Ancestral Tomb"
+                cellId = "Sarys Ancestral Tomb"
             },
             { --Tharys Ancestral Tomb
                 position = {2092, 272, -190},
                 orientation =-2,
-                cell = "Tharys Ancestral Tomb"
+                cellId = "Tharys Ancestral Tomb"
             },
             { --Thelas Ancestral Tomb
                 position = {374, 3176, 770},
                 orientation =3,
-                cell = "Thelas Ancestral Tomb"
+                cellId = "Thelas Ancestral Tomb"
             },
             { --Uveran Ancestral Tomb
                 position = {1934, -1559, 1695},
                 orientation =-4,
-                cell = "Uveran Ancestral Tomb"
+                cellId = "Uveran Ancestral Tomb"
             },
         },
         items = {
@@ -343,6 +361,11 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
         },
     },
     {
@@ -359,39 +382,41 @@ local scenarios = {
                 position = {14, 187, -252},
                 orientation =-4,
                 name = "Vivec",
-                cell = "Vivec, Guild of Mages"
+                cellId = "Vivec, Guild of Mages"
             },
             {
                 position = {370, -584, -761},
                 orientation =-4,
                 name = "Balmora",
-                cell = "Balmora, Guild of Mages"
+                cellId = "Balmora, Guild of Mages"
             },
             {
                 position = {695, 537, 404},
                 orientation =0,
                 name = "Caldera",
-                cell = "Caldera, Guild of Mages"
+                cellId = "Caldera, Guild of Mages"
             },
             {
                 position = {186, 542, 66},
                 orientation =0,
                 name = "Sadrith Mora",
-                cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"
+                cellId = "Sadrith Mora, Wolverine Hall: Mage's Guild"
             },
 
             { --Akamora, Guild of Mages
+                name = "Akamora",
                 position = {78, -447, -382},
                 orientation =-1,
-                cell = "Akamora, Guild of Mages",
+                cellId = "Akamora, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
             { --Almas Thirr, Guild of Mages
+                name = "Almas Thirr",
                 position = {222, -215, -62},
                 orientation =-3,
-                cell = "Almas Thirr, Guild of Mages",
+                cellId = "Almas Thirr, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -399,9 +424,10 @@ local scenarios = {
 
 
             { --Andothren, Guild of Mages
+                name = "Andothren",
                 position = {7847, 4297, 15203},
                 orientation =0,
-                cell = "Andothren, Guild of Mages",
+                cellId = "Andothren, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -409,9 +435,10 @@ local scenarios = {
 
 
             { --Firewatch, Guild of Mages
+                name = "Firewatch",
                 position = {5188, 2511, 10842},
                 orientation =-2,
-                cell = "Firewatch, Guild of Mages",
+                cellId = "Firewatch, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -419,9 +446,10 @@ local scenarios = {
 
 
             { --Helnim, Guild of Mages
+                name = "Helnim",
                 position = {4730, 3631, 12660},
                 orientation =2,
-                cell = "Helnim, Guild of Mages",
+                cellId = "Helnim, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -429,9 +457,10 @@ local scenarios = {
 
 
             { --Old Ebonheart, Guild of Mages
+                name = "Old Ebonheart",
                 position = {4295, 4496, 15234},
                 orientation =2,
-                cell = "Old Ebonheart, Guild of Mages",
+                cellId = "Old Ebonheart, Guild of Mages",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -442,6 +471,10 @@ local scenarios = {
                 id = "bookskill_Alchemy2",
                 count = 1,
                 noDuplicates = true,
+            },
+            {
+                id = "gold_001",
+                count = 25,
             },
         },
     },
@@ -459,31 +492,91 @@ local scenarios = {
                 position = {-901, -379, -764},
                 orientation =0,
                 name = "Ald-Rhun",
-                cell = "Ald-ruhn, Guild of Fighters"
+                cellId = "Ald-ruhn, Guild of Fighters"
             },
             {
                 position = {304, 293, -377},
                 orientation =0,
                 name = "Balmora",
-                cell = "Balmora, Guild of Fighters"
+                cellId = "Balmora, Guild of Fighters"
             },
             {
                 position = {306, -222, 3},
                 orientation =-1,
                 name = "Sadrith Mora",
-                cell = "Sadrith Mora, Wolverine Hall: Fighter's Guild"
+                cellId = "Sadrith Mora, Wolverine Hall: Fighter's Guild"
             },
             {
                 position = {179, 822, -508},
                 orientation =-2,
                 name = "Vivec",
-                cell = "Vivec, Guild of Fighters"
+                cellId = "Vivec, Guild of Fighters"
+            },
+
+
+            { --Akamora, Guild of Fighters
+                name = "Akamora",
+                position = {4431, 4280, 12674},
+                orientation =-4,
+                cellId = "Akamora, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Almas Thirr, Guild of Fighters
+                name = "Almas Thirr",
+                position = {4168, 4355, 14979},
+                orientation =-4,
+                cellId = "Almas Thirr, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Andothren, Guild of Fighters
+                name = "Andothren",
+                position = {2399, 4231, 14983},
+                orientation =3,
+                cellId = "Andothren, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Firewatch, Guild of Fighters
+                name = "Firewatch",
+                position = {4160, 3752, 15714},
+                orientation =-2,
+                cellId = "Firewatch, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Helnim, Guild of Fighters
+                name = "Helnim",
+                position = {5597, 4024, 15970},
+                orientation =3,
+                cellId = "Helnim, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
+            { --Old Ebonheart, Guild of Fighters
+                name = "Old Ebonheart",
+                position = {3928, 324, 11714},
+                orientation =1,
+                cellId = "Old Ebonheart, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
             },
         },
         items = {
             {
                 id = "p_restore_health_s",
                 count = 4,
+            },
+            {
+                id = "gold_001",
+                count = 25,
             },
         }
     },
@@ -494,7 +587,7 @@ local scenarios = {
         location = {
             position = {38154, -53328, 931},
             orientation = 268,
-            cell = "4,-7"
+            cellId = "4,-7"
         },
         items = {
             {
@@ -506,7 +599,11 @@ local scenarios = {
             {
                 id = "ashfall_firewood",
                 count = 4
-            }
+            },
+            {
+                id = "gold_001",
+                count = 25,
+            },
         },
     },
     {
@@ -516,7 +613,7 @@ local scenarios = {
         location = {
             position = {274, -214, -100},
             orientation = 0,
-            cell = "Vivec, Hlaalu Prison Cells"
+            cellId = "Vivec, Hlaalu Prison Cells"
         },
         items = {
             {
@@ -551,14 +648,14 @@ local scenarios = {
                 name = "Neglected Shipwreck",
                 position = {4049, 4179, 79},
                 orientation = -3,
-                cell = "Neglected Shipwreck, Cabin",
+                cellId = "Neglected Shipwreck, Cabin",
                 requirements = requiresOaabShipwreck,
             },
             {  --prelude shipwreck - OAAB
                 name = "Prelude Shipwreck",
                 position = {4170, 4245, 63},
                 orientation = -3,
-                cell = "Prelude Shipwreck, Cabin",
+                cellId = "Prelude Shipwreck, Cabin",
                 requirements = requiresOaabShipwreck,
             },
             {  --remote shipwreck - OAAB
@@ -578,7 +675,7 @@ local scenarios = {
                 position = {-1, -185, -26},
                 orientation =-4,
                 requirements = excludesOaabShipwreck,
-                cell = "Abandoned Shipwreck, Cabin"
+                cellId = "Abandoned Shipwreck, Cabin"
             },
             { -- derelict shipwreck - Vanilla
                 name = "Derelict Shipwreck",
@@ -621,14 +718,14 @@ local scenarios = {
                 position = {4172, 4017, 15651},
                 orientation =-1,
                 requirements = excludesOaabShipwreck,
-                cell = "Strange Shipwreck, Cabin"
+                cellId = "Strange Shipwreck, Cabin"
             },
             { -- unchartered shipwreck - Vanilla
                 name= "Unchartered Shipwreck",
                 position = {4221, 4034, 15466},
                 orientation =-1,
                 requirements = excludesOaabShipwreck,
-                cell = "Unchartered Shipwreck, Cabin"
+                cellId = "Unchartered Shipwreck, Cabin"
             },
             { -- unexplored shipwreck - Vanilla
                 name= "Unexplored Shipwreck",
@@ -648,15 +745,22 @@ local scenarios = {
                 ids = booze,
                 count = 2
             },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
         }
     },
     {
         id = "khuulCamping",
         name = "Camping",
-        description = "You are setting up camp near Khuul.",
-        location = {
-            position = {-78170, 143029, 427},
-            orientation = 349,
+        description = "You are camping out in the wilderness.",
+        locations = {
+            {
+                position = {-78170, 143029, 427},
+                orientation = 349,
+            },
         },
         items = {
             { ids = cookingPots },
@@ -676,7 +780,14 @@ local scenarios = {
                 id = "ingred_hound_meat_01",
                 count = 3
             },
-            { id = "ashfall_flintsteel" },
+            {
+                id = "ashfall_flintsteel"
+            },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
         },
     },
     {
@@ -687,22 +798,22 @@ local scenarios = {
             {
                 position = { 29, -384, -386 },
                 orientation = 0,
-                cell = "Maar Gan, Andus Tradehouse"
+                cellId = "Maar Gan, Andus Tradehouse"
             },
             { --Gnisis, Madach Tradehouse
                 position = {-57, 280, -125},
                 orientation =-2,
-                cell = "Gnisis, Madach Tradehouse"
+                cellId = "Gnisis, Madach Tradehouse"
             },
             { --Suran, Suran Tradehouse
                 position = {4, 240, 519},
                 orientation =0,
-                cell = "Suran, Suran Tradehouse"
+                cellId = "Suran, Suran Tradehouse"
             },
             { --Bodrum, Varalaryn Tradehouse
                 position = {413, -1613, -379},
                 orientation =0,
-                cell = "Bodrum, Varalaryn Tradehouse",
+                cellId = "Bodrum, Varalaryn Tradehouse",
                 requirements = {
                     plugins = { "TR_Mainland.esm" }
                 }
@@ -754,6 +865,11 @@ local scenarios = {
                 id = "ingred_muck_01",
                 count = 2
             },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
         }
     },
     {
@@ -794,7 +910,7 @@ local scenarios = {
         location = {
             position = {-30, -234, 188},
             orientation = 90,
-            cell = "Suran, Desele's House of Earthly Delights"
+            cellId = "Suran, Desele's House of Earthly Delights"
         },
         items = {
             {
@@ -805,15 +921,43 @@ local scenarios = {
                 id = "ingred_moon_sugar_01",
                 count = 2
             },
+            {
+                id = "gold_001",
+                count = 50,
+            },
         }
     },
     {
         id = "fishing",
         name = "Fishing",
-        description = "You are fishing in the waters of Hla Oad.",
+        description = "You are a humble fisherman, casting your line into the waters of Morrowind.",
         locations = {
-            {
+            { --Hla Oad
+                name = "Hla Oad",
                 position = {-48464, -38956, 211},
+                orientation =-2,
+            },
+            {
+                name = "Dragonhead Point",
+                position = {330424, -29432, 784},
+                orientation = 0,
+                requirements = {
+                    plugins = {"TR_Mainland.esm"},
+                },
+            },
+            { --Seyda Neen Outskirts
+                name = "Seyda Neen Outskirts",
+                position = {39, -76175, 113},
+                orientation =-2,
+            },
+            { --South of Ald Velothi
+                name = "South of Ald Velothi",
+                position = {-74003, 106003, 37},
+                orientation =0,
+            },
+            { --Azura's Coast
+                name = "Azura's Coast",
+                position = {142783, -54841, 26},
                 orientation =-2,
             },
         },
@@ -833,7 +977,7 @@ local scenarios = {
             },
             {
                 id = "gold_001",
-                count = 5
+                count = 15
             },
             {
                 id = "mer_bug_spinner2",
@@ -858,7 +1002,7 @@ local scenarios = {
         location = {
             position = {4457, 3423, 12612},
             orientation = 0,
-            cell = "Shulk Egg Mine, Mining Camp"
+            cellId = "Shulk Egg Mine, Mining Camp"
         },
         items = {
             {
@@ -877,7 +1021,11 @@ local scenarios = {
             {
                 id = "p_restore_fatigue_c",
                 count = 1
-            }
+            },
+            {
+                id = "gold_001",
+                count = 20,
+            },
         }
     },
     {
@@ -887,7 +1035,7 @@ local scenarios = {
         location = {
             position = {-219, -159, 276},
             orientation = 0,
-            cell = "Sadrith Mora, Gateway Inn: South Wing"
+            cellId = "Sadrith Mora, Gateway Inn: South Wing"
         },
         items = {
             {
@@ -906,13 +1054,195 @@ local scenarios = {
         end
     },
     {
-        id = "bardInPelagiad",
-        name = "Bard in Pelagiad",
-        description = "You are a bard in the Halfway Tavern in Pelagiad.",
-        location = {
-            position = {407, 236, 105},
-            orientation = 0,
-            cell = "Pelagiad, Halfway Tavern"
+        id = "bard",
+        name = "Performer",
+        description = "You are a bard performing in a tavern",
+        locations = {
+            { --Ald-ruhn, Ald Skar Inn
+                position = {556, -1140, 2},
+                orientation =-3,
+                cellId = "Ald-ruhn, Ald Skar Inn"
+            },
+            { --Balmora, Lucky Lockup
+                position = {190, 1244, -505},
+                orientation =-3,
+                cellId = "Balmora, Lucky Lockup"
+            },
+            { --Caldera, Shenk's Shovel
+                position = {254, -299, 130},
+                orientation =-1,
+                cellId = "Caldera, Shenk's Shovel"
+            },
+            { --Dagon Fel, The End of the World
+                position = {-111, 330, 386},
+                orientation =-2,
+                cellId = "Dagon Fel, The End of the World"
+            },
+            { --Ebonheart, Six Fishes
+                position = {202, 565, 2},
+                orientation =-4,
+                cellId = "Ebonheart, Six Fishes"
+            },
+            { --Gnisis, Madach Tradehouse
+                position = {24, 646, -126},
+                orientation =-4,
+                cellId = "Gnisis, Madach Tradehouse"
+            },
+            { --Maar Gan, Andus Tradehouse
+                position = {186, 33, 2},
+                orientation =-1,
+                cellId = "Maar Gan, Andus Tradehouse"
+            },
+            { --Molag Mar, The Pilgrim's Rest
+                position = {-508, -375, 2},
+                orientation =-1,
+                cellId = "Molag Mar, The Pilgrim's Rest"
+            },
+            {  --Pelagiad
+                position = {407, 236, 105},
+                orientation = 0,
+                cellId = "Pelagiad, Halfway Tavern"
+            },
+            { --Sadrith Mora, Gateway Inn
+                position = {4009, 4318, 766},
+                orientation =0,
+                cellId = "Sadrith Mora, Gateway Inn"
+            },
+            { --Suran, Desele's House of Earthly Delights
+                position = {324, -247, 7},
+                orientation =-2,
+                cellId = "Suran, Desele's House of Earthly Delights"
+            },
+            { --Tel Mora, The Covenant
+                position = {1315, -364, 606},
+                orientation =0,
+                cellId = "Tel Mora, The Covenant"
+            },
+            { --Vivec, The Lizard's Head
+                position = {-231, -9, -126},
+                orientation =1,
+                cellId = "Vivec, The Lizard's Head"
+            },
+
+            --TR
+            { --Aimrah, The Sailors' Inn
+                position = {3768, 3434, 14681},
+                orientation =-1,
+                cellId = "Aimrah, The Sailors' Inn"
+            },
+
+            { --Hunted Hound Inn
+                position = {4206, 3500, 15554},
+                orientation =-2,
+                cellId = "Hunted Hound Inn"
+            },
+
+
+            { --The Inn Between
+                position = {3838, 4137, 14466},
+                orientation =0,
+                cellId = "The Inn Between"
+            },
+
+
+            { --Akamora, The Laughing Goblin
+                position = {3059, 3518, 130},
+                orientation =1,
+                cellId = "Akamora, The Laughing Goblin"
+            },
+
+
+            { --Almas Thirr, Limping Scrib
+                position = {654, -543, 2},
+                orientation =-1,
+                cellId = "Almas Thirr, Limping Scrib"
+            },
+
+
+            { --Andothren, The Dancing Cup
+                position = {4306, 4122, 13959},
+                orientation =1,
+                cellId = "Andothren, The Dancing Cup"
+            },
+
+
+            { --Bodrum, Varalaryn Tradehouse
+                position = {831, -1390, -382},
+                orientation =-3,
+                cellId = "Bodrum, Varalaryn Tradehouse"
+            },
+
+
+            { --Bosmora, The Starlight Inn
+                position = {4095, 5119, 15558},
+                orientation =3,
+                cellId = "Bosmora, The Starlight Inn"
+            },
+
+
+            { --Firewatch, The Queen's Cutlass
+                position = {6271, 3678, 16258},
+                orientation =0,
+                cellId = "Firewatch, The Queen's Cutlass"
+            },
+
+
+            { --Helnim, The Red Drake
+                position = {4465, 4135, 14850},
+                orientation =-2,
+                cellId = "Helnim, The Red Drake"
+            },
+
+
+            { --Necrom, Pilgrim's Respite
+                position = {3692, 2306, 12162},
+                orientation =1,
+                cellId = "Necrom, Pilgrim's Respite"
+            },
+
+
+            { --Old Ebonheart, The Moth and Tiger
+                position = {-809, 387, 2},
+                orientation =1,
+                cellId = "Old Ebonheart, The Moth and Tiger"
+            },
+
+
+            { --Port Telvannis, The Lost Crab Tavern
+                position = {3934, 4538, 14114},
+                orientation =-4,
+                cellId = "Port Telvannis, The Lost Crab Tavern"
+            },
+
+
+            { --Ranyon-ruhn, The Dancing Jug
+                position = {4263, 4003, 15170},
+                orientation =-1,
+                cellId = "Ranyon-ruhn, The Dancing Jug"
+            },
+
+
+            { --Sailen, The Toiling Guar
+                position = {3298, 3754, 11266},
+                orientation =1,
+                cellId = "Sailen, The Toiling Guar"
+            },
+
+
+            { --Tel Ouada, The Magic Mudcrab
+                position = {-749, -956, -510},
+                orientation =-1,
+                cellId = "Tel Ouada, The Magic Mudcrab"
+            },
+
+
+            { --Vhul, The Howling Hound
+                position = {3639, 3889, 15554},
+                orientation =0,
+                cellId = "Vhul, The Howling Hound"
+            },
+
+
         },
         items = {
             {
@@ -932,7 +1262,7 @@ local scenarios = {
             },
             {
                 id = "gold_001",
-                count = 10
+                count = 45
             },
             {id = "expensive_pants_03", noDuplicates = true},
             {id = "extravagant_shirt_02", noDuplicates = true},
@@ -947,9 +1277,9 @@ local scenarios = {
                     difficulty = "beginner",
                 }
             end
+            tes3.findGlobal("GameHour").value = 17
         end
     },
-
 }
 
 

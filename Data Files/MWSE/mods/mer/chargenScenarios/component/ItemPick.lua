@@ -112,22 +112,13 @@ function ItemPick:pick()
     return pickedItem
 end
 
-local function isBlockedByBeasts(item)
-    local beastBlocked = {
-        [tes3.objectType.armor] = {
-            [tes3.armorSlot.boots] = true,
-            [tes3.armorSlot.helmet] = true,
-        },
-        [tes3.objectType.clothing] = {
-            [tes3.clothingSlot.shoes] = true,
-        }
-    }
-    return beastBlocked[item.objectType]
-        and beastBlocked[item.objectType][item.slot]
-end
 
 local function playerRaceCanEquip(item)
-    return not (tes3.player.object.race.isBeast and isBlockedByBeasts(item))
+    if tes3.player.object.race.isBeast then
+        return item.isUsableByBeasts
+    else
+        return true
+    end
 end
 
 ---@param item tes3object|tes3misc|tes3clothing|tes3armor
@@ -141,7 +132,6 @@ local function playerCanEquip(item)
     return isEquippableType(item)
         and playerRaceCanEquip(item)
 end
-
 
 ---Check if the player has an item of the same type and slot/weapontype
 ---@param item tes3clothing|tes3armor|tes3weapon
@@ -172,6 +162,14 @@ function ItemPick:giveToPlayer()
             logger:debug("Player already has item, skipping %s", item)
         elseif self.noSlotDuplicates and playerHasSameItemType(item) then
             logger:debug("Player already has item of same type, skipping %s", item)
+        elseif tes3.player.object.race.isBeast and item.isUsableByBeasts == false then
+            logger:debug("Beast cannot use %s, adding gold value instead", item)
+            tes3.addItem{
+                reference = tes3.player,
+                item = "gold_001",
+                count = item.value,
+                playSound = false,
+            }
         else
             logger:debug("Adding item to player inventory: %s", item)
             tes3.addItem{

@@ -12,7 +12,7 @@ local luaLocationTemplate = [[
     { --${name}
         position = {${posx}, ${posy}, ${posz}},
         orientation =${orz},
-        cell = "${cell}"
+        cellId = "${cell}"
     },
 ]]
 
