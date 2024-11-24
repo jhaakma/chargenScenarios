@@ -581,6 +581,355 @@ local scenarios = {
         }
     },
     {
+        id = "thievesGuild",
+        name = "Faction: Thieves Guild",
+        description = "You are a freshly recruited Toad of the Thieves Guild, hiding out with your fellow thieves at the South Wall Cornerclub in Balmora.",
+        location = { --Balmora, South Wall Cornerclub
+            position = {255, -21, -250},
+            orientation = 0 ,
+            cellId = "Balmora, South Wall Cornerclub"
+        },
+        items = {
+            {
+                id = "probe_apprentice_01",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "pick_apprentice_01",
+                count = 2,
+            },
+            {
+                id = "ab_misc_pursecoin",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+        onStart = function()
+            local topics = {
+                "join the Thieves Guild",
+                "jobs",
+                "advancement",
+                "price on your head"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local thievesGuild = tes3.getFaction("Thieves Guild")
+            thievesGuild.playerJoined = true
+            thievesGuild.playerRank = 0
+        end,
+    },
+    {
+        id = "imperialCult",
+        name = "Faction: Imperial Cult",
+        description = "You are a layman of the Imperial Cult.",
+        location = { --Ebonheart, Imperial Chapels
+            position = {366, -638, 2},
+            orientation =0,
+            cellId = "Ebonheart, Imperial Chapels"
+        },
+        items = {
+            {
+                id = "bk_formygodsandemperor",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "common_robe_01",
+                count = 1,
+                noSlotDuplicates = true,
+            },
+            {
+                id = "gold_001",
+                count = 25,
+            },
+        },
+        onStart = function()
+            local topics = {
+                "Imperial cult",
+                "lay member",
+                "join the Imperial Cult",
+                "requirements",
+                "blessings",
+                "services"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local imperialCult = tes3.getFaction("Imperial Cult")
+            imperialCult.playerJoined = true
+            imperialCult.playerRank = 0
+            tes3.updateJournal{ id = "IC0_ImperialCult", index = 1, showMessage = false }
+            tes3.updateJournal{ id = "IC_guide", index = 2, showMessage = false }
+        end,
+    },
+    {
+        id = "imperialLegion",
+        name = "Faction: Imperial Legion",
+        description = "You are a recruit of the Imperial Legion, awaiting orders in Gnisis.",
+        location = { --Gnisis, Madach Tradehouse
+            position = {103, 1043, -894},
+            orientation = 1,
+            cellId = "Gnisis, Madach Tradehouse"
+        },
+        items = {
+            {
+                id = "imperial_chain_cuirass",
+                count = 1,
+                noDuplicates = true,
+            }
+        },
+        onStart = function()
+            local topics = {
+                "join the Imperial Legion",
+                "orders",
+                "advancement",
+                "requirements"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local legion = tes3.getFaction("Imperial Legion")
+            legion.playerJoined = true
+            legion.playerRank = 0
+            tes3.equip{ reference = tes3.player, item = "imperial_chain_cuirass" }
+        end,
+    },
+    {
+        id = "moragTong",
+        name = "Faction: Morag Tong",
+        description = "You have been given a writ of execution by the Morag Tong. You must carry out this lawful murder in order to be accepted into the ancient guild of assassins.",
+        location =     { --Vivec, Arena Hidden Area
+            position = {684, 508, 2},
+            orientation =3,
+            cellId = "Vivec, Arena Hidden Area"
+        },
+        items = {
+            {
+                id = "writ_oran",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "sc_ondusisunhinging",
+                count = 1
+            },
+            {
+                id = "probe_apprentice_01",
+                count = 1,
+            },
+            {
+                id = "cruel viperblade",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                ids = {
+                    "morag_tong_helm",
+                    "ab_a_moragtonghelm01",
+                    "ab_a_moragtonghelm02",
+                    "ab_a_moragtonghelm03",
+                    "ab_a_moragtonghelm04",
+                },
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "netch_leather_cuirass",
+                count = 1,
+                noSlotDuplicates = true,
+            }
+        },
+        onStart = function()
+            local topics = {
+                "join the Morag Tong",
+                "Feruren Oran",
+                "writ",
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local moragTong = tes3.getFaction("Morag Tong")
+            moragTong.playerJoined = true
+            moragTong.playerRank = 0
+            tes3.updateJournal{ id = "MT_WritOran", index = 10, showMessage = false }
+        end,
+    },
+    {
+        id = "houseTelvanni",
+        name = "Faction: House Telvanni",
+        description = "You are a hireling of House Telvanni, waiting in attendance of the Mouths at the Council Hall in Sadrith Mora.",
+        location =     { --Sadrith Mora, Telvanni Council House
+            position = {47, -232, 201},
+            orientation =-1,
+            cellId = "Sadrith Mora, Telvanni Council House"
+        },
+        items = {
+            {
+                id = "common_shirt_02_t",
+                count = 1,
+                noSlotDuplicates = true,
+            },
+            {
+                ids = {
+                    "common_pants_05",
+                    "common_skirt_04_c",
+                },
+                count = 1,
+                pickMethod = 'bestForGenderFirst',
+                noSlotDuplicates = true,
+            }
+        },
+        onStart = function()
+            local topics = {
+                "join House Telvanni",
+                "chores",
+                "advancement",
+                "rules",
+                "requirements"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local telvanni = tes3.getFaction("Telvanni")
+            telvanni.playerJoined = true
+            telvanni.playerRank = 0
+        end,
+    },
+    {
+        id = "houseHlaalu",
+        name = "Faction: House Hlaalu",
+        description = "You are a hireling of House Hlaalu, ready to take up your first order of business in Balmora.",
+        location =     { --Balmora, Hlaalu Council Manor
+            position = {-120, 655, 7},
+            orientation =-4,
+            cellId = "Balmora, Hlaalu Council Manor"
+        },
+        items = {
+            {
+                id = "misc_inkwell",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "misc_quill",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "sc_paper plain",
+                count = 3,
+            }
+        },
+        onStart = function()
+            local topics = {
+                "join House Hlaalu",
+                "House Hlaalu",
+                "Hlaalu councilors",
+                "business",
+                "advancement"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local hlaalu = tes3.getFaction("Hlaalu")
+            hlaalu.playerJoined = true
+            hlaalu.playerRank = 0
+        end,
+    },
+    {
+        id = "houseRedoran",
+        name = "Faction: House Redoran",
+        description = "You are a hireling of House Redoran, waiting in attendance of the Councilors at the Redoran Council Hall in Ald'ruhn.",
+        location = { --Ald-ruhn, Redoran Council Entrance
+            position = {749, 763, -126},
+            orientation =0,
+            cellId = "Ald-ruhn, Redoran Council Entrance"
+        },
+        items = {
+            {
+                id = "bonemold_gah-julan_helm",
+                count = 1,
+                noSlotDuplicates = true,
+            }
+        },
+        onStart = function()
+            local topics = {
+                "join House Redoran",
+                "duties",
+                "advancement"
+            }
+            for _, topic in ipairs(topics) do
+                tes3.addTopic{ topic = topic }
+            end
+            local redoran = tes3.getFaction("Redoran")
+            redoran.playerJoined = true
+            redoran.playerRank = 0
+        end,
+    },
+    {
+        id = "ashlander",
+        name = "Ashlander",
+        description = "You live with a small group of Ashlanders in a yurt on the plains of the West Gash.",
+        location = { --Massahanud Camp, Sargon's Yurt
+            position = {4256, 4014, 15698},
+            orientation =-1,
+            cellId = "Massahanud Camp, Sargon's Yurt"
+        },
+        items = {
+            {
+                id = "ingred_wickwheat_01",
+                count = 3,
+            },
+            {
+                id = "ingred_hackle-lo_leaf_01",
+                count = 2,
+            },
+            {
+                id = "ashfall_tent_ashl_m",
+                noDuplicates = true,
+            },
+        },
+        onStart = function (self)
+            --Add disposition to nearby Ashlanders
+            local friends = {
+                "manabi kummimmidan",
+                "yahaz ashurnasaddas",
+                "sargon santumatus",
+                "teshmus assebiriddan"
+            }
+            for _, id in ipairs(friends) do
+                local friendRef = tes3.getReference(id)
+                if friendRef then
+                    if tes3.modDisposition then
+                        tes3.modDisposition{
+                            reference = friendRef,
+                            value = 40
+                        }
+                    end
+                end
+            end
+            --Find the nearest active_de_bedroll and remove ownership
+            local closetBedroll = nil
+            local closestDistance = 999999
+            for ref in tes3.player.cell:iterateReferences(tes3.objectType.activator) do
+                if ref.object.id == "active_de_bedroll" then
+                    local distance = tes3.player.position:distance(ref.position)
+                    if distance < closestDistance then
+                        closetBedroll = ref
+                        closestDistance = distance
+                    end
+                end
+            end
+            if closetBedroll then
+                mwse.log("Removing ownership from bedroll")
+                closetBedroll.itemData.owner = nil
+                closetBedroll.modified = true
+            end
+        end
+    },
+    {
         id = "lumberjack",
         name = "Lumberjack",
         description = "You are gathering firewood in the wilderness.",
@@ -591,8 +940,12 @@ local scenarios = {
         },
         items = {
             {
-                id = "ashfall_woodaxe_steel",
-                alternative = "AB_w_ToolWoodAxe",
+                ids = {
+                    "ashfall_woodaxe_steel",
+                    "AB_w_ToolWoodAxe",
+                    "chitin war axe"
+                },
+                pickMethod = 'firstValid',
                 count = 1,
                 noDuplicates = true,
             },
@@ -697,8 +1050,8 @@ local scenarios = {
             },
             { -- lost shipwreck - Vanilla
                 name = "Lost Shipwreck",
-                position = {127245, 94761, 71},
-                orientation =2,
+                position = {127322, 94621, -50},
+                orientation = 2,
                 requirements = excludesOaabShipwreck,
             },
             { -- remote shipwreck - Vanilla
@@ -750,6 +1103,11 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            {
+                id = "t_com_compass_01",
+                count = 1,
+                noDuplicates = true,
+            }
         }
     },
     {
@@ -773,7 +1131,12 @@ local scenarios = {
                 noDuplicates = true,
             },
             {
-                id = "ashfall_woodaxe",
+                ids = {
+                    "ashfall_woodaxe",
+                    "AB_w_ToolWoodAxe",
+                    "chitin war axe"
+                },
+                pickMethod = 'firstValid',
                 noDuplicates = true,
             },
             {
@@ -963,7 +1326,11 @@ local scenarios = {
         },
         items = {
             {
-                id = "misc_de_fishing_pole",
+                ids = {
+                    "mer_fishing_pole_01",
+                    "misc_de_fishing_pole"
+                },
+                pickMethod = 'firstValid',
                 count = 1,
                 noDuplicates = true,
             },
@@ -985,11 +1352,20 @@ local scenarios = {
                 noDuplicates = true,
             },
             {
-                id = "mer_fish_trout",
+                ids = {
+                    "mer_fish_trout",
+                    "T_IngFood_FishBrowntrout_01",
+                    "AB_IngCrea_SfMeat_01",
+                },
+                pickMethod = 'firstValid',
                 count = 1
             },
             {
-                id = "AB_w_CookKnifeBone",
+                ids = {
+                    "AB_w_CookKnifeBone",
+                    "T_Com_Var_Cleaver_01"
+                },
+                pickMethod = 'firstValid',
                 count = 1,
                 noDuplicates = true,
             },
@@ -1251,7 +1627,11 @@ local scenarios = {
                 noDuplicates = true,
             },
             {
-                id = "misc_de_lute_01",
+                ids = {
+                    "mer_lute",
+                    "misc_de_lute_01"
+                },
+                pickMethod = 'firstValid',
                 count = 1,
                 noDuplicates = true,
             },
@@ -1280,6 +1660,64 @@ local scenarios = {
             tes3.findGlobal("GameHour").value = 17
         end
     },
+    {
+        id = "necromancer",
+        name = "Necromancer's Apprentice",
+        description = "You are an apprentice studying the dark arts of necromancy in a secluded cave.",
+        locations = {
+            { --Yesamsi
+                position = {-930, -405, 272},
+                orientation =0,
+                cellId = "Yesamsi"
+            },
+        },
+        items = {
+            {
+                id = "sc_summonskeletalservant",
+                count = 3
+            },
+            {
+                id = "sc_summonflameatronach",
+                count = 3
+            },
+            {
+                ids = {
+                    "ab_c_commonhoodblack",
+                },
+                pickMethod = "firstValid",
+                count = 1,
+            },
+            {
+                ids = {
+                    "ab_c_commonrobeblack",
+                    "common_robe_01",
+                },
+                pickMethod = "firstValid",
+                count = 1,
+            },
+        },
+        onStart = function ()
+            --learn summon scamp spell
+            tes3.addSpell{
+                reference = tes3.player,
+                spell = "summon scamp"
+            }
+
+            --pacify creatures and NPCs
+            for ref in tes3.player.cell:iterateReferences(tes3.objectType.creature) do
+                if ref.mobile ~= nil then
+                    mwse.log("Pacifying creature %s", ref.object.name)
+                    ref.mobile.fight = 0
+                end
+            end
+            for ref in tes3.player.cell:iterateReferences(tes3.objectType.npc) do
+                if ref.mobile ~= nil then
+                    mwse.log("Pacifying NPC %s", ref.object.name)
+                    ref.mobile.fight = 0
+                end
+            end
+        end
+    }
 }
 
 

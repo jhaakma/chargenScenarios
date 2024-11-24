@@ -44,26 +44,9 @@ local function disableChargenStuff()
     tes3.runLegacyScript{ command = '"CharGen Door Hall"->Unlock'} ---@diagnostic disable-line
 end
 
-local function clearInitialInventory()
-    local shoes = tes3.getObject("common_shoes_01")
-    tes3.player.mobile:unequip{item = shoes}
-    tes3.player.object.inventory:removeItem{
-        item = shoes
-    }
-    local shirt = tes3.getObject("common_shirt_01")
-    tes3.player.mobile:unequip{item = shirt}
-    tes3.player.object.inventory:removeItem{
-        item = shirt
-    }
-    local pants = tes3.getObject("common_pants_01")
-    tes3.player.mobile:unequip{item = pants}
-    tes3.player.object.inventory:removeItem{
-        item = pants
-    }
-end
 
 local function startChargen()
-    --clearInitialInventory()
+    logger:debug("Starting Chargen")
     tes3.worldController.weatherController:switchImmediate(0)
     --Set Chargen State
     logger:debug("Setting chargen state to 'start'")
@@ -106,8 +89,7 @@ end
 ---@param e loadedEventData
 local function startChargenOnLoad(e)
     if common.modEnabled() and e.newGame then
-        logger:debug("Starting Chargen")
-        startChargen()
+        timer.delayOneFrame(startChargen)
     end
 end
 event.register("loaded", startChargenOnLoad)

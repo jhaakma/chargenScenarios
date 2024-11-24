@@ -108,6 +108,7 @@ function Scenario:getStartingLocation()
     return self.decidedLocation
 end
 
+---@return ChargenScenariosLocation[]
 function Scenario:getValidLocations()
     local validLocations = {}
     for _, location in pairs(self.locations) do
@@ -149,6 +150,7 @@ function Scenario:isVisible()
 end
 
 function Scenario:addAndEquipCommonClothing()
+    logger:debug("Adding and equipping common clothing")
     local items = {
         {
             id = "common_pants_01",
@@ -190,6 +192,7 @@ function Scenario:addAndEquipCommonClothing()
             local canEquip = true
             if tes3.player.object.race.isBeast then
                 canEquip = item.isUsableByBeasts ~= false
+                logger:debug("Beast - can equip %s: %s", item.id, canEquip)
             end
             if canEquip then
                 logger:debug("Equipping deafult %s to player", item.id)
@@ -202,7 +205,7 @@ function Scenario:addAndEquipCommonClothing()
                     reference = tes3.player,
                 }
             else
-                logger:debug("Beast - cannot equip %s", item.id)
+                logger:debug("Beast - cannot equip deafult %s", item.id)
             end
         end
     end
@@ -254,14 +257,11 @@ end
 function Scenario:start()
     self:doClutter()
     self:moveToLocation()
-    timer.start{
-        duration = 1,
-        callback = function()
-            self:doSpells()
-            self:doItems()
-            self:doIntro()
-        end
-    }
+    timer.delayOneFrame(function()
+        self:doSpells()
+        self:doItems()
+        self:doIntro()
+    end)
 end
 
 return Scenario

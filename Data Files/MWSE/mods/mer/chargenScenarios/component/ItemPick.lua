@@ -1,32 +1,33 @@
----@class ChargenScenariosItemPickInput
+---@class (exact) ChargenScenariosItemPickInput
 ---@field id? string The id of the item
 ---@field ids? table<number, string> The ids of multiple items. If this is used instead of 'id', one will be chosen at random.
 ---@field alternative? string The item id to use if none of the ids are valid
----@field count? number The number of items to add. Default is 1
+---@field count? number The number of items to add. Only useful for random pick methods. Default is 1
 ---@field requirements? ChargenScenariosRequirementsInput The requirements for the item
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
 ---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
----@field pickBestForClass? boolean If true, the item will be picked from the ids list based on the player's class rather than randomly
+---@field pickMethod? ChargenScenarios.ItemPickMethod The method for picking an item. Default is 'random'
+
+---@alias ChargenScenarios.ItemPickItem tes3object|tes3misc|tes3clothing|tes3armor|tes3weapon
+---@alias ChargenScenarios.ItemPickMethod
+---|'random' #Pick a random item from the list
+---|'bestForClass' #Pick the best item for the player's class
+---|'bestForGenderRandom' #Picks random pants/skirt depending on gender
+---|'bestForGenderFirst' #Picks first pants/skirt depending on gender
+---|'firstValid' #Pick the first valid item. If count is > 1, the same item will be added multiple times
+---|'all' #Add all valid items. If count is > 1, all items will be added multiple times
 
 local common = require("mer.chargenScenarios.common")
 local logger = common.createLogger("ItemPick")
 local Requirements = require("mer.chargenScenarios.component.Requirements")
 local Validator = require("mer.chargenScenarios.util.validator")
 local GearManager = require("mer.chargenScenarios.component.GearManager")
---[[
-    For specific items, use "id"
-    To pick a random item from a list, use "ids"
-]]
 
----@class ChargenScenariosItemPick
+---@class ChargenScenariosItemPick : ChargenScenariosItemPickInput
 ---@field ids table<number, string> the list of item ids the item pick is chosen from
----@field resolvedItems? table<tes3object|tes3misc|tes3clothing|tes3armor, number> the resolved items and their counts
----@field alternative? string the item id to use if none of the ids are valid
+---@field resolvedItems? table<ChargenScenarios.ItemPickItem, number> the resolved items and their counts
 ---@field count number the number of items to add to the player's inventory
 ---@field requirements? ChargenScenariosRequirements the requirements for the item pick
----@field noDuplicates? boolean if true, the same item will not be added if it is already in the player's inventory
----@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
----@field pickBestForClass? boolean If true, the item will be picked from the ids list based on the player's class rather than randomly
 local ItemPick = {
     schema = {
         name = "ItemPick",
@@ -35,8 +36,60 @@ local ItemPick = {
             ids = { type = "table", childType = "string", required = false },
             count = { type = "number", default = 1, required = false },
             requirements = { type = Requirements.schema, required = false },
+            noDuplicates = { type = "boolean", required = false },
+            noSlotDuplicates = { type = "boolean", required = false },
+            pickMethod = { type = "string", required = false },
         }
     }
+}
+
+---@type table<ChargenScenarios.ItemPickMethod, fun(items: ChargenScenarios.ItemPickItem[]): ChargenScenarios.ItemPickItem[] >
+ItemPick.pickMethods = {
+    random = function(items)
+        local choice = table.choice(items)
+        return { choice }
+    end,
+    bestForClass = function(items)
+        local choice = GearManager.getBestItemForClass(items)
+        return { choice }
+    end,
+    bestForGenderRandom = function(items)
+        local validItems = {}
+        for _, item in ipairs(items) do
+            local slot = tes3.player.object.female and tes3.clothingSlot.skirt or tes3.clothingSlot.pants
+            if item.slot == slot then
+                table.insert(validItems, item)
+            end
+        end
+        if #validItems == 0 then
+            return {}
+        end
+        local choice = table.choice(validItems)
+        return { choice }
+    end,
+    bestForGenderFirst = function(items)
+        local validItems = {}
+        for _, item in ipairs(items) do
+            local slot = tes3.player.object.female == true
+                and tes3.clothingSlot.skirt
+                or tes3.clothingSlot.pants
+            if item.slot == slot then
+                table.insert(validItems, item)
+            end
+        end
+        if #validItems == 0 then
+            return {}
+        end
+        local choice = validItems[1]
+        return { choice }
+    end,
+    firstValid = function(items)
+        local choice = items[1]
+        return { choice }
+    end,
+    all = function(items)
+        return items
+    end
 }
 
 --Constructor
@@ -54,7 +107,7 @@ function ItemPick:new(data)
         requirements = data.requirements and Requirements:new(data.requirements),
         noDuplicates = data.noDuplicates,
         noSlotDuplicates = data.noSlotDuplicates,
-        pickBestForClass = data.pickBestForClass,
+        pickMethod = data.pickMethod or "random",
     }
 
     --go through ids and remove any where the object doesn't exist
@@ -73,12 +126,10 @@ function ItemPick:new(data)
     return itemPick
 end
 
----@return tes3object|tes3misc|tes3clothing|tes3armor|nil
-function ItemPick:pick()
-    if not self:checkRequirements() then
-        return nil
-    end
-    --Find which items exist
+
+--Get a lit of all valid items
+---@return ChargenScenarios.ItemPickItem[]
+function ItemPick:getValidItems()
     local validItems = {}
     for _, id in ipairs(self.ids) do
         local item = tes3.getObject(id)
@@ -86,42 +137,36 @@ function ItemPick:pick()
             table.insert(validItems, item)
         end
     end
-    if #validItems == 0 then
-        --try alternative
-        if self.alternative then
-            local item = tes3.getObject(self.alternative)
-            if item then
-                return item
-            end
-        end
-        logger:debug("No valid items to pick from")
+    return validItems
+end
+
+---@return ChargenScenarios.ItemPickItem[]|nil
+function ItemPick:pick()
+    if not self:checkRequirements() then
         return nil
     end
-
+    --Find which items exist
+    local validItems = self:getValidItems()
+    if #validItems == 0 then
+        logger:debug("No valid items found")
+        return nil
+    end
     --Pick an item
     if not self.ids then return nil end
-
-    local pickedItem
-    if self.pickBestForClass then
-        pickedItem = GearManager.getBestItemForClass(validItems)
-    else
-        while pickedItem == nil do
-            pickedItem = table.choice(validItems)
-        end
-    end
-    return pickedItem
+    local pickedItems = self.pickMethods[self.pickMethod](validItems)
+    return pickedItems
 end
 
 
 local function playerRaceCanEquip(item)
     if tes3.player.object.race.isBeast then
-        return item.isUsableByBeasts
+        return item.isUsableByBeasts ~= false
     else
         return true
     end
 end
 
----@param item tes3object|tes3misc|tes3clothing|tes3armor
+---@param item ChargenScenarios.ItemPickItem
 local function isEquippableType(item)
     return item.objectType == tes3.objectType.armor
         or item.objectType == tes3.objectType.clothing
@@ -209,17 +254,18 @@ function ItemPick:resolveItems()
     local hasMultipleItems = #self.ids > 1
     local numAddedPerLoop = hasMultipleItems and 1 or self.count
     while added < (self.count or 1) do
-        local pickedItem = self:pick()
-        if not pickedItem then
+        local pickedItems = self:pick()
+        if pickedItems == nil or #pickedItems == 0 then
             logger:debug("No valid items to pick from")
             break
         end
-        logger:debug("Picked Item: %s", pickedItem)
-
-        self.resolvedItems[pickedItem] = self.resolvedItems[pickedItem]
-            and (self.resolvedItems[pickedItem] + numAddedPerLoop)
-            or numAddedPerLoop
-        added = added + numAddedPerLoop
+        for _, pickedItem in ipairs(pickedItems) do
+            logger:debug("Picked item: %s", pickedItem)
+            self.resolvedItems[pickedItem] = self.resolvedItems[pickedItem]
+                and (self.resolvedItems[pickedItem] + numAddedPerLoop)
+                or numAddedPerLoop
+            added = added + numAddedPerLoop
+        end
     end
 end
 

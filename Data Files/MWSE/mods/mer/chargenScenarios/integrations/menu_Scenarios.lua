@@ -169,6 +169,8 @@ local function onClickScenario(scenario)
             locationListBlock.paddingAllSides = 4
             locationListBlock.borderRight = 6
 
+            validLocations = sortListAlphabetically(validLocations)
+
             for _, location in ipairs(validLocations) do
                 local locationButton = locationListBlock:createTextSelect{
                     text = location:getName(),
