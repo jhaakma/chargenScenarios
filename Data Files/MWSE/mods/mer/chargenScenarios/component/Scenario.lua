@@ -1,14 +1,9 @@
 local common = require("mer.chargenScenarios.common")
 local logger = common.createLogger("Scenario")
-local Validator = require("mer.chargenScenarios.util.validator")
-local Controls = require("mer.chargenScenarios.util.Controls")
 local ItemList = require("mer.chargenScenarios.component.ItemList")
 local Location = require("mer.chargenScenarios.component.Location")
 local Requirements = require("mer.chargenScenarios.component.Requirements")
-local SpellPick = require("mer.chargenScenarios.component.SpellPick")
 local SpellList = require("mer.chargenScenarios.component.SpellList")
-local ItemPick = require("mer.chargenScenarios.component.ItemPick")
-local Clutter = require("mer.chargenScenarios.component.Clutter")
 local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 
 ---@class ChargenScenariosScenarioInput
@@ -24,9 +19,11 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 ---@field onStart nil|fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
 
 ---@class (exact) ChargenScenariosScenario : ChargenScenariosScenarioInput
+---@field getSelectedScenario fun():ChargenScenariosScenario Get the selected scenario
+---@field setSelectedScenario fun(scenario:ChargenScenariosScenario) Set the selected scenario
 ---@field requirements ChargenScenariosRequirements the requirements for the scenario
 ---@field locations ChargenScenariosLocation[] the list of locations for the scenario
----@field itemList? ChargenScenariosItemList the list of items for the scenario
+---@field itemList ChargenScenariosItemList the list of items for the scenario
 ---@field spellList? ChargenScenariosSpellList the list of spells given to the player for this scenario. May include abilities, diseases etc
 ---@field clutterList? ChargenScenariosClutterList the clutter for the location
 ---@field decidedLocation? ChargenScenariosLocation the index of the location that was decided for this scenario
@@ -35,11 +32,23 @@ local Scenario = {
     registeredScenarios = {},
 }
 
+local selectedScenario
+event.register("load", function()
+    selectedScenario = nil
+end)
+
+function Scenario.getSelectedScenario()
+    return selectedScenario
+end
+
+function Scenario.setSelectedScenario(scenario)
+    selectedScenario = scenario
+end
+
 --- Construct a new Scenario
 ---@param data ChargenScenariosScenarioInput
 ---@return ChargenScenariosScenario
 function Scenario:new(data)
-
     --resolve location/locations
     local locationList = data.location and {data.location} or data.locations
 
@@ -57,11 +66,17 @@ function Scenario:new(data)
         description = data.description,
         requirements = Requirements:new(data.requirements),
         locations = locationList and common.convertListTypes(locationList, Location) or {},
-        itemList = data.items and ItemList:new(data.items),
+        itemList = ItemList:new{
+            name = "Scenario: " .. data.name,
+            items = data.items or {}
+        },
         spellList = data.spells and SpellList:new(data.spells),
         clutterList = clutter,
         onStart = data.onStart,
+        items = data.items,
     }
+
+
     --Create scenario
     setmetatable(scenario, { __index = Scenario })
 
@@ -149,80 +164,6 @@ function Scenario:isVisible()
         and self.requirements:checkExcludedPlugins()
 end
 
-function Scenario:addAndEquipCommonClothing()
-    logger:debug("Adding and equipping common clothing")
-    local items = {
-        {
-            id = "common_pants_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.pants,
-        },
-        {
-            id = "common_shoes_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.shoes,
-            alt = {
-                objectType = tes3.objectType.armor,
-                slot = tes3.armorSlot.boots
-            }
-        },
-        {
-            id = "common_shirt_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.shirt,
-        }
-    }
-
-    for _, item in ipairs(items) do
-        local hasItem = tes3.getEquippedItem{
-            actor = tes3.player,
-            objectType = item.objectType,
-            slot = item.slot
-        }
-        if not hasItem and item.alt then
-            hasItem = tes3.getEquippedItem{
-                actor = tes3.player,
-                objectType = item.alt.objectType,
-                slot = item.alt.slot
-            }
-        end
-
-        if not hasItem then
-            local item = tes3.getObject(item.id)
-            local canEquip = true
-            if tes3.player.object.race.isBeast then
-                canEquip = item.isUsableByBeasts ~= false
-                logger:debug("Beast - can equip %s: %s", item.id, canEquip)
-            end
-            if canEquip then
-                logger:debug("Equipping deafult %s to player", item.id)
-                tes3.addItem{
-                    reference = tes3.player,
-                    item = item.id
-                }
-                tes3.equip{
-                    item = item,
-                    reference = tes3.player,
-                }
-            else
-                logger:debug("Beast - cannot equip deafult %s", item.id)
-            end
-        end
-    end
-end
-
---- Add the items for this scenario to the player's inventory
-function Scenario:doItems()
-    local locationItems = self:getStartingLocation():doItems()
-    local didItems
-    if locationItems then
-        didItems = locationItems
-    elseif self.itemList then
-        didItems = self.itemList:doItems()
-    end
-    self:addAndEquipCommonClothing()
-    return didItems
-end
 
 --- Do the location and scenario callbacks
 function Scenario:doIntro()
@@ -258,8 +199,8 @@ function Scenario:start()
     self:doClutter()
     self:moveToLocation()
     timer.delayOneFrame(function()
+        event.trigger("ChargenScenarios:ScenarioStarted", {scenario = self})
         self:doSpells()
-        self:doItems()
         self:doIntro()
     end)
 end

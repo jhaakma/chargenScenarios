@@ -1,6 +1,8 @@
 
 local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
+local Menu = require("mer.chargenScenarios.util.Menu")
 local Scenario = require("mer.chargenScenarios.component.Scenario")
+local Loadouts = require("mer.chargenScenarios.component.Loadouts")
 
 ---@class ChargenScenarios.ScenarioMenu
 local ScenarioMenu = {}
@@ -14,6 +16,14 @@ local logger = common.createLogger("ScenarioMenu")
 
 --Register the Menu
 
+Loadouts.register{
+    id = "scenario",
+    callback = function()
+        local scenario = Scenario.getSelectedScenario()
+        return scenario.itemList
+    end
+}
+
 ---@type ChargenScenarios.ChargenMenu.config
 local menu = {
     id = "scenarioMenu",
@@ -21,7 +31,7 @@ local menu = {
     priority = -1000,
     buttonLabel= "Scenarios",
     getButtonValue = function(self)
-        local scenario = self.getSelectedScenario()
+        local scenario = Scenario.getSelectedScenario()
         return scenario and scenario.name or "None"
     end,
     createMenu = function(self)
@@ -29,20 +39,20 @@ local menu = {
             scenarioList = Scenario.registeredScenarios,
             onScenarioSelected = function(scenario)
                 logger:debug("Clicked scenario: %s", scenario.name)
-                self.setSelectedScenario(scenario)
+                Scenario.setSelectedScenario(scenario)
             end,
             onOkayButton = function()
                 self:okCallback()
             end,
-            currentScenario = self.getSelectedScenario()
+            currentScenario = Scenario.getSelectedScenario()
         }
     end,
     validate = function(self)
-        local scenario = self.getSelectedScenario()
+        local scenario = Scenario.getSelectedScenario()
         return scenario and scenario:checkRequirements()
     end,
     onStart = function(self)
-        local scenario = self.getSelectedScenario()
+        local scenario = Scenario.getSelectedScenario()
         if not scenario then
             scenario = Scenario.registeredScenarios.vanilla
         end
@@ -54,35 +64,6 @@ local menu = {
     end
 }
 ChargenMenu.register(menu)
-
-
-local function createHeading(parent)
-    local title = parent:createLabel{
-        id = tes3ui.registerID("Mer_ScenarioSelectorMenu_heading"),
-        text = "Select your Scenario:"
-    }
-    title.color = tes3ui.getPalette("header_color")
-    title.absolutePosAlignX = 0.5
-    title.borderTop = 4
-    title.borderBottom = 4
-    return title
-end
-
-local function createOuterBlock(parent)
-    local outerBlock = parent:createBlock()
-    outerBlock.flowDirection = "top_to_bottom"
-    outerBlock.autoHeight = true
-    outerBlock.autoWidth = true
-    return outerBlock
-end
-
-local function createInnerBlock(parent)
-    local innerBlock = parent:createBlock()
-    innerBlock.height = 350
-    innerBlock.autoWidth = true
-    innerBlock.flowDirection = "left_to_right"
-    return innerBlock
-end
 
 local function createScenarioListBlock(parent)
     local scenarioListBlock = parent:createVerticalScrollPane{
@@ -109,6 +90,18 @@ local function sortListAlphabetically(list)
     return sortedList
 end
 
+local function sortLocationListAlphabetically(locationList)
+    local alphabetSort = function(a, b)
+        return string.lower(a:getName()) < string.lower(b:getName())
+    end
+    local sortedList = {}
+    for _, location in pairs(locationList) do
+        table.insert(sortedList, location)
+    end
+    table.sort(sortedList, alphabetSort)
+    return sortedList
+end
+
 ---@param scenario ChargenScenariosScenario
 local function onClickScenario(scenario)
     logger:debug("Clicked Scenario %s", scenario.name)
@@ -118,8 +111,10 @@ local function onClickScenario(scenario)
     header.text = scenario.name
 
     local description = menu:findChild(descriptionID)
-    description.text = string.format("%s\n\n%s", scenario.description,
-        scenario.requirements:getDescription())
+    description.text = table.concat({
+        scenario.description,
+        scenario.requirements:getDescription()
+    }, "\n\n")
 
     local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton"))
 
@@ -129,7 +124,6 @@ local function onClickScenario(scenario)
         header.color = tes3ui.getPalette("disabled_color")
         okayButton.widget.state = 2
         okayButton.disabled = true
-
     else
         header.color = tes3ui.getPalette("header_color")
         okayButton.widget.state = 1
@@ -169,7 +163,7 @@ local function onClickScenario(scenario)
             locationListBlock.paddingAllSides = 4
             locationListBlock.borderRight = 6
 
-            validLocations = sortListAlphabetically(validLocations)
+            validLocations = sortLocationListAlphabetically(validLocations)
 
             for _, location in ipairs(validLocations) do
                 local locationButton = locationListBlock:createTextSelect{
@@ -252,7 +246,7 @@ end
 local function createDescriptionBlock(parent)
     local descriptionBlock = parent:createThinBorder()
     descriptionBlock.heightProportional = 1.0
-    descriptionBlock.width = 350
+    descriptionBlock.width = 400
     descriptionBlock.borderRight = 10
     descriptionBlock.flowDirection = "top_to_bottom"
     descriptionBlock.paddingAllSides = 10
@@ -273,35 +267,8 @@ local function createDescriptionBlock(parent)
     return descriptionText
 end
 
-local function createButtonsBlock(parent)
-    local buttonBlock = parent:createBlock()
-    buttonBlock.flowDirection = "left_to_right"
-    buttonBlock.widthProportional = 1.0
-    buttonBlock.autoHeight = true
-    buttonBlock.childAlignX = 1.0
-    return buttonBlock
-end
 
-local function createRandomiseButton(parent, listBlock)
-    local randomButton = parent:createButton{ text = "Random"}
-    randomButton.alignX = 1.0
-    randomButton:register("mouseClick", function()
-        local list = listBlock:getContentElement().children
-        list[ math.random(#list) ]:triggerEvent("mouseClick")
-    end)
-    return randomButton
-end
-
-local function createOkButton(parent, onOkayButton)
-    local okButton = parent:createButton{ text = "Ok", id = tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton")}
-    okButton.alignX = 1.0
-    okButton:register("mouseClick", function()
-        tes3ui.findMenu(menuId):destroy()
-        onOkayButton()
-    end)
-    return okButton
-end
-
+---@param e { scenarioList: ChargenScenariosScenario[], onScenarioSelected: fun(scenario: ChargenScenariosScenario), onOkayButton: fun(), currentScenario: ChargenScenariosScenario}
 function ScenarioMenu.createScenarioMenu(e)
     logger:debug("Creating Scenario Selector Menu")
     local scenarioList = sortListAlphabetically(table.values(e.scenarioList))
@@ -311,10 +278,22 @@ function ScenarioMenu.createScenarioMenu(e)
 
     logger:debug("- Creating menu")
     local menu = tes3ui.createMenu{ id = menuId, fixedFrame = true }
-    local outerBlock = createOuterBlock(menu)
+    local outerBlock = Menu.createOuterBlock{
+        id = "Mer_ScenarioSelectorMenu_outerBlock",
+        parent = menu
+    }
     --outer block
-    createHeading(outerBlock)
-    local innerBlock = createInnerBlock(outerBlock)
+    Menu.createHeading{
+        id = "Mer_ScenarioSelectorMenu_heading",
+        parent = outerBlock,
+        text = "Select your Scenario:"
+    }
+
+    local innerBlock = Menu.createInnerBlock{
+        id = "Mer_ScenarioSelectorMenu_innerBlock",
+        parent = outerBlock,
+        height = 400
+    }
     --inner block
     local scenarioListBlock = createScenarioListBlock(innerBlock)
 
@@ -322,9 +301,32 @@ function ScenarioMenu.createScenarioMenu(e)
     populateScenarioList(scenarioListBlock, scenarioList, onScenarioSelected, currentScenario)
     createDescriptionBlock(innerBlock)
     --Buttons
-    local buttonsBlock = createButtonsBlock(outerBlock)
-    createRandomiseButton(buttonsBlock, scenarioListBlock)
-    createOkButton(buttonsBlock, onOkayButton)
+    local buttonsBlock = Menu.createButtonsBlock{
+        id = "Mer_ScenarioSelectorMenu_buttonsBlock",
+        parent = outerBlock
+    }
+
+    --Randomize button
+    Menu.createButton{
+        id = "Mer_ScenarioSelectorMenu_randomButton",
+        text = "Random",
+        parent = buttonsBlock,
+        callback = function()
+            local list = scenarioListBlock:getContentElement().children
+            list[ math.random(#list) ]:triggerEvent("mouseClick")
+        end
+    }
+
+    --Ok button
+    Menu.createButton{
+        id = "Mer_ScenarioSelectorMenu_okayButton",
+        text = "Ok",
+        parent = buttonsBlock,
+        callback = function()
+            tes3ui.findMenu(menuId):destroy()
+            onOkayButton()
+        end
+    }
 
     logger:debug("- Updating Layout")
     menu:updateLayout()

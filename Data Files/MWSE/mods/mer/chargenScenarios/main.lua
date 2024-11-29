@@ -14,6 +14,7 @@ event.register("initialized", function()
     tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_shirt_01")}
     tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_pants_01")}
     common.initAll("mer\\chargenScenarios\\integrations")
+    common.initAll("mer\\chargenScenarios\\menus")
     common.initAll("mer\\chargenScenarios\\modules")
     logger:info("Initialized v^%s", common.getVersion())
     event.trigger("ChargenScenarios:Initialized")

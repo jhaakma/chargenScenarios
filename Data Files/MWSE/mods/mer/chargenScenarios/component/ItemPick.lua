@@ -1,4 +1,5 @@
 ---@class (exact) ChargenScenariosItemPickInput
+---@field description? string A description of the item. Required if using multiple ids
 ---@field id? string The id of the item
 ---@field ids? table<number, string> The ids of multiple items. If this is used instead of 'id', one will be chosen at random.
 ---@field alternative? string The item id to use if none of the ids are valid
@@ -24,6 +25,7 @@ local Validator = require("mer.chargenScenarios.util.validator")
 local GearManager = require("mer.chargenScenarios.component.GearManager")
 
 ---@class ChargenScenariosItemPick : ChargenScenariosItemPickInput
+---@field id nil
 ---@field ids table<number, string> the list of item ids the item pick is chosen from
 ---@field resolvedItems? table<ChargenScenarios.ItemPickItem, number> the resolved items and their counts
 ---@field count number the number of items to add to the player's inventory
@@ -126,6 +128,18 @@ function ItemPick:new(data)
     return itemPick
 end
 
+function ItemPick:getDescription()
+    local description = self.description
+    if not self.description then
+        local item = tes3.getObject(self.ids[1])
+        if item then
+            description = item.name
+        else
+            description = "Unknown item"
+        end
+    end
+    return description
+end
 
 --Get a lit of all valid items
 ---@return ChargenScenarios.ItemPickItem[]
@@ -158,24 +172,12 @@ function ItemPick:pick()
 end
 
 
-local function playerRaceCanEquip(item)
-    if tes3.player.object.race.isBeast then
-        return item.isUsableByBeasts ~= false
-    else
-        return true
-    end
-end
 
 ---@param item ChargenScenarios.ItemPickItem
 local function isEquippableType(item)
     return item.objectType == tes3.objectType.armor
         or item.objectType == tes3.objectType.clothing
         or item.objectType == tes3.objectType.weapon
-end
-
-local function playerCanEquip(item)
-    return isEquippableType(item)
-        and playerRaceCanEquip(item)
 end
 
 ---Check if the player has an item of the same type and slot/weapontype
@@ -223,16 +225,6 @@ function ItemPick:giveToPlayer()
                 count = count,
                 playSound = false,
             }
-            local doEquip = playerCanEquip(item)
-            if doEquip then
-                logger:debug("Equipping item: %s", item)
-                tes3.equip{
-                    item = item,
-                    reference = tes3.player,
-                    playSound = false,
-                    bypassEquipEvents = true,
-                }
-            end
         end
     end
 end

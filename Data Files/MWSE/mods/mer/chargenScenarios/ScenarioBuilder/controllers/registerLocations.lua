@@ -39,7 +39,7 @@ local function registerLocation()
             math.floor(tes3.player.position.y),
             math.floor(tes3.player.position.z),
         },
-        orientation = math.floor(tes3.player.orientation.z),
+        orientation = math.round(tes3.player.orientation.z, 2),
         cell = tes3.player.cell
     }
     timer.delayOneFrame(function()

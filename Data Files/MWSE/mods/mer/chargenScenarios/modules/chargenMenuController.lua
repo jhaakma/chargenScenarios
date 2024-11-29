@@ -3,6 +3,7 @@ local logger = common.createLogger("chargenMenuController")
 local Tooltip = require("mer.chargenScenarios.util.Tooltip")
 local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
 local Controls = require("mer.chargenScenarios.util.Controls")
+local Ashfall = require("mer.ashfall.interop")
 
 local function nameChosen()
     return tes3.player.tempData.chargenScenariosNameChosen
@@ -121,6 +122,13 @@ local function startGame()
     end
     tes3.findGlobal("CharGenState").value = -1
     Controls.enableControls()
+    if Ashfall then
+        timer.start{
+            type = timer.simulate,
+            duration = 1.0,
+            callback = Ashfall.unblockNeeds
+        }
+    end
 end
 
 

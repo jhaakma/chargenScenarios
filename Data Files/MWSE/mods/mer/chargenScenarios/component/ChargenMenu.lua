@@ -14,14 +14,12 @@ local logger = common.createLogger("ChargenMenu")
 ---@field onStart? fun(self: ChargenScenarios.ChargenMenu) Callback triggered when chargen finishes
 
 ---Defines a menu that is added to the chargen sequence
----@class (exact) ChargenScenarios.ChargenMenu : ChargenScenarios.ChargenMenu.config
+---@class ChargenScenarios.ChargenMenu : ChargenScenarios.ChargenMenu.config
 ---@field registeredMenus table<string, ChargenScenarios.ChargenMenu> The menus that have been registered
 ---@field orderedMenus ChargenScenarios.ChargenMenu[] The menus in the order they should be added
 ---@field data fun(self: ChargenScenarios.ChargenMenu):table<string, boolean> Get the data table for the player
 ---@field getCompleted fun(self: ChargenScenarios.ChargenMenu):boolean Check if the menu has been completed
 ---@field setCompleted fun(self: ChargenScenarios.ChargenMenu) Set the menu as completed
----@field getSelectedScenario fun():ChargenScenariosScenario|nil Get the selected scenario
----@field setSelectedScenario fun(scenario:ChargenScenariosScenario) Set the selected scenario
 ---@field new fun(data:ChargenScenarios.ChargenMenu.config):ChargenScenarios.ChargenMenu Create a new ChargenMenu
 ---@field register fun(data:ChargenScenarios.ChargenMenu.config):ChargenScenarios.ChargenMenu Register a new ChargenMenu
 ---@field createMenu fun(self: ChargenScenarios.ChargenMenu) Create the menu
@@ -106,13 +104,6 @@ function ChargenMenu:data()
     return tes3.player.tempData.chargenScenariosMenus
 end
 
-function ChargenMenu.getSelectedScenario()
-    return tes3.player.tempData.selectedChargenScenario
-end
-
-function ChargenMenu.setSelectedScenario(scenario)
-    tes3.player.tempData.selectedChargenScenario = scenario
-end
 
 function ChargenMenu:getCompleted()
     return self:data()[self.id]

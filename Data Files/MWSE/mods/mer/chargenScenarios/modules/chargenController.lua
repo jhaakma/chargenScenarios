@@ -2,6 +2,7 @@
 local common = require('mer.chargenScenarios.common')
 local logger = common.createLogger("ChargenController")
 local controls = require('mer.chargenScenarios.util.Controls')
+local Ashfall = require("mer.ashfall.interop")
 
 local defaultTopics = {
     "duties",
@@ -89,6 +90,7 @@ end
 ---@param e loadedEventData
 local function startChargenOnLoad(e)
     if common.modEnabled() and e.newGame then
+        if Ashfall then Ashfall.blockNeeds() end
         timer.delayOneFrame(startChargen)
     end
 end

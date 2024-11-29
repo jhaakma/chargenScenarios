@@ -204,6 +204,67 @@ local scenarios = {
             },
         },
     },
+    {
+        id = "teynCensus",
+        name = "Teyn Census Office",
+        description = "You are being processed at the census office in Teyn.",
+        location = { --Teyn, Census and Excise Office
+            position = {4321, 4372, 16322},
+            orientation =3.13,
+            cellId = "Teyn, Census and Excise Office"
+        },
+        items = {
+            {
+                id = "gold_001",
+                count = 75,
+            },
+            {
+                id = "T_IngFood_Bread_01",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+    },
+    {
+        id = "unwelcomeVisitor",
+        name = "Unwelcome Visitor",
+        description = "You have wandered into the Andothren Council Club for a game of thirty-six. You feel the eyes of the patrons glaring at you. You should probably leave.",
+        location =  { --Andothren, Council Club
+            position = {4102, 3970, 12295},
+            orientation =0.02,
+            cellId = "Andothren, Council Club"
+        },
+        items = {
+            {
+                id = "t_com_dice_01",
+                count = 2,
+                noDuplicates = true,
+            },
+            {
+                id = "gold_001",
+                count = 100,
+            },
+            {
+                id = "iron dagger",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+        onStart = function()
+            -- Lower the disposition of nearby NPCs to reflect their distrust
+            for ref in tes3.player.cell:iterateReferences(tes3.objectType.npc) do
+                if ref and ref.mobile then
+                    tes3.modDisposition{
+                        reference = ref,
+                        value = -20
+                    }
+                end
+            end
+            -- Optionally, set the time to evening for atmosphere
+            tes3.findGlobal("GameHour").value = 21
+        end,
+    }
+
 }
 
 for _, scenario in ipairs(scenarios) do
