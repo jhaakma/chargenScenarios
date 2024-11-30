@@ -31,6 +31,7 @@ local scenarios = {
             position = {33,-87,194},
             cellId = "Seyda Neen, Census and Excise Office"
         },
+        journalEntry = "I need to speak with Sellus Gravius to discuss my duties.",
     },
     {
         id = "hidingFromTheLaw",
@@ -54,7 +55,8 @@ local scenarios = {
                 },
                 count = 3
             },
-        }
+        },
+        journalEntry = "After that botched job, I barely made it out of town with my life. I need to lay low for a while.",
     },
     {
         id = "pearlDiving",
@@ -78,7 +80,8 @@ local scenarios = {
                 id = "gold_001",
                 count = 25,
             },
-        }
+        },
+        journalEntry = "I've been diving for pearls near Pelagiad. I should either continue my work or return to town to sell them.",
     },
 
     {
@@ -104,7 +107,8 @@ local scenarios = {
                 count = 30,
             },
             itemPicks.coinpurse,
-        }
+        },
+        journalEntry = "It's a good day for a hunt. I should keep my eyes open for prey.",
     },
     {
         id = "workingInTheFields",
@@ -127,6 +131,7 @@ local scenarios = {
             itemPicks.coinpurse,
         },
         requirements = requiresBeastRace,
+        journalEntry = "Master has me working in the fields today. I should keep my head down and get my work done.",
     },
     {
         id = "gatheringMushrooms",
@@ -158,6 +163,7 @@ local scenarios = {
                 count = 25,
             },
         },
+        journalEntry = "I have been gathering mushrooms in the Bitter Coast. I should keep an eye out for more ingredients.",
     },
     {
         id = "graveRobbing",
@@ -343,16 +349,16 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
+        journalEntry = "I've found an ancestral tomb, ripe for the picking. Surely this one will have some decent loot."
     },
     {
         id = "magesGuild",
         name = "Faction: Mages Guild",
         description = "You are an associate of the Mages Guild.",
-        onStart = function()
-            local mageGuild = tes3.getFaction("Mages Guild")
-            mageGuild.playerJoined = true
-            mageGuild.playerRank = 0
-        end,
+        factions = {
+            { id = "Mages Guild"}
+        },
+        journalEntry = "I have joined the Mages Guild. I should speak with the guild steward to see what duties they have for me.",
         locations = {
             {
                 position = {14, 187, -252},
@@ -454,16 +460,16 @@ local scenarios = {
             },
             itemPicks.robe,
         },
+
     },
     {
         id = "fightersGuild",
         name = "Faction: Fighters Guild",
         description = "You are an associate of the Fighters Guild.",
-        onStart = function()
-            local fightersGuild = tes3.getFaction("Fighters Guild")
-            fightersGuild.playerJoined = true
-            fightersGuild.playerRank = 0
-        end,
+        factions = {
+            { id = "Fighters Guild"}
+        },
+        journalEntry = "I have joined the Fighters Guild. I should speak with the guild steward to see what duties they have for me.",
         locations = {
             {
                 position = {-901, -379, -764},
@@ -578,20 +584,16 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
-        onStart = function()
-            local topics = {
-                "join the Thieves Guild",
-                "jobs",
-                "advancement",
-                "price on your head"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local thievesGuild = tes3.getFaction("Thieves Guild")
-            thievesGuild.playerJoined = true
-            thievesGuild.playerRank = 0
-        end,
+        topics = {
+            "join the Thieves Guild",
+            "jobs",
+            "advancement",
+            "price on your head"
+        },
+        factions = {
+            { id = "Thieves Guild"}
+        },
+        journalEntry = "I have joined the Thieves Guild. I should speak with Sugar-Lips Habasi to receive my first job.",
     },
     {
         id = "imperialCult",
@@ -618,24 +620,21 @@ local scenarios = {
                 count = 25,
             },
         },
-        onStart = function()
-            local topics = {
-                "Imperial cult",
-                "lay member",
-                "join the Imperial Cult",
-                "requirements",
-                "blessings",
-                "services"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local imperialCult = tes3.getFaction("Imperial Cult")
-            imperialCult.playerJoined = true
-            imperialCult.playerRank = 0
-            tes3.updateJournal{ id = "IC0_ImperialCult", index = 1, showMessage = false }
-            tes3.updateJournal{ id = "IC_guide", index = 2, showMessage = false }
-        end,
+        topics = {
+            "Imperial cult",
+            "lay member",
+            "join the Imperial Cult",
+            "requirements",
+            "blessings",
+            "services"
+        },
+        journalUpdates = {
+            { id = "IC0_ImperialCult", index = 1 },
+            { id = "IC_guide", index = 2 }
+        },
+        factions = {
+            { id = "Imperial Cult"}
+        },
     },
     {
         id = "imperialLegion",
@@ -653,21 +652,21 @@ local scenarios = {
                 noDuplicates = true,
             }
         },
+        topics = {
+            "join the Imperial Legion",
+            "orders",
+            "advancement",
+            "requirements"
+        },
         onStart = function()
-            local topics = {
-                "join the Imperial Legion",
-                "orders",
-                "advancement",
-                "requirements"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local legion = tes3.getFaction("Imperial Legion")
-            legion.playerJoined = true
-            legion.playerRank = 0
-            tes3.equip{ reference = tes3.player, item = "imperial_chain_cuirass" }
+            timer.delayOneFrame(function()
+                tes3.equip{ reference = tes3.player, item = "imperial_chain_cuirass" }
+            end)
         end,
+        factions = {
+            { id = "Imperial Legion"}
+        },
+        journalEntry = "It is my first day in the Imperial Legion. I must speak with General Darius to receive my orders.",
     },
     {
         id = "moragTong",
@@ -678,6 +677,7 @@ local scenarios = {
             orientation =3,
             cellId = "Vivec, Arena Hidden Area"
         },
+        journalEntry = "I have been given a writ of execution by the Morag Tong. I must carry out this lawful murder in order to be accepted into the ancient guild of assassins.",
         items = {
             {
                 id = "writ_oran",
@@ -715,20 +715,17 @@ local scenarios = {
                 noSlotDuplicates = true,
             }
         },
-        onStart = function()
-            local topics = {
-                "join the Morag Tong",
-                "Feruren Oran",
-                "writ",
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local moragTong = tes3.getFaction("Morag Tong")
-            moragTong.playerJoined = true
-            moragTong.playerRank = 0
-            tes3.updateJournal{ id = "MT_WritOran", index = 10, showMessage = false }
-        end,
+        topics = {
+            "join the Morag Tong",
+            "Feruren Oran",
+            "writ",
+        },
+        journalUpdates = {
+            { id = "MT_WritOran", index = 10 }
+        },
+        factions = {
+            { id = "Morag Tong"}
+        },
     },
     {
         id = "houseTelvanni",
@@ -743,21 +740,17 @@ local scenarios = {
             itemPicks.robe,
             itemPicks.soulGems(3)
         },
-        onStart = function()
-            local topics = {
-                "join House Telvanni",
-                "chores",
-                "advancement",
-                "rules",
-                "requirements"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local telvanni = tes3.getFaction("Telvanni")
-            telvanni.playerJoined = true
-            telvanni.playerRank = 0
-        end,
+        topics = {
+            "join House Telvanni",
+            "chores",
+            "advancement",
+            "rules",
+            "requirements"
+        },
+        factions = {
+            { id = "Telvanni" }
+        },
+        journalEntry = "I am a hireling of House Telvanni. I must speak with the Mouths to receive my first orders.",
     },
     {
         id = "houseHlaalu",
@@ -784,21 +777,17 @@ local scenarios = {
                 count = 3,
             }
         },
-        onStart = function()
-            local topics = {
-                "join House Hlaalu",
-                "House Hlaalu",
-                "Hlaalu councilors",
-                "business",
-                "advancement"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local hlaalu = tes3.getFaction("Hlaalu")
-            hlaalu.playerJoined = true
-            hlaalu.playerRank = 0
-        end,
+        topics = {
+            "join House Hlaalu",
+            "House Hlaalu",
+            "Hlaalu councilors",
+            "business",
+            "advancement"
+        },
+        factions = {
+            { id = "Hlaalu" }
+        },
+        journalEntry = "I am a hireling of House Hlaalu. I should speak with Nileno Dorvayn to discuss business.",
     },
     {
         id = "houseRedoran",
@@ -816,24 +805,20 @@ local scenarios = {
                 noSlotDuplicates = true,
             }
         },
-        onStart = function()
-            local topics = {
-                "join House Redoran",
-                "duties",
-                "advancement"
-            }
-            for _, topic in ipairs(topics) do
-                tes3.addTopic{ topic = topic }
-            end
-            local redoran = tes3.getFaction("Redoran")
-            redoran.playerJoined = true
-            redoran.playerRank = 0
-        end,
+        topics = {
+            "join House Redoran",
+            "duties",
+            "advancement"
+        },
+        factions = {
+            { id = "Redoran" }
+        },
+        journalEntry = "I am a hireling of House Redoran. I should speak with Neminda at the Redoral Council Entrance to receive my first orders.",
     },
     {
         id = "ashlander",
         name = "Ashlander",
-        description = "You live with a small group of Ashlanders in a yurt on the plains of the West Gash.",
+        description = "You live with a small group of Ashlanders in a yurt on the coast of the Grazelands.",
         location = { --Massahanud Camp, Sargon's Yurt
             position = {4256, 4014, 15698},
             orientation =-1,
@@ -889,7 +874,8 @@ local scenarios = {
                 closetBedroll.itemData.owner = nil
                 closetBedroll.modified = true
             end
-        end
+        end,
+        journalEntry = "Another quiet day in the yurt. Perhaps its time for a change in scenery.",
     },
     {
         id = "lumberjack",
@@ -898,19 +884,23 @@ local scenarios = {
         location = {
             position = {38154, -53328, 931},
             orientation = 268,
-            cellId = "4,-7"
+        },
+        requirements = {
+            plugins = { "Ashfall.ESP" }
         },
         items = {
             itemPicks.axe,
             {
                 id = "ashfall_firewood",
-                count = 4
+                count = 8
             },
             {
                 id = "gold_001",
                 count = 25,
             },
         },
+        time = 15,
+        journalEntry = "It's been a long day gathering firewood. I should head back to town to sell it.",
     },
     {
         id = "prisoner",
@@ -932,6 +922,7 @@ local scenarios = {
                 count = 20
             }
         },
+        journalEntry = "Today's the day. I am finally being released from prison. I wonder how the outside world has changed?",
     },
     {
         id = "shipwrecked",
@@ -1054,7 +1045,8 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             }
-        }
+        },
+        journalEntry = "I am the sole survivor of a shipwreck. I must find a way to survive and make my way back to civilization.",
     },
     {
         id = "khuulCamping",
@@ -1089,11 +1081,13 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
+        journalEntry = "I've set up camp in the wilderness. It's a good place to rest and cook some food.",
     },
     {
         id= "commoner",
         name = "Commoner",
         description = "You are working as a commoner in a tradehouse, Serving drinks and clearing tables.",
+        journalEntry = "Another day serving drinks to ungrateful patrons. I wonder if there's more to life than this.",
         locations = {
             {
                 position = { 29, -384, -386 },
@@ -1162,7 +1156,8 @@ local scenarios = {
                 count = 2
             },
             itemPicks.coinpurse,
-        }
+        },
+        journalEntry = "I have made a pilgrimage to the Fields of Kummu. I should read my copy of The Pilgrim's Path and make my offering.",
     },
     {
         id = "shakingDownFargoth",
@@ -1193,7 +1188,8 @@ local scenarios = {
                 id = "gold_001",
                 count = 50, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
             },
-        }
+        },
+        journalEntry = "I've shaken down Fargoth for all he's worth. I should make myself scarce before the guards arrive.",
     },
     {
         id = "houseOfEarthlyDelights",
@@ -1215,15 +1211,17 @@ local scenarios = {
             },
             {
                 id = "gold_001",
-                count = 50,
+                count = 69,
             },
         },
         time = 18,
+        journalEntry = "I've spent nearly all my money at Desele's House of Earthly Delights... I should probably head home before I'm completely broke.",
     },
     {
         id = "fishing",
         name = "Fishing",
         description = "You are a humble fisherman, casting your line into the waters of Morrowind.",
+        journalEntry = "I've spent the day fishing. I should head back to town to sell my catch.",
         locations = {
             { --Hla Oad
                 name = "Hla Oad",
@@ -1282,6 +1280,7 @@ local scenarios = {
         id = "eggFarmer",
         name = "Egg Farmer",
         description = "You are farming Kwama Eggs in the Shulk Egg Mine.",
+        journalEntry = "It's a hard day's work farming Kwama Eggs.",
         location = {
             position = {4457, 3423, 12612},
             orientation = 0,
@@ -1315,6 +1314,7 @@ local scenarios = {
         id = "hauntedRoom",
         name = "Haunted Room",
         description = "You are sleeping in a haunted room at the Gateway Inn in Sadrith Mora.",
+        journalEntry = "During my stay at the Gateway Inn, my rest was interrupted by a noise from the other room. I should investigate.",
         location = {
             position = {-219, -159, 276},
             orientation = 0,
@@ -1333,14 +1333,12 @@ local scenarios = {
             {id = "silver dagger",}
         },
         time = 19,
-        onStart = function(self)
-            tes3.messageBox("You are awakened by a noise from the other room.")
-        end
     },
     {
         id = "bard",
         name = "Performer",
         description = "You are a bard performing in a tavern",
+        journalEntry = "I've been practicing \"Beneath the Mushroom tree\" on my lute. I should speak to the innkeeper to see if I can perform at the tavern.",
         locations = {
             { --Ald-ruhn, Ald Skar Inn
                 position = {556, -1140, 2},
@@ -1564,6 +1562,7 @@ local scenarios = {
         id = "necromancer",
         name = "Necromancer's Apprentice",
         description = "You are an apprentice studying the dark arts of necromancy in a secluded cave.",
+        journalEntry = "I've been studying the dark arts of necromancy in Yesamsi cave.",
         locations = {
             { --Yesamsi
                 position = {-930, -405, 272},
@@ -1619,6 +1618,7 @@ local scenarios = {
         id = "skoomaAddict",
         name = "Skooma Addict",
         description = "You are a skooma addict, spending an evening in the Suran Tradehouse. With only one bottle of skooma left, you need to find your next fix.",
+        journalEntry = "I've spent the evening in the Suran Tradehouse. I need to find my next fix soon.",
         location = { --Suran, Suran Tradehouse
             position = {101, 543, 519},
             orientation =3,
@@ -1653,6 +1653,7 @@ local scenarios = {
         id = "library",
         name = "Studying in the Library",
         description = "You are immersed in study at the Library of Vivec, surrounded by ancient tomes and scrolls.",
+        journalEntry = "I've spent the day studying in the Library of Vivec.",
         location = { --Vivec, Library of Vivec
             position = {-509, 1713, -126},
             orientation = 1.5,
@@ -1677,6 +1678,7 @@ local scenarios = {
         id = "lostInAshlands",
         name = "Lost in the Ashlands",
         description = "A sudden ash storm has left you disoriented and lost in the Ashlands.",
+        journalEntry = "I'm lost in the Ashlands. I need to find shelter before the storm gets worse.",
         location =  { --Ashlands
             position = {5173, 129314, 801},
             orientation = 2.41,

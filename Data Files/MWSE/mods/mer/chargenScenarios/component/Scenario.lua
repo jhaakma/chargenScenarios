@@ -19,6 +19,10 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 ---@field onStart nil|fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
 ---@field weather? tes3.weather|`random` (Default: tes3.weather.clear) The weather for the scenario
 ---@field time? number The starting time
+---@field journalEntry? string A custom journal entry that is written as soon as the scenario starts
+---@field journalUpdates? { id: string, index: number }[] A list of journal entries that are updated when the scenario starts
+---@field topics? string[] A list of topics that are added when the scenario starts
+---@field factions? { id: string, rank?: number }[] (Default rank: 0) A list of factions and ranks that the player is added to when the scenario starts.
 
 ---@class (exact) ChargenScenariosScenario : ChargenScenariosScenarioInput
 ---@field getSelectedScenario fun():ChargenScenariosScenario Get the selected scenario
@@ -74,12 +78,16 @@ function Scenario:new(data)
             items = data.items or {},
             active = true,
         },
+        items = data.items,
         spellList = data.spells and SpellList:new(data.spells),
         clutterList = clutter,
         onStart = data.onStart,
-        items = data.items,
+        time = data.time,
         weather = data.weather or tes3.weather.clear,
-        time = data.time
+        journalEntry = data.journalEntry,
+        journalUpdates = data.journalUpdates,
+        topics = data.topics,
+        factions = data.factions,
     }
 
     --Create scenario
@@ -171,16 +179,6 @@ function Scenario:isVisible()
 end
 
 
---- Do the location and scenario callbacks
-function Scenario:doIntro()
-    if self.onStart then
-        self:onStart()
-    end
-    local location = self:getStartingLocation()
-    if location and location.onStart then
-        location:onStart()
-    end
-end
 
 --- Place the clutter for this scenario
 ---@return tes3reference[]|nil
@@ -219,6 +217,50 @@ function Scenario:doTime()
     end
 end
 
+function Scenario:doJournal()
+    if self.journalUpdates then
+        for _, update in ipairs(self.journalUpdates) do
+            tes3.updateJournal{ id = update.id, index = update.index, showMessage = false }
+        end
+    end
+    if self.journalEntry then
+        tes3.addJournalEntry{ text = self.journalEntry, showMessage = true }
+    end
+end
+
+function Scenario:doTopics()
+    if self.topics then
+        for _, topic in ipairs(self.topics) do
+            mwse.log("Adding topic %s", topic)
+            tes3.addTopic{
+                topic = topic,
+            }
+        end
+    end
+end
+
+---Do factions
+function Scenario:doFactions()
+    if self.factions then
+        for _, factionData in ipairs(self.factions) do
+            local redoran = tes3.getFaction(factionData.id)
+            redoran.playerJoined = true
+            redoran.playerRank = factionData.rank or 0
+        end
+    end
+end
+
+--- Do the location and scenario callbacks
+function Scenario:doIntro()
+    if self.onStart then
+        self:onStart()
+    end
+    local location = self:getStartingLocation()
+    if location and location.onStart then
+        location:onStart()
+    end
+end
+
 --- Start the scenario
 function Scenario:start()
     self:doClutter()
@@ -228,6 +270,9 @@ function Scenario:start()
     timer.delayOneFrame(function()
         event.trigger("ChargenScenarios:ScenarioStarted", {scenario = self})
         self:doSpells()
+        self:doJournal()
+        self:doTopics()
+        self:doFactions()
         self:doIntro()
     end)
 end
