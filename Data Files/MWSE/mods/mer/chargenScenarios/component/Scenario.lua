@@ -17,17 +17,20 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 ---@field requirements nil|ChargenScenariosRequirementsInput The requirements that need to be met for this scenario to be used.
 ---@field clutter nil|string|ChargenScenariosClutterInput[] The clutter for the location. Can be a list of clutter data or a cluterList ID
 ---@field onStart nil|fun(self: ChargenScenariosScenario) Callback triggered when a scenario starts.
+---@field weather? tes3.weather|`random` (Default: tes3.weather.clear) The weather for the scenario
+---@field time? number The starting time
 
 ---@class (exact) ChargenScenariosScenario : ChargenScenariosScenarioInput
 ---@field getSelectedScenario fun():ChargenScenariosScenario Get the selected scenario
 ---@field setSelectedScenario fun(scenario:ChargenScenariosScenario) Set the selected scenario
 ---@field requirements ChargenScenariosRequirements the requirements for the scenario
 ---@field locations ChargenScenariosLocation[] the list of locations for the scenario
----@field itemList ChargenScenariosItemList the list of items for the scenario
+---@field itemList ChargenScenarios.ItemList the list of items for the scenario
 ---@field spellList? ChargenScenariosSpellList the list of spells given to the player for this scenario. May include abilities, diseases etc
 ---@field clutterList? ChargenScenariosClutterList the clutter for the location
 ---@field decidedLocation? ChargenScenariosLocation the index of the location that was decided for this scenario
 ---@field registeredScenarios table<string, ChargenScenariosScenario> the list of registered scenarios
+---@field weather tes3.weather|`random` The weather for the scenario
 local Scenario = {
     registeredScenarios = {},
 }
@@ -68,20 +71,23 @@ function Scenario:new(data)
         locations = locationList and common.convertListTypes(locationList, Location) or {},
         itemList = ItemList:new{
             name = "Scenario: " .. data.name,
-            items = data.items or {}
+            items = data.items or {},
+            active = true,
         },
         spellList = data.spells and SpellList:new(data.spells),
         clutterList = clutter,
         onStart = data.onStart,
         items = data.items,
+        weather = data.weather or tes3.weather.clear,
+        time = data.time
     }
-
 
     --Create scenario
     setmetatable(scenario, { __index = Scenario })
 
     event.register("loaded", function()
         scenario.decidedLocation = nil
+        scenario.itemList.active = scenario.itemList.defaultActive
     end)
 
     return scenario --[[@as ChargenScenariosScenario]]
@@ -194,10 +200,31 @@ function Scenario:doSpells()
     end
 end
 
+--- Update current weather to the scenario weather
+function Scenario:doWeather()
+    local weather = self.weather
+    if weather == "random" then
+        logger:debug("Random weather")
+        weather = table.choice(tes3.weather)
+    end
+    logger:debug("Setting weather to %s", table.find(tes3.weather, weather))
+    tes3.worldController.weatherController:switchImmediate(weather)
+    tes3.worldController.weatherController:updateVisuals()
+end
+
+---Update the current game time to the scenario time
+function Scenario:doTime()
+    if self.time then
+        tes3.worldController.hour.value = self.time
+    end
+end
+
 --- Start the scenario
 function Scenario:start()
     self:doClutter()
+    self:doTime()
     self:moveToLocation()
+    self:doWeather()
     timer.delayOneFrame(function()
         event.trigger("ChargenScenarios:ScenarioStarted", {scenario = self})
         self:doSpells()

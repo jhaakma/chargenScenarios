@@ -7,10 +7,7 @@ local interop = {
     ItemList = ItemList
 }
 
----@param data { id: string, callback: fun():ChargenScenariosItemList }
-function interop.registerLoadout(data)
-    Loadouts.register(data)
-end
+interop.registerLoadout = Loadouts.register
 
 ---@param data ChargenScenariosScenarioInput
 ---@return ChargenScenariosScenario

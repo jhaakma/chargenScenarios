@@ -20,6 +20,11 @@ Loadouts.register{
     id = "scenario",
     callback = function()
         local scenario = Scenario.getSelectedScenario()
+        if not scenario then
+            return Scenario.registeredScenarios.vanilla.itemList
+        end
+        --We do scenario items last, so noDuplicates etc can be applied
+        scenario.itemList.priority = -100
         return scenario.itemList
     end
 }

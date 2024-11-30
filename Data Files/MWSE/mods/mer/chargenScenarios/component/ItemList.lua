@@ -3,9 +3,17 @@ local logger = common.createLogger("ItemList")
 local ItemPick = require("mer.chargenScenarios.component.ItemPick")
 local Validator = require("mer.chargenScenarios.util.validator")
 
----@class ChargenScenariosItemList
+---@class ChargenScenarios.ItemListInput
+---@field name string
+---@field description? string A description of the Item List
+---@field items ChargenScenariosItemPickInput[]
+---@field active? boolean (Default: false)
+---@field priority? number (Default: 0)
+
+---@class ChargenScenarios.ItemList : ChargenScenarios.ItemListInput
 ---@field name string @the name of the item list
----@field active boolean
+---@field active boolean @whether the item list is active
+---@field defaultActive boolean @whether the item list is active by default
 ---@field items ChargenScenariosItemPick @the list of items to add to the player's inventory
 local ItemList = {
     schema = {
@@ -17,19 +25,16 @@ local ItemList = {
     },
 }
 
----@class ChargenScenariosItemListInput
----@field name string
----@field items ChargenScenariosItemPickInput[]
-
-
 --Constructor
----@param e ChargenScenariosItemListInput
----@return ChargenScenariosItemList
+---@param e ChargenScenarios.ItemListInput
+---@return ChargenScenarios.ItemList
 function ItemList:new(e)
-    local itemList = table.deepcopy(e)
+    local itemList = table.copy(e)
     ---validate
     Validator.validate(itemList, self.schema)
-    itemList.active = true
+    itemList.active = not not itemList.active
+    itemList.defaultActive = itemList.active
+    itemList.priority = itemList.priority or 0
     itemList.items = common.convertListTypes(itemList.items, ItemPick)
 
     setmetatable(itemList, self)

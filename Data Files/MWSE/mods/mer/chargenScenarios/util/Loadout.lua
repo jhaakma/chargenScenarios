@@ -5,7 +5,7 @@ local ItemList = require("mer.chargenScenarios.component.ItemList")
 ---@class ChargenScenarios.Util.LoadoutUI
 local LoadoutUI = {}
 
----@param e { itemList : ChargenScenariosItemList }
+---@param e { itemList : ChargenScenarios.ItemList }
 local function createLoadoutTooltip(e)
     local tooltip = tes3ui.createTooltipMenu()
     local outerBlock = tooltip:createBlock{}
@@ -22,6 +22,18 @@ local function createLoadoutTooltip(e)
     heading.borderRight = 6
     heading.autoWidth = true
     heading.autoHeight = true
+
+    if e.itemList.description then
+        local description = outerBlock:createLabel{ text = e.itemList.description }
+        description.wrapText = true
+        description.borderTop = 6
+        description.borderBottom = 6
+        description.borderLeft = 6
+        description.borderRight = 6
+        description.autoWidth = true
+        description.autoHeight = true
+        description.maxWidth = 300
+    end
 
     local descriptions = e.itemList:getDescriptionList()
     for _, description in ipairs(descriptions) do
@@ -40,11 +52,11 @@ local function getColor(active)
 end
 
 local function getToggleText(active)
-    return active and "Active" or "Inactive"
+    return active and "Remove" or "Add"
 end
 
 
----@param e { parent: tes3uiElement, itemList : ChargenScenariosItemList }
+---@param e { parent: tes3uiElement, itemList : ChargenScenarios.ItemList }
 function LoadoutUI.createLoadoutRow(e)
     local outerBlock = e.parent:createThinBorder{}
     outerBlock.flowDirection = "left_to_right"
@@ -65,20 +77,19 @@ function LoadoutUI.createLoadoutRow(e)
     label:register("help", function()
         createLoadoutTooltip(e)
     end)
-
-    local buttonText = getToggleText(e.itemList.active)
-    local button = outerBlock:createButton{ text = buttonText }
-    button.absolutePosAlignX = 1.0
-    button.absolutePosAlignY = 0.5
-    button.color = color
-    button:register("mouseClick", function()
-        e.itemList.active = not e.itemList.active
-        button.text = getToggleText(e.itemList.active)
-        local color = getColor(e.itemList.active)
-        label.color = color
-        button.color = color
-        outerBlock:updateLayout()
-    end)
+    if not e.itemList.defaultActive then
+        local buttonText = getToggleText(e.itemList.active)
+        local button = outerBlock:createButton{ text = buttonText }
+        button.absolutePosAlignX = 1.0
+        button.absolutePosAlignY = 0.5
+        button:register("mouseClick", function()
+            e.itemList.active = not e.itemList.active
+            button.text = getToggleText(e.itemList.active)
+            local color = getColor(e.itemList.active)
+            label.color = color
+            outerBlock:updateLayout()
+        end)
+    end
 end
 
 return LoadoutUI

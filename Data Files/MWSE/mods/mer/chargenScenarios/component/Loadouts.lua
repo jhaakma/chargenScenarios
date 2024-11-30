@@ -4,26 +4,42 @@ local ItemList = require("mer.chargenScenarios.component.ItemList")
 
 ---@class ChargenScenarios.Loadouts
 local Loadouts = {
-    ---@type table<string, fun():ChargenScenariosItemList>
+    ---@type table<string, fun():ChargenScenarios.ItemList>
     registeredLoadouts = {}
 }
 
----@param e { id: string, callback: fun():ChargenScenariosItemList }
+event.register("load", function()
+    logger:debug("Resetting active flag on loadouts")
+    --reset active flag on load
+    for _, callback in pairs(Loadouts.registeredLoadouts) do
+        local itemList = callback()
+        itemList.active = itemList.defaultActive
+    end
+end)
+
+---@param e { id: string, itemList?:ChargenScenarios.ItemListInput, callback?: fun():ChargenScenarios.ItemList }
 function Loadouts.register(e)
     logger:debug("Registering loadout %s", e.id)
+    local itemList
+    if e.itemList then
+        itemList = ItemList:new(e.itemList)
+    end
     Loadouts.registeredLoadouts[e.id] = function()
+        if itemList then
+            return itemList
+        end
         return e.callback()
     end
 end
 
 ---Get a loadout by id
 ---@param id string
----@return ChargenScenariosItemList?
+---@return ChargenScenarios.ItemList?
 function Loadouts.get(id)
     return Loadouts.registeredLoadouts[id]()
 end
 
----@return ChargenScenariosItemList[]
+---@return ChargenScenarios.ItemList[]
 function Loadouts.getLoadouts()
     logger:debug("Getting loadouts")
     local loadouts = {}
@@ -34,9 +50,17 @@ function Loadouts.getLoadouts()
     return loadouts
 end
 
+---Higher priority goes first
+---@param a ChargenScenarios.ItemList
+---@param b ChargenScenarios.ItemList
+local function sortLoadoutsByPriority(a, b)
+    return a.priority > b.priority
+end
+
 function Loadouts.doItems()
     logger:debug("Adding loadout items")
     local loadouts = Loadouts.getLoadouts()
+    table.sort(loadouts, sortLoadoutsByPriority)
     for _, itemList in ipairs(loadouts) do
         itemList:doItems()
     end

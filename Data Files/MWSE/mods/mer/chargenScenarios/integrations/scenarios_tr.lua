@@ -1,8 +1,5 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
-local GearManager = require("mer.chargenScenarios.component.GearManager")
-
-
 
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
@@ -250,6 +247,7 @@ local scenarios = {
                 noDuplicates = true,
             },
         },
+        time = 21,
         onStart = function()
             -- Lower the disposition of nearby NPCs to reflect their distrust
             for ref in tes3.player.cell:iterateReferences(tes3.objectType.npc) do
@@ -260,8 +258,6 @@ local scenarios = {
                     }
                 end
             end
-            -- Optionally, set the time to evening for atmosphere
-            tes3.findGlobal("GameHour").value = 21
         end,
     }
 

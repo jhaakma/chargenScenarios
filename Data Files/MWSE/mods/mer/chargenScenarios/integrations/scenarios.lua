@@ -1,19 +1,6 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
-local itemLists = require("mer.chargenScenarios.util.itemLists")
-local function setTime(hour)
-    tes3.setGlobal("GameHour", hour)
-end
-
-
-local booze = {
-    "potion_local_brew_01",
-    "Potion_Cyro_Whiskey_01",
-    "potion_local_liquor_01",
-    "potion_comberry_wine_01",
-    "potion_comberry_brandy_01",
-    "potion_nord_mead"
-}
+local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 
 local requiresBeastRace = {
     races = {"Argonian", "Khajiit"}
@@ -44,9 +31,6 @@ local scenarios = {
             position = {33,-87,194},
             cellId = "Seyda Neen, Census and Excise Office"
         },
-        onStart = function(self)
-            tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
-        end
     },
     {
         id = "hidingFromTheLaw",
@@ -119,11 +103,7 @@ local scenarios = {
                 id = "chitin arrow",
                 count = 30,
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         }
     },
     {
@@ -144,11 +124,7 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         },
         requirements = requiresBeastRace,
     },
@@ -182,9 +158,6 @@ local scenarios = {
                 count = 25,
             },
         },
-        onStart = function(self)
-            tes3.worldController.weatherController:switchImmediate(tes3.weather.clear)
-        end
     },
     {
         id = "graveRobbing",
@@ -368,11 +341,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         },
     },
     {
@@ -483,7 +452,7 @@ local scenarios = {
                 id = "gold_001",
                 count = 25,
             },
-            itemLists.robe,
+            itemPicks.robe,
         },
     },
     {
@@ -607,11 +576,7 @@ local scenarios = {
                 id = "pick_apprentice_01",
                 count = 2,
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         },
         onStart = function()
             local topics = {
@@ -775,8 +740,8 @@ local scenarios = {
             cellId = "Sadrith Mora, Telvanni Council House"
         },
         items = {
-            itemLists.robe,
-            itemLists.soulGems
+            itemPicks.robe,
+            itemPicks.soulGems(3)
         },
         onStart = function()
             local topics = {
@@ -936,7 +901,7 @@ local scenarios = {
             cellId = "4,-7"
         },
         items = {
-            itemLists.axe,
+            itemPicks.axe,
             {
                 id = "ashfall_firewood",
                 count = 4
@@ -1082,16 +1047,8 @@ local scenarios = {
             },
         },
         items = {
-            {
-                description = "Booze",
-                ids = booze,
-                count = 2
-            },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.booze(4),
+            itemPicks.coinpurse,
             {
                 id = "t_com_compass_01",
                 count = 1,
@@ -1122,7 +1079,7 @@ local scenarios = {
                 id = "ashfall_tent_base_m",
                 noDuplicates = true,
             },
-            itemLists.axe,
+            itemPicks.axe,
             {
                 id = "ingred_hound_meat_01",
                 count = 3
@@ -1130,11 +1087,7 @@ local scenarios = {
             {
                 id = "ashfall_flintsteel"
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         },
     },
     {
@@ -1167,11 +1120,7 @@ local scenarios = {
             },
         },
         items = {
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
             {
                 id = "misc_com_bucket_01",
                 count = 1,
@@ -1212,11 +1161,7 @@ local scenarios = {
                 id = "ingred_muck_01",
                 count = 2
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
         }
     },
     {
@@ -1273,9 +1218,7 @@ local scenarios = {
                 count = 50,
             },
         },
-        onStart = function(self)
-            setTime(18)
-        end
+        time = 18,
     },
     {
         id = "fishing",
@@ -1312,7 +1255,7 @@ local scenarios = {
             },
         },
         items = {
-            itemLists.fishingPole,
+            itemPicks.fishingPole,
             {
                 id = "ingred_scales_01",
                 count = 2
@@ -1330,12 +1273,10 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            itemLists.fishMeat,
-            itemLists.knife,
+            itemPicks.fishMeat(3),
+            itemPicks.knife,
         },
-        onStart = function()
-            setTime(17)
-        end
+        time = 17,
     },
     {
         id = "eggFarmer",
@@ -1391,8 +1332,8 @@ local scenarios = {
             },
             {id = "silver dagger",}
         },
+        time = 19,
         onStart = function(self)
-            setTime(18)
             tes3.messageBox("You are awakened by a noise from the other room.")
         end
     },
@@ -1593,7 +1534,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            itemLists.lute,
+            itemPicks.lute,
             {
                 id = "misc_de_drum_01",
                 count = 1,
@@ -1607,6 +1548,7 @@ local scenarios = {
             {id = "extravagant_shirt_02", noDuplicates = true},
             {id = "expensive_shoes_02", noDuplicates = true},
         },
+        time = 17,
         onStart = function()
             local songController = include("mer.bardicInspiration.controllers.songController")
             if songController then
@@ -1616,7 +1558,6 @@ local scenarios = {
                     difficulty = "beginner",
                 }
             end
-            setTime(17)
         end
     },
     {
@@ -1654,13 +1595,11 @@ local scenarios = {
                 count = 1,
             },
         },
+        time = 18,
+        spells = {
+            { id = "summon scamp" }
+        },
         onStart = function ()
-            setTime(18)
-            --learn summon scamp spell
-            tes3.addSpell{
-                reference = tes3.player,
-                spell = "summon scamp"
-            }
             --pacify creatures and NPCs
             for ref in tes3.player.cell:iterateReferences(tes3.objectType.creature) do
                 if ref.mobile ~= nil then
@@ -1700,8 +1639,8 @@ local scenarios = {
                 count = 1
             },
         },
+        time = 21,
         onStart = function()
-            setTime(21)
             timer.delayOneFrame(function()
                 tes3.equip{
                     item = "potion_skooma_01",
@@ -1747,11 +1686,7 @@ local scenarios = {
                 id = "torch",
                 noDuplicates = true,
             },
-            {
-                id = "ab_misc_pursecoin",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.coinpurse,
             { --robe
                 id = "common_robe_01",
                 noSlotDuplicates = true,
@@ -1779,20 +1714,13 @@ local scenarios = {
             {
                 id = "ashfall_waterskin",
                 noDuplicates = true,
+                data = {
+                    waterAmount = 30
+                }
             }
         },
-        onStart = function()
-            setTime(20)
-            tes3.worldController.weatherController:switchImmediate(tes3.weather.ash)
-            if tes3.getObject("ashfall_waterskin") then
-                --Give the player some water
-                local itemData = tes3.addItemData{
-                    to = tes3.player,
-                    item = "ashfall_waterskin",
-                }
-                itemData.data.waterAmount = 25
-            end
-        end
+        weather = tes3.weather.ash,
+        time = 20,
     }
 }
 

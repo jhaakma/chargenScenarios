@@ -48,7 +48,18 @@ local menu = {
 }
 ChargenMenu.register(menu)
 
----@param e { parent: tes3uiElement, loadouts: ChargenScenariosItemList[] }
+---Sorts lists with defaultActive first, then alphabetically
+---@param a ChargenScenarios.ItemList
+---@param b ChargenScenarios.ItemList
+local function sortLoadouts(a, b)
+    if a.defaultActive == b.defaultActive then
+        return a.name < b.name
+    else
+        return a.defaultActive
+    end
+end
+
+---@param e { parent: tes3uiElement, loadouts: ChargenScenarios.ItemList[] }
 local function createLoadoutList(e)
     local scrollPane = e.parent:createVerticalScrollPane{
         id = "ChargenScenarios_LoadoutsMenu_scrollPane",
@@ -57,6 +68,7 @@ local function createLoadoutList(e)
     scrollPane.widthProportional = 1.0
     scrollPane.heightProportional = nil
 
+    table.sort(e.loadouts, sortLoadouts)
     for _, itemList in ipairs(e.loadouts) do
         LoadoutUI.createLoadoutRow{
             parent = scrollPane,
@@ -74,11 +86,11 @@ function LoadoutsMenu.open(e)
         id = "ChargenScenarios_LoadoutsMenu_outerBlock",
         parent = menu
     }
-    outerBlock.minWidth = 500
+    outerBlock.minWidth = 400
     --heading
     Menu.createHeading{
         parent = outerBlock,
-        text = "Add or Remove Starting Equipment"
+        text = "Starting Equipment"
     }
 
     createLoadoutList{

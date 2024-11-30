@@ -18,7 +18,7 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 
 
 ---@class ChargenScenariosLocation : ChargenScenariosLocationInput
----@field items? ChargenScenariosItemList
+---@field items? ChargenScenarios.ItemList
 ---@field requirements ChargenScenariosRequirements
 ---@field clutterList? ChargenScenariosClutterList
 local Location = {

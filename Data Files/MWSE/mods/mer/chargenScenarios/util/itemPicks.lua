@@ -1,23 +1,5 @@
----@class (exact) ChargenScenarios.Util.ItemLists
----@field boots ChargenScenariosItemPickInput
----@field cuirass ChargenScenariosItemPickInput
----@field leftGauntlet ChargenScenariosItemPickInput
----@field rightGauntlet ChargenScenariosItemPickInput
----@field greaves ChargenScenariosItemPickInput
----@field leftPauldron ChargenScenariosItemPickInput
----@field rightPauldron ChargenScenariosItemPickInput
----@field helm ChargenScenariosItemPickInput
----@field shield ChargenScenariosItemPickInput
----@field weapon ChargenScenariosItemPickInput
----@field hood ChargenScenariosItemPickInput
----@field robe ChargenScenariosItemPickInput
----@field axe ChargenScenariosItemPickInput
----@field fishingPole ChargenScenariosItemPickInput
----@field fishMeat ChargenScenariosItemPickInput
----@field knife ChargenScenariosItemPickInput
----@field lute ChargenScenariosItemPickInput
----@field soulGems ChargenScenariosItemPickInput
-local loadouts = {
+
+local ItemPicks = {
     boots = {
         description = "Boots",
         ids = {
@@ -29,6 +11,7 @@ local loadouts = {
         pickMethod = "bestForClass"
     },
     cuirass = {
+        description = "Cuirass",
         ids = {
             "netch_leather_cuirass",       --light
             "nordic_ringmail_cuirass",     --medium
@@ -149,12 +132,11 @@ local loadouts = {
     axe = {
         description = "Axe",
         ids = {
-            "ashfall_woodaxe_steel",
+            "ashfall_woodaxe",
             "AB_w_ToolWoodAxe",
             "chitin war axe"
         },
         pickMethod = 'firstValid',
-        count = 1,
         noDuplicates = true,
     },
     fishingPole = {
@@ -164,7 +146,6 @@ local loadouts = {
             "misc_de_fishing_pole"
         },
         pickMethod = 'firstValid',
-        count = 1,
         noDuplicates = true,
     },
     fishMeat = {
@@ -175,7 +156,6 @@ local loadouts = {
             "AB_IngCrea_SfMeat_01",
         },
         pickMethod = 'firstValid',
-        count = 1
     },
     knife = {
         description = "Knife",
@@ -184,17 +164,11 @@ local loadouts = {
             "T_Com_Var_Cleaver_01"
         },
         pickMethod = 'firstValid',
-        count = 1,
         noDuplicates = true,
     },
     lute = {
         description = "Lute",
-        ids = {
-            "mer_lute",
-            "misc_de_lute_01"
-        },
-        pickMethod = 'firstValid',
-        count = 1,
+        id = "misc_de_lute_01",
         noDuplicates = true,
     },
     soulGems = {
@@ -205,10 +179,55 @@ local loadouts = {
             "misc_soulgem_petty",
         },
         pickMethod = 'random',
-        count = 3,
-    }
+    },
+    booze = {
+        description = "Booze",
+        ids = {
+            "potion_local_brew_01",
+            "Potion_Cyro_Whiskey_01",
+            "potion_local_liquor_01",
+            "potion_comberry_wine_01",
+            "potion_comberry_brandy_01",
+            "potion_nord_mead"
+        },
+    },
+    coinpurse = {
+        id = "ab_misc_pursecoin",
+        noDuplicates = true,
+    },
 }
 
+---@class (exact) ChargenScenarios.Util.ItemPicks
+---@field boots ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field cuirass ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field leftGauntlet ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field rightGauntlet ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field greaves ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field leftPauldron ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field rightPauldron ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field helm ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field shield ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field weapon ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field hood ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field robe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field axe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field fishingPole ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field fishMeat ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field knife ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field lute ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field soulGems ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field booze ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field coinpurse ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+local out = setmetatable({}, {
+    __index = function(self, key)
+        local itemList = table.deepcopy(ItemPicks[key])
+        itemList.count = 1
+        local func = function(t, count)
+            if count then itemList.count = count end
+            return itemList
+        end
+        return setmetatable(itemList, {__call = func})
+    end
+})
 
-
-return loadouts
+return out

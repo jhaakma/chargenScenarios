@@ -8,6 +8,7 @@
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
 ---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
 ---@field pickMethod? ChargenScenarios.ItemPickMethod The method for picking an item. Default is 'random'
+---@field data? table Additional data added to the item pick. Will only add data to one item
 
 ---@alias ChargenScenarios.ItemPickItem tes3object|tes3misc|tes3clothing|tes3armor|tes3weapon
 ---@alias ChargenScenarios.ItemPickMethod
@@ -103,6 +104,7 @@ function ItemPick:new(data)
     Validator.validate(data, self.schema)
     assert(data.id or data.ids, "ItemPick must have either an id or ids")
     local itemPick = {
+        description = data.description,
         ids = data.id and {data.id} or data.ids,
         alternative = data.alternative,
         count = data.count or 1,
@@ -110,6 +112,7 @@ function ItemPick:new(data)
         noDuplicates = data.noDuplicates,
         noSlotDuplicates = data.noSlotDuplicates,
         pickMethod = data.pickMethod or "random",
+        data = data.data,
     }
 
     --go through ids and remove any where the object doesn't exist
@@ -130,7 +133,7 @@ end
 
 function ItemPick:getDescription()
     local description = self.description
-    if not self.description then
+    if not description then
         local item = tes3.getObject(self.ids[1])
         if item then
             description = item.name
@@ -225,6 +228,16 @@ function ItemPick:giveToPlayer()
                 count = count,
                 playSound = false,
             }
+            if self.data then
+                local itemData = tes3.addItemData{
+                    to = tes3.player,
+                    item = item,
+
+                }
+                for k, v in pairs(self.data) do
+                    itemData.data[k] = v
+                end
+            end
         end
     end
 end
