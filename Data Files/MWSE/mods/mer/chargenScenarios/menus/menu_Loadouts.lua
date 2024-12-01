@@ -15,9 +15,9 @@ local Loadouts = require("mer.chargenScenarios.component.Loadouts")
 
 ---@class ChargenScenarios.LoadoutsMenu
 local LoadoutsMenu = {
-    MENU_ID = "ChargenScenarios:LoadoutsMenu"
+    MENU_ID = "ChargenScenarios:LoadoutsMenu",
+    LOADOUT_LIMIT_LABEL_ID = "ChargenScenarios_LoadoutsMenu_limitLabel",
 }
-
 
 ---@type ChargenScenarios.ChargenMenu.config
 local menu = {
@@ -48,6 +48,36 @@ local menu = {
 }
 ChargenMenu.register(menu)
 
+local function getNumActiveLoadouts(loadouts)
+    local active = 0
+    for _, itemList in ipairs(loadouts) do
+        if itemList.active and not itemList.defaultActive then
+            active = active + 1
+        end
+    end
+    return active
+end
+
+local function updateLimitLabel(loadouts)
+    local limit = common.config.mcm.itemPackageLimit
+    local activeLoadouts = getNumActiveLoadouts(loadouts)
+    local text = string.format("Active Loadouts: %s/%s", activeLoadouts, limit)
+    local label = tes3ui.findMenu(LoadoutsMenu.MENU_ID):findChild(LoadoutsMenu.LOADOUT_LIMIT_LABEL_ID)
+    label.text = text
+end
+
+---@param e { parent: tes3uiElement, loadouts: ChargenScenarios.ItemList[] }
+local function createLimitLabel(e)
+    local subheading = Menu.createSubheading{
+        parent = e.parent,
+        id = LoadoutsMenu.LOADOUT_LIMIT_LABEL_ID,
+        text = "Active Loadouts: 0/3"
+    }
+    updateLimitLabel(e.loadouts)
+    return subheading
+end
+
+
 ---Sorts lists with defaultActive first, then alphabetically
 ---@param a ChargenScenarios.ItemList
 ---@param b ChargenScenarios.ItemList
@@ -68,11 +98,24 @@ local function createLoadoutList(e)
     scrollPane.widthProportional = 1.0
     scrollPane.heightProportional = nil
 
+    local canClick = function(itemList)
+        local limit = common.config.mcm.itemPackageLimit
+        local active = getNumActiveLoadouts(e.loadouts)
+        if itemList.active then return true end
+        return active < limit
+    end
+
+    local onClick = function()
+        updateLimitLabel(e.loadouts)
+    end
+
     table.sort(e.loadouts, sortLoadouts)
     for _, itemList in ipairs(e.loadouts) do
         LoadoutUI.createLoadoutRow{
             parent = scrollPane,
-            itemList = itemList
+            itemList = itemList,
+            canClick = canClick,
+            onClick = onClick,
         }
     end
 end
@@ -81,6 +124,7 @@ end
 function LoadoutsMenu.open(e)
     logger:debug("Opening Loadouts Menu")
 
+    local loadouts = Loadouts.getLoadouts()
     local menu = tes3ui.createMenu{ id = LoadoutsMenu.MENU_ID, fixedFrame = true }
     local outerBlock = Menu.createOuterBlock{
         id = "ChargenScenarios_LoadoutsMenu_outerBlock",
@@ -92,10 +136,15 @@ function LoadoutsMenu.open(e)
         parent = outerBlock,
         text = "Starting Equipment"
     }
+    --subheading - limits
+    createLimitLabel{
+        parent = outerBlock,
+        loadouts = loadouts
+    }
 
     createLoadoutList{
         parent = outerBlock,
-        loadouts = Loadouts.getLoadouts()
+        loadouts = loadouts
     }
 
     local buttonsBlock = Menu.createButtonsBlock{

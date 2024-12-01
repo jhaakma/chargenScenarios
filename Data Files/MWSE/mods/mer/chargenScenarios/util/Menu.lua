@@ -15,6 +15,18 @@ function Menu.createHeading(e)
     return title
 end
 
+function Menu.createSubheading(e)
+    local title = e.parent:createLabel{
+        id = e.id,
+        text = e.text
+    }
+    title.color = tes3ui.getPalette("normal_color")
+    title.absolutePosAlignX = 0.5
+    title.borderTop = 4
+    title.borderBottom = 4
+    return title
+end
+
 ---@param e { parent: tes3uiElement, id?: string}
 ---@return tes3uiElement
 function Menu.createButtonsBlock(e)

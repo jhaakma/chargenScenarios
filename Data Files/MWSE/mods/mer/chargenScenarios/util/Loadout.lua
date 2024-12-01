@@ -56,7 +56,7 @@ local function getToggleText(active)
 end
 
 
----@param e { parent: tes3uiElement, itemList : ChargenScenarios.ItemList }
+---@param e { parent: tes3uiElement, itemList : ChargenScenarios.ItemList, onClick: fun(), canClick: fun(ChargenScenarios.ItemList):boolean }
 function LoadoutUI.createLoadoutRow(e)
     local outerBlock = e.parent:createThinBorder{}
     outerBlock.flowDirection = "left_to_right"
@@ -83,11 +83,16 @@ function LoadoutUI.createLoadoutRow(e)
         button.absolutePosAlignX = 1.0
         button.absolutePosAlignY = 0.5
         button:register("mouseClick", function()
+            if not e.canClick(e.itemList) then
+                tes3.messageBox("You have reached the limit of item packages you can add.")
+                return
+            end
             e.itemList.active = not e.itemList.active
             button.text = getToggleText(e.itemList.active)
             local color = getColor(e.itemList.active)
             label.color = color
             outerBlock:updateLayout()
+            e.onClick()
         end)
     end
 end

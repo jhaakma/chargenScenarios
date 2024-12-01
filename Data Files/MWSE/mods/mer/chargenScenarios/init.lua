@@ -1,10 +1,23 @@
+local common = require("mer.chargenScenarios.common")
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 local Loadouts = require("mer.chargenScenarios.component.Loadouts")
 local ItemList = require("mer.chargenScenarios.component.ItemList")
 
+
 ---@class ChargenScenariosInterop
 local interop = {
-    ItemList = ItemList
+    Scenario = Scenario,
+    Loadouts = Loadouts,
+    ItemList = ItemList,
+    --read only
+    enabled = setmetatable({}, {
+        __index = function()
+            return common.config.mcm.enabled
+        end,
+        __newindex = function()
+            error("Cannot modify ChargenScenariosInterop.enabled")
+        end
+    })
 }
 
 interop.registerLoadout = Loadouts.register

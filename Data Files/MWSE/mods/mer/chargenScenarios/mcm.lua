@@ -22,6 +22,17 @@ local function registerModConfig()
         }
     }
 
+    settings:createSlider{
+        label = "Item Package Limit",
+        description = "The maximum number of item packages that can be selected. Default: 3.",
+        min = 1,
+        max = 20,
+        variable = mwse.mcm.createTableVariable{
+            id = 'itemPackageLimit',
+            table = config.mcm
+        },
+    }
+
     settings:createDropdown{
         label = "Log Level",
         description = "Set the logging level for all Loggers.",

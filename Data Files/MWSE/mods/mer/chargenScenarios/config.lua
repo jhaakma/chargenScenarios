@@ -23,6 +23,7 @@ config.metadata = toml.loadMetadata("Chargen Scenarios") --[[@as MWSE.Metadata]]
 ---@class ChargenScenariosMcmConfig
 local mcmDefault = {
     enabled = true,
+    itemPackageLimit = 3,
     logLevel = "INFO",
     startingLocation = config.defaultLocation,
     startingLocations = {
