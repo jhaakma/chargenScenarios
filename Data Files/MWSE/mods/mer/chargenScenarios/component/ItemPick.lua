@@ -2,13 +2,13 @@
 ---@field description? string A description of the item. Required if using multiple ids
 ---@field id? string The id of the item
 ---@field ids? table<number, string> The ids of multiple items. If this is used instead of 'id', one will be chosen at random.
----@field alternative? string The item id to use if none of the ids are valid
 ---@field count? number The number of items to add. Only useful for random pick methods. Default is 1
 ---@field requirements? ChargenScenariosRequirementsInput The requirements for the item
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
 ---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
 ---@field pickMethod? ChargenScenarios.ItemPickMethod The method for picking an item. Default is 'random'
 ---@field data? table Additional data added to the item pick. Will only add data to one item
+---@field ammo? {weaponId: string, ammoId: string, count: number}[] If a given weapon is selected, this ammo will be added to the player's inventory
 
 ---@alias ChargenScenarios.ItemPickItem tes3object|tes3misc|tes3clothing|tes3armor|tes3weapon
 ---@alias ChargenScenarios.ItemPickMethod
@@ -106,13 +106,13 @@ function ItemPick:new(data)
     local itemPick = {
         description = data.description,
         ids = data.id and {data.id} or data.ids,
-        alternative = data.alternative,
         count = data.count or 1,
         requirements = data.requirements and Requirements:new(data.requirements),
         noDuplicates = data.noDuplicates,
         noSlotDuplicates = data.noSlotDuplicates,
         pickMethod = data.pickMethod or "random",
         data = data.data,
+        ammo = data.ammo
     }
 
     --go through ids and remove any where the object doesn't exist
@@ -236,6 +236,19 @@ function ItemPick:giveToPlayer()
                 }
                 for k, v in pairs(self.data) do
                     itemData.data[k] = v
+                end
+            end
+            if self.ammo then
+                for _, ammoData in ipairs(self.ammo) do
+                    if ammoData.weaponId:lower() == item.id:lower() then
+                        logger:debug("Adding ammo to player inventory: %s", ammoData.ammoId)
+                        tes3.addItem{
+                            reference = tes3.player,
+                            item = ammoData.ammoId,
+                            count = ammoData.count,
+                            playSound = false,
+                        }
+                    end
                 end
             end
         end

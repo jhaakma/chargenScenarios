@@ -3,12 +3,15 @@ local Scenario = require("mer.chargenScenarios.component.Scenario")
 local Loadouts = require("mer.chargenScenarios.component.Loadouts")
 local ItemList = require("mer.chargenScenarios.component.ItemList")
 
+local itemPicks = require("mer.chargenScenarios.util.itemPicks")
+
 
 ---@class ChargenScenariosInterop
 local interop = {
     Scenario = Scenario,
     Loadouts = Loadouts,
     ItemList = ItemList,
+    itemPicks = itemPicks,
     --read only
     enabled = setmetatable({}, {
         __index = function()

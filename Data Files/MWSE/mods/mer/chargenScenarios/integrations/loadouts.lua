@@ -1,5 +1,4 @@
 local itemPicks = require("mer.chargenScenarios.util.itemPicks")
-local ItemList = require("mer.chargenScenarios.component.ItemList")
 local Loadouts = require("mer.chargenScenarios.component.Loadouts")
 
 ---@type ChargenScenarios.ItemListInput[]
@@ -30,8 +29,9 @@ local itemListInputs = {
     },
     {
         name = "Armor",
-        description = "A full set of light, medium or heave armor, whichever is best for the chosen class. Ignores armor slots that are already taken.",
+        description = "Fills in any empty armor slots with light, medium or heave armor, whichever is best for the chosen class.",
         items = {
+            itemPicks.helm,
             itemPicks.boots,
             itemPicks.cuirass,
             itemPicks.greaves,
@@ -94,6 +94,14 @@ local itemListInputs = {
         description = "A lute, if you don't already have one.",
         items = {
             itemPicks.lute
+        }
+    },
+    {
+        name = "Thief's Tools",
+        description = "Lockpicks and probes for the aspiring thief.",
+        items = {
+            { id = "pick_apprentice_01", count = 2, },
+            { id = "probe_apprentice_01", count = 2, },
         }
     }
 }

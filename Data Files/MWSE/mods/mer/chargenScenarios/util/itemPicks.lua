@@ -1,4 +1,5 @@
 
+---@type table<string, ChargenScenariosItemPickInput>
 local ItemPicks = {
     boots = {
         description = "Boots",
@@ -100,8 +101,11 @@ local ItemPicks = {
             "AB_w_ChitinMace",        --blunt
             "chitin short bow",       --marksman
         },
-        noSlotDuplicates = true,
-        pickMethod = "bestForClass"
+        noDuplicates = true,
+        pickMethod = "bestForClass",
+        ammo = {
+            { weaponId = "chitin short bow", ammoId = "chitin arrow", count = 40 }
+        }
     },
     hood = {
         description = "Hood",

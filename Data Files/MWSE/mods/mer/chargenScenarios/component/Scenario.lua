@@ -40,7 +40,7 @@ local Scenario = {
 }
 
 local selectedScenario
-event.register("load", function()
+event.register("loaded", function()
     selectedScenario = nil
 end)
 
