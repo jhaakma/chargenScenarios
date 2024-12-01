@@ -8,7 +8,7 @@ local Loadouts = {
     registeredLoadouts = {}
 }
 
-event.register("load", function()
+event.register("loaded", function()
     logger:debug("Resetting active flag on loadouts")
     --reset active flag on load
     for _, callback in pairs(Loadouts.registeredLoadouts) do
