@@ -48,7 +48,6 @@ end
 
 local function startChargen()
     logger:debug("Starting Chargen")
-    tes3.worldController.weatherController:switchImmediate(0)
     --Set Chargen State
     logger:debug("Setting chargen state to 'start'")
     tes3.findGlobal("CharGenState").value = 10
@@ -87,15 +86,6 @@ local function startChargen()
 
 end
 
----@param e loadedEventData
-local function startChargenOnLoad(e)
-    if common.modEnabled() and e.newGame then
-        if Ashfall then Ashfall.blockNeeds() end
-        timer.delayOneFrame(startChargen)
-    end
-end
-event.register("loaded", startChargenOnLoad)
-
 --[[
     Prevent vanilla chargen scripts from running,
 ]]
@@ -124,13 +114,47 @@ local chargenScripts = {
 }
 
 local function blockChargenScripts()
-    if common.config.mcm.enabled then
-        logger:debug("Overriding Chargen Scripts")
-        for _, scriptId in pairs(chargenScripts) do
-            mwse.overrideScript(scriptId, function()
-                mwscript.stopScript{script = scriptId} ---@diagnostic disable-line
-            end)
-        end
+    logger:debug("Overriding Chargen Scripts")
+    for _, scriptId in pairs(chargenScripts) do
+        mwse.overrideScript(scriptId, function()
+            mwscript.stopScript{script = scriptId} ---@diagnostic disable-line
+        end)
     end
 end
-blockChargenScripts()
+
+local function unblockChargenScripts()
+    logger:debug("Unblocking Chargen Scripts")
+    for _, scriptId in pairs(chargenScripts) do
+        mwse.clearScriptOverride(scriptId)
+    end
+end
+
+event.register("load", function()
+    if common.modEnabled() then
+        blockChargenScripts()
+    else
+        unblockChargenScripts()
+    end
+end)
+
+event.register("loaded", function(e)
+    if not common.modEnabled() then
+        logger:debug("Positioning at vanilla starting location")
+        -- tes3.positionCell{
+        --     reference = tes3.player,
+        --     position = {61, -135, -104},
+        --     orientation = {0, 0, 0},
+        --     cellId = "Imperial Prison Ship"
+        -- }
+    end
+end)
+
+---@param e loadedEventData
+local function startChargenOnLoad(e)
+    if common.modEnabled() and e.newGame then
+        if Ashfall then Ashfall.blockNeeds() end
+        timer.delayOneFrame(startChargen)
+    end
+end
+event.register("loaded", startChargenOnLoad)
+

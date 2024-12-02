@@ -7,21 +7,20 @@ local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 
 
 ---@class ChargenScenariosInterop
-local interop = {
+---@field enabled boolean (Read-only) Whether chargen scenarios is enabled
+local interop = setmetatable({
     Scenario = Scenario,
     Loadouts = Loadouts,
     ItemList = ItemList,
     itemPicks = itemPicks,
     --read only
-    enabled = setmetatable({}, {
-        __index = function()
+}, {
+    __index = function(_, key)
+        if key == "enabled" then
             return common.config.mcm.enabled
-        end,
-        __newindex = function()
-            error("Cannot modify ChargenScenariosInterop.enabled")
         end
-    })
-}
+    end
+})
 
 interop.registerLoadout = Loadouts.register
 

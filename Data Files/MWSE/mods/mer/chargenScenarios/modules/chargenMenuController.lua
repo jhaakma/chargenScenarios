@@ -135,6 +135,7 @@ end
 --MenuStatReview_Okbutton
 --MenuStatReview_BackButton
 local function modifyStatReviewMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -180,6 +181,7 @@ event.register("uiActivated", modifyStatReviewMenu, { filter = "MenuStatReview"}
 ]]
 ---@param e uiActivatedEventData
 local function modifyRaceSexMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -209,6 +211,7 @@ event.register("uiActivated", modifyRaceSexMenu, { filter = "MenuRaceSex"})
 ]]
 ---@param e uiActivatedEventData
 local function modifyClassChoiceMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -234,6 +237,7 @@ event.register("uiActivated", modifyClassChoiceMenu, { filter = "MenuClassChoice
 
 ---@param e uiActivatedEventData
 local function modifyCreateClassMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -258,6 +262,7 @@ event.register("uiActivated", modifyCreateClassMenu, { filter = "MenuCreateClass
 
 ---@param e uiActivatedEventData
 local function modifyChooseClassMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -286,6 +291,7 @@ event.register("uiActivated", modifyChooseClassMenu, { filter = "MenuChooseClass
 ]]
 ---@param e uiActivatedEventData
 local function modifyBirthSignMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end
@@ -366,6 +372,7 @@ end
 ]]
 ---@param e uiActivatedEventData
 local function modifyNameMenu(e)
+    if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
     end

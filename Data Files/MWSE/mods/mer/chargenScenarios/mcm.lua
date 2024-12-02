@@ -19,7 +19,9 @@ local function registerModConfig()
         variable = mwse.mcm.createTableVariable{
             id = 'enabled',
             table = config.mcm
-        }
+        },
+        restartRequired = true,
+        restartRequiredMessage = "The game must be restarted for this to work properly."
     }
 
     settings:createSlider{
