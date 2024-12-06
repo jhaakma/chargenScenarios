@@ -46,6 +46,17 @@ local function disableChargenStuff()
 end
 
 
+local function updateSellusGravius()
+    local sellus = tes3.getReference("chargen captain")
+    if not sellus then
+        logger:warn("Sellus Gravius not found")
+        return
+    end
+    logger:debug("Setting Sellus Gravius state to -1")
+    sellus.object.script.context.state = -1
+end
+
+
 local function startChargen()
     logger:debug("Starting Chargen")
     --Set Chargen State
@@ -57,7 +68,7 @@ local function startChargen()
     --Disable NPCs
     logger:debug("Disabling Vanilla Chargen stuff")
     disableChargenStuff()
-
+    updateSellusGravius()
     --Move Player to Chargen Cell
     logger:debug("Moving player to chargen cell")
     tes3.positionCell(table.copy(
