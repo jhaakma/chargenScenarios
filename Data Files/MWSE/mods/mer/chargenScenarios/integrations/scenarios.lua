@@ -1681,10 +1681,6 @@ local scenarios = {
                 count = 3
             },
             {
-                id = "sc_summonflameatronach",
-                count = 3
-            },
-            {
                 id = "ab_c_commonhoodblack",
                 pickMethod = "firstValid",
                 count = 1,
