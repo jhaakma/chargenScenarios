@@ -855,7 +855,7 @@ local scenarios = {
             "our camp"
         },
         journalUpdates = {
-            { id = "mer_cs_ashlander" }
+            { id = "mer_cs_ashlander", showMessage = true }
         },
         location = { --Massahanud Camp, Sargon's Yurt
             position = {4256, 4014, 15698},
@@ -863,14 +863,8 @@ local scenarios = {
             cellId = "Massahanud Camp, Sargon's Yurt"
         },
         items = {
-            {
-                id = "ingred_wickwheat_01",
-                count = 3,
-            },
-            {
-                id = "ingred_hackle-lo_leaf_01",
-                count = 2,
-            },
+            { id = "Thisitemdoesn'texist"},
+            { id = "ashfall_knife_flint"},
             {
                 id = "ashfall_tent_ashl_m",
                 noDuplicates = true,
@@ -896,21 +890,28 @@ local scenarios = {
                 end
             end
             --Find the nearest active_de_bedroll and remove ownership
-            local closetBedroll = nil
+            local closestBedroll = nil
             local closestDistance = 999999
             for ref in tes3.player.cell:iterateReferences(tes3.objectType.activator) do
                 if ref.object.id == "active_de_bedroll" then
                     local distance = tes3.player.position:distance(ref.position)
                     if distance < closestDistance then
-                        closetBedroll = ref
+                        closestBedroll = ref
                         closestDistance = distance
                     end
                 end
             end
-            if closetBedroll then
-                mwse.log("Removing ownership from bedroll")
-                closetBedroll.itemData.owner = nil
-                closetBedroll.modified = true
+            if closestBedroll then
+                mwse.log("Replacing with player bedroll")
+                local newObject = closestBedroll.object:createCopy{}
+                newObject.name = "Your Bedroll"
+                tes3.createReference{
+                    object = newObject,
+                    position = closestBedroll.position:copy(),
+                    orientation = closestBedroll.orientation:copy(),
+                    cell = closestBedroll.cell,
+                }
+                closestBedroll:delete()
             end
         end,
     },
@@ -1166,28 +1167,19 @@ local scenarios = {
                 orientation = 349,
             },
         },
-        journalEntry =  "I've returned to an old campfire, and to my relief, everything is just as I left it—including my chest. Now, if only I could remember where I hid the key!",
+        journalEntry =  "I've returned to an old campfire, and to my relief, everything is just as I left it-including my chest. Now, if only I could remember where I hid the key!",
         items = {
-            {
-                id = "ashfall_tent_base_m",
-                noDuplicates = true,
-            },
             {
                 description = "Cooking Pot",
                 ids = cookingPots
             },
             {
                 id = "ashfall_firewood",
-                count = 5
-            },
-            itemPicks.axe,
-            {
-                id = "ingred_hound_meat_01",
                 count = 3
             },
-            {
-                id = "ashfall_flintsteel"
-            },
+            itemPicks.axe,
+            itemPicks.meat(3),
+            {id = "ashfall_flintsteel"},
             itemPicks.coinpurse,
         },
     },
@@ -1277,7 +1269,7 @@ local scenarios = {
         name = "Shaking Down Fargoth",
         description = "You are in Seyda Neen, shaking down Fargoth for all he's worth.",
         journalUpdates = {
-            { id = "mer_sc_fargoth" }
+            { id = "mer_cs_fargoth" }
         },
         location = {
             position = {-10412, -71271, 298},
