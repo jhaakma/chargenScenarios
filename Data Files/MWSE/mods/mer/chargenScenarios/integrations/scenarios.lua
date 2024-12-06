@@ -71,6 +71,9 @@ local scenarios = {
             position = {12481, -61011, -280},
             orientation = 0,
         },
+        journalUpdates = {
+            { id = "mer_cs_pearl" }
+        },
         topics = {
             "sell pearls"
         },
@@ -89,13 +92,14 @@ local scenarios = {
                 count = 25,
             },
         },
-        journalEntry = "I've been diving for pearls near Pelagiad. The waters here are rich with them, and I've collected a fair number. Now I need to decide whether to continue diving or return to town and try to sell what I've found.",
     },
-
     {
         id = "huntingInGrazelands",
         name = "Hunting in the Grazelands",
         description = "You are a hunter, stalking your prey in the Grazelands.",
+        journalUpdates = {
+            { id = "mer_cs_hunt" }
+        },
         location = {
             position = {74894, 124753, 1371},
             orientation = 0,
@@ -119,12 +123,14 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
-        journalEntry = "It's a fine day for hunting. Burcanius Varo at the Varo Tradehouse in Vos is expecting a delivery of fresh meat. He pays well for three units of nix-hound meat, but rat meat will suffice if that's all I can find. I should keep my eyes open for prey.",
     },
     {
         id = "workingInTheFields",
         name = "Working in the Fields",
         description = "You are a lowly slave, toiling in the fields outside of Pelagiad.",
+        journalUpdates = {
+            { id = "mer_cs_field" }
+        },
         location = {
             position = {13449, -57064, 136},
             orientation = 0,
@@ -145,12 +151,17 @@ local scenarios = {
             itemPicks.coinpurse,
         },
         requirements = requiresBeastRace,
-        journalEntry = "Master has %PCName working in the fields today. %PCName must keep head down and do the work. But... escape! That is a thought. Even if %PCName runs, how will %PCName get rid of this cursed bracer? Perhaps a smith can remove it, if %PCName can find one who will.",
     },
     {
         id = "gatheringMushrooms",
         name = "Gathering Mushrooms",
         description = "You are in the swamps of the Bitter Coast, searching for ingredients.",
+        journalUpdates = {
+            { id = "mer_cs_mushrooms" }
+        },
+        topics = {
+            "mushrooms"
+        },
         location = {
             position = {-44618, 29841, 598},
             orientation =2,
@@ -177,7 +188,6 @@ local scenarios = {
                 count = 25,
             },
         },
-        journalEntry = "I have been gathering mushrooms in the Bitter Coast. I should keep an eye out for more ingredients.",
     },
     {
         id = "graveRobbing",
@@ -363,7 +373,15 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
-        journalEntry = "I've found an ancestral tomb, ripe for the picking. Surely this one will have some decent loot."
+        journalEntry = "I've found an ancestral tomb, its secrets untouched for who knows how long. Whatever spirits haunt this place won't care if I help myself to a little of what's left behind… right?",
+        onStart = function()
+            timer.start{
+                duration = math.random(12, 24),
+                type = timer.game,
+                callback = "mer_scenarios_ghostTimer",
+                persist = true
+            }
+        end
     },
     {
         id = "magesGuild",
@@ -836,7 +854,9 @@ local scenarios = {
         topics = {
             "our camp"
         },
-        journalEntry = "Another quiet morning in the yurt. I should speak with Sargon and find out what tasks need doing for the camp today.",
+        journalUpdates = {
+            { id = "mer_cs_ashlander" }
+        },
         location = { --Massahanud Camp, Sargon's Yurt
             position = {4256, 4014, 15698},
             orientation =-1,
@@ -1175,7 +1195,9 @@ local scenarios = {
         id= "commoner",
         name = "Commoner",
         description = "You are working as a commoner in a tradehouse, Serving drinks and clearing tables.",
-        journalEntry = "I've been thinking. I'm done serving drinks here. I need my wages to buy the gear I need to start a new life.",
+        journalUpdates = {
+            { id = "mer_cs_commoner" }
+        },
         topics = {
             "my wages"
         },
@@ -1254,6 +1276,9 @@ local scenarios = {
         id = "shakingDownFargoth",
         name = "Shaking Down Fargoth",
         description = "You are in Seyda Neen, shaking down Fargoth for all he's worth.",
+        journalUpdates = {
+            { id = "mer_sc_fargoth" }
+        },
         location = {
             position = {-10412, -71271, 298},
             orientation = 300,
@@ -1280,7 +1305,6 @@ local scenarios = {
                 count = 50, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
             },
         },
-        journalEntry = "I've shaken down Fargoth for all he's worth. I should make myself scarce before the guards arrive.",
     },
     {
         id = "houseOfEarthlyDelights",
@@ -1614,8 +1638,6 @@ local scenarios = {
                 orientation =0,
                 cellId = "Vhul, The Howling Hound"
             },
-
-
         },
         items = {
             {
@@ -1822,3 +1844,27 @@ for _, scenario in ipairs(scenarios) do
     Scenario:register(scenario)
 end
 
+
+timer.register("mer_scenarios_ghostTimer", function()
+    local object = tes3.getObject("mer_cs_ancestor_ghost")
+        or tes3.getObject("ancestor_ghost")
+
+    local distanceBehind = 128
+
+    -- Get the player's forward direction vector
+    local forwardVector = tes3.getPlayerEyeVector()
+    -- Invert it to get the backward direction
+    local backwardVector = -forwardVector
+    -- Calculate the new position
+    local position = tes3.player.position:copy() + backwardVector * distanceBehind
+
+    local ghost = tes3.createReference{
+        object = object,
+        position = position,
+        --facing player
+        orientation = tes3.player.orientation:copy() + tes3vector3.new(0, 0, math.pi),
+        cell = tes3.player.cell
+    }
+    ghost.mobile:startCombat(tes3.player.mobile)
+    tes3.messageBox("You feel a chill down your spine.")
+end)
