@@ -7,6 +7,7 @@
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
 ---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
 ---@field pickMethod? ChargenScenarios.ItemPickMethod The method for picking an item. Default is 'random'
+---@field pickOneOnly? boolean If true, when using pickMethod random and count > 1, the same item will be added multiple times
 ---@field data? table Additional data added to the item pick. Will only add data to one item
 ---@field ammo? {weaponId: string, ammoId: string, count: number}[] If a given weapon is selected, this ammo will be added to the player's inventory
 
@@ -111,6 +112,7 @@ function ItemPick:new(data)
         noDuplicates = data.noDuplicates,
         noSlotDuplicates = data.noSlotDuplicates,
         pickMethod = data.pickMethod or "random",
+        pickOneOnly = data.pickOneOnly,
         data = data.data,
         ammo = data.ammo
     }
@@ -269,7 +271,7 @@ function ItemPick:resolveItems()
     local added = 0
     --If there's only one item in the list, then add them all at once
     --If there's multiple items, pick and add one at a time
-    local hasMultipleItems = #self.ids > 1
+    local hasMultipleItems = #self.ids > 1 and not self.pickOneOnly
     local numAddedPerLoop = hasMultipleItems and 1 or self.count
     while added < (self.count or 1) do
         local pickedItems = self:pick()

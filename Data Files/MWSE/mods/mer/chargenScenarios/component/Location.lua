@@ -57,13 +57,13 @@ function Location:new(data)
     --Validate
     Validator.validate(data, self.schema)
 
+
     ---@type ChargenScenariosLocation
     local location = {
         name = data.name,
         position = data.position,
         orientation = data.orientation,
         cellId = data.cellId,
-        items = data.items and ItemList:new(data.items),
         requirements = Requirements:new(data.requirements),
         onStart = data.onStart,
         clutterList = data.clutter and ClutterList:new(data.clutter),
@@ -71,6 +71,14 @@ function Location:new(data)
     --Create Location
     setmetatable(location, self)
     self.__index = self
+
+    --Add items
+    location.items = data.items and ItemList:new{
+        name = "Location: " .. location:getName(),
+        active = true,
+        items = data.items,
+    }
+
     return location
 end
 

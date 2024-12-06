@@ -5,7 +5,6 @@ local ItemList = require("mer.chargenScenarios.component.ItemList")
 
 local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 
-
 ---@class ChargenScenariosInterop
 ---@field enabled boolean (Read-only) Whether chargen scenarios is enabled
 local interop = setmetatable({
@@ -41,4 +40,4 @@ function interop.registerScenarios(scenarioList)
     return registeredScenarios
 end
 
-return interop
+return interop --[[@as ChargenScenariosInterop|nil]]

@@ -125,6 +125,11 @@ function LoadoutsMenu.open(e)
     logger:debug("Opening Loadouts Menu")
 
     local loadouts = Loadouts.getLoadouts()
+    --for each itemList, if defaultActive then set active to true
+    for _, itemList in ipairs(loadouts) do
+        itemList.active = itemList.defaultActive
+    end
+
     local menu = tes3ui.createMenu{ id = LoadoutsMenu.MENU_ID, fixedFrame = true }
     local outerBlock = Menu.createOuterBlock{
         id = "ChargenScenarios_LoadoutsMenu_outerBlock",
