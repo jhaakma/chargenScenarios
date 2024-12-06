@@ -131,9 +131,10 @@ end
 
 function Loadouts.equipBestItemForEachSlot()
     logger:debug("Equipping best item for each slot")
-    --armor
-    for _, slot in pairs(tes3.armorSlot) do
-        local item = Loadouts.getBestItemInSlot(tes3.objectType.armor, slot)
+
+    --clothing
+    for _, slot in pairs(tes3.clothingSlot) do
+        local item = Loadouts.getBestItemInSlot(tes3.objectType.clothing, slot)
         if item then
             if playerCanEquip(item) then
                 logger:debug("Equipping best armor %s to player", item.id)
@@ -142,13 +143,13 @@ function Loadouts.equipBestItemForEachSlot()
                     reference = tes3.player,
                 }
             else
-                logger:debug("Beast - cannot equip best armor %s", item.id)
+                logger:debug("Beast - cannot equip best clothing %s", item.id)
             end
         end
     end
-    --clothing
-    for _, slot in pairs(tes3.clothingSlot) do
-        local item = Loadouts.getBestItemInSlot(tes3.objectType.clothing, slot)
+    --armor
+    for _, slot in pairs(tes3.armorSlot) do
+        local item = Loadouts.getBestItemInSlot(tes3.objectType.armor, slot)
         if item then
             if playerCanEquip(item) then
                 logger:debug("Equipping best armor %s to player", item.id)
@@ -217,6 +218,7 @@ function Loadouts.addAndEquipCommonClothing()
                 canEquip = item.isUsableByBeasts ~= false
                 logger:debug("Beast - can equip %s: %s", item.id, canEquip)
             end
+
             if canEquip then
                 logger:debug("Equipping deafult %s to player", item.id)
                 tes3.addItem{
