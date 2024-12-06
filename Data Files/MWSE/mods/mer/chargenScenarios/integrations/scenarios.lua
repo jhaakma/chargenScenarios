@@ -44,6 +44,11 @@ local scenarios = {
         onStart = function(self)
             tes3.player.mobile.bounty =
                 tes3.mobilePlayer.bounty + 75
+            tes3.modStatistic{
+                reference = tes3.player.mobile,
+                name = "health",
+                current = math.ceil(tes3.player.object.health * 75)
+            }
         end,
         items = {
             {
@@ -56,7 +61,7 @@ local scenarios = {
                 count = 3
             },
         },
-        journalEntry = "After that botched job, I barely made it out of town with my life. I need to lay low for a while.",
+        journalEntry = "The authorities are after me, and there's a price on my head. The next move is clear: either sell these gems and gather enough money to pay the fine, or track down the Thieves Guild. I've heard they can clear my name... for the right price. Either way, I can't stay hidden forever.",
     },
     {
         id = "pearlDiving",
@@ -65,6 +70,9 @@ local scenarios = {
         location = {
             position = {12481, -61011, -280},
             orientation = 0,
+        },
+        topics = {
+            "sell pearls"
         },
         items = {
             {
@@ -81,7 +89,7 @@ local scenarios = {
                 count = 25,
             },
         },
-        journalEntry = "I've been diving for pearls near Pelagiad. I should either continue my work or return to town to sell them.",
+        journalEntry = "I've been diving for pearls near Pelagiad. The waters here are rich with them, and I've collected a fair number. Now I need to decide whether to continue diving or return to town and try to sell what I've found.",
     },
 
     {
@@ -91,6 +99,9 @@ local scenarios = {
         location = {
             position = {74894, 124753, 1371},
             orientation = 0,
+        },
+        topics = {
+            "sell fresh meat"
         },
         items = {
             {
@@ -108,7 +119,7 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
-        journalEntry = "It's a good day for a hunt. I should keep my eyes open for prey.",
+        journalEntry = "It's a fine day for hunting. Burcanius Varo at the Varo Tradehouse in Vos is expecting a delivery of fresh meat. He pays well for three units of nix-hound meat, but rat meat will suffice if that's all I can find. I should keep my eyes open for prey.",
     },
     {
         id = "workingInTheFields",
@@ -118,20 +129,23 @@ local scenarios = {
             position = {13449, -57064, 136},
             orientation = 0,
         },
+        topics = {
+            "remove slave bracer",
+        },
         items = {
             {
                 id = "ingred_saltrice_01",
                 count = 6
             },
             {
-                id = "slave_bracer_right",
+                id = "mer_cs_slave_bracer",
                 count = 1,
-                noSlotDuplicates = true,
+                noDuplicates = true,
             },
             itemPicks.coinpurse,
         },
         requirements = requiresBeastRace,
-        journalEntry = "Master has me working in the fields today. I should keep my head down and get my work done.",
+        journalEntry = "Master has %PCName working in the fields today. %PCName must keep head down and do the work. But... escape! That is a thought. Even if %PCName runs, how will %PCName get rid of this cursed bracer? Perhaps a smith can remove it, if %PCName can find one who will.",
     },
     {
         id = "gatheringMushrooms",
@@ -731,6 +745,7 @@ local scenarios = {
         id = "houseTelvanni",
         name = "Faction: House Telvanni",
         description = "You are a hireling of House Telvanni, waiting in attendance of the Mouths at the Council Hall in Sadrith Mora.",
+        journalEntry = "I am a hireling of House Telvanni. I must speak with the Mouths to receive my first orders.",
         location =     { --Sadrith Mora, Telvanni Council House
             position = {47, -232, 201},
             orientation =-1,
@@ -750,12 +765,12 @@ local scenarios = {
         factions = {
             { id = "Telvanni" }
         },
-        journalEntry = "I am a hireling of House Telvanni. I must speak with the Mouths to receive my first orders.",
     },
     {
         id = "houseHlaalu",
         name = "Faction: House Hlaalu",
         description = "You are a hireling of House Hlaalu, ready to take up your first order of business in Balmora.",
+        journalEntry = "I am a hireling of House Hlaalu. I should speak with Nileno Dorvayn to discuss business.",
         location =     { --Balmora, Hlaalu Council Manor
             position = {-120, 655, 7},
             orientation =-4,
@@ -787,12 +802,12 @@ local scenarios = {
         factions = {
             { id = "Hlaalu" }
         },
-        journalEntry = "I am a hireling of House Hlaalu. I should speak with Nileno Dorvayn to discuss business.",
     },
     {
         id = "houseRedoran",
         name = "Faction: House Redoran",
         description = "You are a hireling of House Redoran, waiting in attendance of the Councilors at the Redoran Council Hall in Ald'ruhn.",
+        journalEntry = "I am a hireling of House Redoran. I should speak with Neminda at the Redoral Council Entrance to receive my first orders.",
         location = { --Ald-ruhn, Redoran Council Entrance
             position = {749, 763, -126},
             orientation =0,
@@ -805,20 +820,23 @@ local scenarios = {
                 noSlotDuplicates = true,
             }
         },
+        factions = {
+            { id = "Redoran" }
+        },
         topics = {
             "join House Redoran",
             "duties",
             "advancement"
         },
-        factions = {
-            { id = "Redoran" }
-        },
-        journalEntry = "I am a hireling of House Redoran. I should speak with Neminda at the Redoral Council Entrance to receive my first orders.",
     },
     {
         id = "ashlander",
         name = "Ashlander",
         description = "You live with a small group of Ashlanders in a yurt on the coast of the Grazelands.",
+        topics = {
+            "our camp"
+        },
+        journalEntry = "Another quiet morning in the yurt. I should speak with Sargon and find out what tasks need doing for the camp today.",
         location = { --Massahanud Camp, Sargon's Yurt
             position = {4256, 4014, 15698},
             orientation =-1,
@@ -875,12 +893,12 @@ local scenarios = {
                 closetBedroll.modified = true
             end
         end,
-        journalEntry = "Another quiet day in the yurt. Perhaps its time for a change in scenery.",
     },
     {
         id = "lumberjack",
         name = "Lumberjack",
         description = "You are gathering firewood in the wilderness.",
+        journalEntry = "It's been a long day gathering firewood. I should head back to town to sell it.",
         location = {
             position = {38154, -53328, 931},
             orientation = 268,
@@ -900,16 +918,23 @@ local scenarios = {
             },
         },
         time = 15,
-        journalEntry = "It's been a long day gathering firewood. I should head back to town to sell it.",
     },
     {
         id = "prisoner",
         name = "Imprisoned",
         description = "You are imprisoned in the Vivec Hlaalu Prison.",
+        journalEntry = "I was released from the prison in Vivec today. Before my arrest, I hid some gold near the entrance to Othrelas Ancestral Tomb, tucked behind a corkbulb root. It's time to reclaim what's mine.",
         location = {
             position = {274, -214, -100},
             orientation = 0,
             cellId = "Vivec, Hlaalu Prison Cells"
+        },
+        clutter = {
+            {
+                ids = { "mer_cs_imprisoned_chest" },
+                position = { 17989, -69980, 160 },
+                orientation = {0, 0, 0},
+            }
         },
         items = {
             {
@@ -922,12 +947,12 @@ local scenarios = {
                 count = 20
             }
         },
-        journalEntry = "Today's the day. I am finally being released from prison. I wonder how the outside world has changed?",
     },
     {
         id = "shipwrecked",
         name = "Shipwrecked",
         description = "You are the sole survivor of a shipwreck.",
+        journalEntry = "I am the sole survivor of a shipwreck. I must find a way to survive and make my way back to civilization.",
         locations = {
             {  --abandoned shipwreck - OAAB
                 name = "Abandoned Shipwreck",
@@ -1046,30 +1071,94 @@ local scenarios = {
                 noDuplicates = true,
             }
         },
-        journalEntry = "I am the sole survivor of a shipwreck. I must find a way to survive and make my way back to civilization.",
+    },
+    {
+        id = "ashfallCamping",
+        name = "Camping in the Wilderness",
+        description = "You are camping in the wilderness.",
+        journalEntry = "I've set up camp in the wilderness. It's a good place to rest and cook some food.",
+        items = {
+            {
+                description = "Cooking Pot",
+                ids = cookingPots,
+                data = {
+                    waterAmount = 100
+                }
+            },
+            {
+                id = "ashfall_firewood",
+                count = 3
+            },
+            itemPicks.axe,
+            itemPicks.meat(4),
+            { id = "misc_com_iron_ladle" },
+            { id = "ashfall_flintsteel" },
+            itemPicks.coinpurse,
+        },
+        locations = {
+            { --Camping - South of Vivec
+                requirements = {
+                    plugins = { "Ashfall.esp" }
+                },
+                position = {22989, -113084, 599},
+                orientation = 1.51,
+                clutter = {
+                    { --Tent: Common
+                        ids = {"ashfall_tent_base_a"},
+                        position = {23450, -113182, 633},
+                        orientation = {-0, 0.062418811023235, 1.9599673748016},
+                        data = {
+                            tentCover = "ashfall_cov_common",
+                        },
+                        onPlaced = function(reference)
+                            event.trigger("Ashfall:coverCreated", { reference = reference })
+                        end
+                    },
+                    { --Campfire
+                        ids = {"ashfall_campfire"},
+                        position = {23183, -113030, 612},
+                        orientation = {-0, 0.12435500323772, 0.9062665104866},
+                        data = {
+                            fuelLevel = 4,
+                            isLit = true,
+                            burned = true,
+                        }
+                    },
+                    { --Bed: Straw
+                        ids = {"ashfall_strawbed_s"},
+                        position = {23537, -113230, 639},
+                        orientation = {0, -0, 3.5955812931061},
+                        data = {
+                            crafted = true
+                        }
+                    },
+                }
+            },
+        },
     },
     {
         id = "khuulCamping",
-        name = "Camping",
-        description = "You are camping out in the wilderness.",
+        name = "Khuul Camper",
+        description = "You are camping on an island near Khuul.",
         locations = {
             {
                 position = {-78170, 143029, 427},
                 orientation = 349,
             },
         },
+        journalEntry =  "I've returned to an old campfire, and to my relief, everything is just as I left it—including my chest. Now, if only I could remember where I hid the key!",
         items = {
+            {
+                id = "ashfall_tent_base_m",
+                noDuplicates = true,
+            },
             {
                 description = "Cooking Pot",
                 ids = cookingPots
             },
             {
                 id = "ashfall_firewood",
-                count = 4
-            },
-            {
-                id = "ashfall_tent_base_m",
-                noDuplicates = true,
+                count = 5
             },
             itemPicks.axe,
             {
@@ -1081,13 +1170,15 @@ local scenarios = {
             },
             itemPicks.coinpurse,
         },
-        journalEntry = "I've set up camp in the wilderness. It's a good place to rest and cook some food.",
     },
     {
         id= "commoner",
         name = "Commoner",
         description = "You are working as a commoner in a tradehouse, Serving drinks and clearing tables.",
-        journalEntry = "Another day serving drinks to ungrateful patrons. I wonder if there's more to life than this.",
+        journalEntry = "I've been thinking. I'm done serving drinks here. I need my wages to buy the gear I need to start a new life.",
+        topics = {
+            "my wages"
+        },
         locations = {
             {
                 position = { 29, -384, -386 },
