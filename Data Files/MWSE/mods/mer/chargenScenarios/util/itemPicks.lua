@@ -199,6 +199,17 @@ local ItemPicks = {
         id = "ab_misc_pursecoin",
         noDuplicates = true,
     },
+    meat = {
+        description = "Meat",
+        ids = {
+            "ingred_hound_meat_01",
+            "ingred_crab_meat_01",
+            "ingred_rat_meat_01",
+            "ashfall_meat_sfish",
+            "ashfall_meat_kag"
+        },
+        pickOneOnly = true
+    }
 }
 
 ---@class (exact) ChargenScenarios.Util.ItemPicks
@@ -222,6 +233,7 @@ local ItemPicks = {
 ---@field soulGems ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field booze ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field coinpurse ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field meat ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 local out = setmetatable({}, {
     __index = function(self, key)
         local itemList = table.deepcopy(ItemPicks[key])
