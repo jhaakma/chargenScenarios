@@ -9,7 +9,7 @@ local logger = require("mer.chargenScenarios.ScenarioBuilder.luaLogger").new{
 
 local luaClutterTemplate = [[
     { --${name}
-        ids = {"${ids}"},
+        ids = {"${id}"},
         position = {${posx}, ${posy}, ${posz}},
         orientation = {${orz}},
         cell = "${cell}",
@@ -41,12 +41,21 @@ local function registerClutter(target)
             math.floor(target.position.z),
         },
         orientation = {
-            math.floor(target.orientation.x),
-            math.floor(target.orientation.y),
-            math.floor(target.orientation.z),
+            target.orientation.x,
+            target.orientation.y,
+            target.orientation.z,
         },
         cell = target.cell,
-        scale = string.format("%.2d", target.scale)
+        scale = string.format("%.2d", target.scale),
+        data = (function()
+            local data = {}
+            for k, v in pairs(target.data) do
+                if not type(v) == "table" then
+                    data[k] = v
+                end
+            end
+            return data
+        end)()
     }
     addClutter(clutter)
 end
