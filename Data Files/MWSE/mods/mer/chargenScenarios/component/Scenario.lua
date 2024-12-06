@@ -20,7 +20,7 @@ local ClutterList = require("mer.chargenScenarios.component.ClutterList")
 ---@field weather? tes3.weather|`random` (Default: tes3.weather.clear) The weather for the scenario
 ---@field time? number The starting time
 ---@field journalEntry? string A custom journal entry that is written as soon as the scenario starts
----@field journalUpdates? { id: string, index: number }[] A list of journal entries that are updated when the scenario starts
+---@field journalUpdates? { id: string, index: number, showMessage: boolean }[] A list of journal entries that are updated when the scenario starts
 ---@field topics? string[] A list of topics that are added when the scenario starts
 ---@field factions? { id: string, rank?: number }[] (Default rank: 0) A list of factions and ranks that the player is added to when the scenario starts.
 
@@ -220,7 +220,8 @@ end
 function Scenario:doJournal()
     if self.journalUpdates then
         for _, update in ipairs(self.journalUpdates) do
-            tes3.updateJournal{ id = update.id, index = update.index, showMessage = false }
+            logger:debug("Updating journal %s to %s", update.id, update.index)
+            tes3.updateJournal{ id = update.id, index = update.index or 1, showMessage = update.showMessage }
         end
     end
     if self.journalEntry then
