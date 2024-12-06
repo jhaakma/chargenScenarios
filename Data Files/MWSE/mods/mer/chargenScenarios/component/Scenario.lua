@@ -263,10 +263,10 @@ end
 
 --- Start the scenario
 function Scenario:start()
-    self:doClutter()
     self:doTime()
     self:moveToLocation()
     self:doWeather()
+    self:doClutter()
     timer.delayOneFrame(function()
         event.trigger("ChargenScenarios:ScenarioStarted", {scenario = self})
         self:doSpells()

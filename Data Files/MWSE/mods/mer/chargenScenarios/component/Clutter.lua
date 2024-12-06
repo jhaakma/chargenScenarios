@@ -1,25 +1,25 @@
 local common = require("mer.chargenScenarios.common")
+local logger = common.createLogger("Clutter")
 local Requirements = require("mer.chargenScenarios.component.Requirements")
 local Validator = require("mer.chargenScenarios.util.validator")
 
 ---@class ChargenScenariosClutterInput
----@field id string @The id of the clutter object.
----@field ids table<number, string> @The list of clutter object ids. If used instead of 'id', one will be chosen at random from this list.
+---@field id? string @The id of the clutter object.
+---@field ids? table<number, string> @The list of clutter object ids. If used instead of 'id', one will be chosen at random from this list.
 ---@field position table<number, number> @The position the clutter object will be placed at.
 ---@field orientation table<number, number> @The orientation the clutter object will be placed at.
----@field cell string @The cell the clutter object will be placed in.
----@field scale number @The scale of the clutter object.
----@field requirements ChargenScenariosRequirementsInput @The requirements for the clutter object.
+---@field cell? string @The cell the clutter object will be placed in.
+---@field scale? number @The scale of the clutter object.
+---@field requirements? ChargenScenariosRequirementsInput @The requirements for the clutter object.
+---@field data? table<string, any> @Extra data to be stored on the clutter object.
+---@field onPlaced? fun(referenec: tes3reference) @Callback triggered when the clutter object is placed.
 
----@class ChargenScenariosClutter
----@field ids table<number, string> @the list of item ids the clutter is chosen from
----@field position table<number, number> @the position where the clutter will be placed
----@field orientation table<number, number> @the orientation where the clutter will be placed
----@field cell string @the cell where the clutter will be placed
----@field scale number @the scale the clutter will be placed at
----@field requirements ChargenScenariosRequirements @the requirements for the clutter
+---@class ChargenScenariosClutter : ChargenScenariosClutterInput
+---@field requirements? ChargenScenariosRequirements @the requirements for the clutter
 ---@field chosenItem? tes3object @the cached item that was chosen
-local Clutter = {}
+local Clutter = {
+    registeredClutter = {}
+}
 
 --Constructor
 ---@param data ChargenScenariosClutterInput
@@ -34,11 +34,14 @@ function Clutter:new(data)
         position = data.position,
         orientation = data.orientation,
         cell = data.cell,
-        scale = data.scale,
-        requirements = Requirements:new(data.requirements)
+        scale = data.scale or 1,
+        requirements = data.requirements and Requirements:new(data.requirements),
+        data = data.data,
+        onPlaced = data.onPlaced
     }
     self.__index = self
-    table.insert(common.registeredClutters, clutter)
+    table.insert(Clutter.registeredClutter, clutter)
+    setmetatable(clutter, self)
     return clutter
 end
 
@@ -74,6 +77,7 @@ function Clutter:place()
     if self:checkRequirements() then
         local obj = self:getObject() --[[@as tes3misc]]
         if obj then
+            logger:debug("Placing clutter %s", obj.id)
             local reference = tes3.createReference{
                 object = obj,
                 position = self.position,
@@ -82,6 +86,14 @@ function Clutter:place()
             }
             if self.scale then
                 reference.scale = self.scale
+            end
+            if self.data then
+                for k, v in pairs(self.data) do
+                    reference.data[k] = v
+                end
+            end
+            if self.onPlaced then
+                self.onPlaced(reference)
             end
             return reference
         end
