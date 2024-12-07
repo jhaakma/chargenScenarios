@@ -959,15 +959,57 @@ local scenarios = {
         },
         items = {
             {
-                id = "key_vivec_hlaalu_cell",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
                 id = "gold_001",
                 count = 20
             }
         },
+        onStart = function()
+            timer.start{
+                duration = 1,
+                callback = function()
+                    ---Find nearest door and open it
+                    local doorId = "in_v_s_jaildoor_01"
+                    local nearestDoor = nil
+                    for door in tes3.player.cell:iterateReferences(tes3.objectType.door) do
+                        if door.baseObject.id:lower() == doorId then
+                            if not nearestDoor then
+                                nearestDoor = door
+                            else
+                                if tes3.player.position:distance(door.position) < tes3.player.position:distance(nearestDoor.position) then
+                                    nearestDoor = door
+                                end
+                            end
+                        end
+                    end
+                    if nearestDoor then
+                        tes3.unlock{ reference = nearestDoor }
+                        tes3.player:activate(nearestDoor)
+                    end
+
+                    --Find nearest ordinator and make them speak
+                    local ordinatorId = "ordinator wander_hp"
+                    local nearestOrdinator = nil
+                    for ordinator in tes3.player.cell:iterateReferences(tes3.objectType.npc) do
+                        if ordinator.baseObject.id:lower() == ordinatorId then
+                            if not nearestOrdinator then
+                                nearestOrdinator = ordinator
+                            else
+                                if tes3.player.position:distance(ordinator.position) < tes3.player.position:distance(nearestOrdinator.position) then
+                                    nearestOrdinator = ordinator
+                                end
+                            end
+                        end
+                    end
+                    if nearestOrdinator then
+                        tes3.say{
+                            reference = nearestOrdinator,
+                            text = "Move along, Outlander.",
+                            soundPath = "Vo\\d\\m\\Hlo_DM111.mp3"
+                        }
+                    end
+                end
+            }
+        end
     },
     {
         id = "shipwrecked",
