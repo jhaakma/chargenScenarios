@@ -2,7 +2,7 @@
 local common = require('mer.chargenScenarios.common')
 local logger = common.createLogger("ChargenController")
 local controls = require('mer.chargenScenarios.util.Controls')
-local Ashfall = require("mer.ashfall.interop")
+local Ashfall = include("mer.ashfall.interop")
 
 local defaultTopics = {
     "duties",
