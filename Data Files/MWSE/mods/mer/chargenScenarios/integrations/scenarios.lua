@@ -1709,12 +1709,46 @@ local scenarios = {
         id = "necromancer",
         name = "Necromancer's Apprentice",
         description = "You are an apprentice studying the dark arts of necromancy in a secluded cave.",
-        journalEntry = "I've been studying the dark arts of necromancy in Yesamsi cave.",
+        journalUpdates = {
+            { id = "mer_cs_necro" }
+        },
+        topics = {
+            "necromancy"
+        },
         locations = {
             { --Yesamsi
                 position = {-930, -405, 272},
                 orientation =0,
                 cellId = "Yesamsi"
+            },
+        },
+        clutter = {
+            { --boulder
+                ids = {"in_moldboulder03"},
+                position = {-197, -176, -90},
+                orientation = {0, -0, 1.8000000715256},
+                cell = "Yesamsi",
+                scale = 2.0,
+            },
+            { --boulder
+                ids = {"in_moldboulder03"},
+                position = {-145, -331, -73},
+                orientation = {0, 0, 0.5},
+                cell = "Yesamsi",
+                scale = 2.0,
+            },
+            { --Skeleton
+                ids = {"mer_cs_skeleton"},
+                position = {-100, -218, 52},
+                orientation = {0, 0, 0.25054800510406},
+                cell = "Yesamsi",
+                scale = 1,
+            },
+            { --Bonepile
+                ids = {"mer_cs_bonepile"},
+                position = {-133, -249, -12},
+                orientation = {0, 0, 0},
+                cell = "Yesamsi",
             },
         },
         items = {
