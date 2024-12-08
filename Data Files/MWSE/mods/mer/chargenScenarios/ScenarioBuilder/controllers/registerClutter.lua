@@ -19,7 +19,7 @@ local luaClutterTemplate = [[
 
 local function addClutter(clutterToAdd)
     local clutterString = luaClutterTemplate:
-        gsub("${name}", clutterToAdd.name):
+        gsub("${name}", clutterToAdd.name or ""):
         gsub("${id}", clutterToAdd.id):
         gsub("${posx}", clutterToAdd.position[1]):
         gsub("${posy}", clutterToAdd.position[2]):
