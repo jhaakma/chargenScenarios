@@ -3,7 +3,8 @@ local logger = common.createLogger("chargenMenuController")
 local Tooltip = require("mer.chargenScenarios.util.Tooltip")
 local ChargenMenu = require("mer.chargenScenarios.component.ChargenMenu")
 local Controls = require("mer.chargenScenarios.util.Controls")
-local Ashfall = require("mer.ashfall.interop")
+local ChargenState = require("mer.chargenScenarios.util.ChargenState")
+local Ashfall = include("mer.ashfall.interop")
 
 local function nameChosen()
     return tes3.player.tempData.chargenScenariosNameChosen
@@ -120,7 +121,7 @@ local function startGame()
             chargenMenu:onStart()
         end
     end
-    tes3.findGlobal("CharGenState").value = -1
+    ChargenState.complete()
     Controls.enableControls()
     if Ashfall then
         timer.start{
@@ -135,6 +136,7 @@ end
 --MenuStatReview_Okbutton
 --MenuStatReview_BackButton
 local function modifyStatReviewMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -181,6 +183,7 @@ event.register("uiActivated", modifyStatReviewMenu, { filter = "MenuStatReview"}
 ]]
 ---@param e uiActivatedEventData
 local function modifyRaceSexMenu(e)
+
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -193,8 +196,12 @@ local function modifyRaceSexMenu(e)
 
     --override OK button
     local okButton = menu:findChild("MenuRaceSex_Okbutton")
-    okButton:registerBefore("mouseClick", function()
-        --menu:destroy()
+
+    ---@param e tes3uiEventData
+    okButton:registerBefore("mouseClick", function(e)
+        if ChargenState.isComplete() then
+            return
+        end
         setRaceChosen()
         if not classChosen() then
             tes3.runLegacyScript{ command = "EnableClassMenu"} ---@diagnostic disable-line
@@ -211,6 +218,7 @@ event.register("uiActivated", modifyRaceSexMenu, { filter = "MenuRaceSex"})
 ]]
 ---@param e uiActivatedEventData
 local function modifyClassChoiceMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -237,6 +245,7 @@ event.register("uiActivated", modifyClassChoiceMenu, { filter = "MenuClassChoice
 
 ---@param e uiActivatedEventData
 local function modifyCreateClassMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -262,6 +271,7 @@ event.register("uiActivated", modifyCreateClassMenu, { filter = "MenuCreateClass
 
 ---@param e uiActivatedEventData
 local function modifyChooseClassMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -291,6 +301,7 @@ event.register("uiActivated", modifyChooseClassMenu, { filter = "MenuChooseClass
 ]]
 ---@param e uiActivatedEventData
 local function modifyBirthSignMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
@@ -372,6 +383,7 @@ end
 ]]
 ---@param e uiActivatedEventData
 local function modifyNameMenu(e)
+    if ChargenState.isComplete() then return end
     if not common.config.mcm.enabled then return end
     if (not e.newlyCreated) then
         return
