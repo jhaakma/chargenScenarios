@@ -1,4 +1,4 @@
-
+local TagManager = require("CraftingFramework").TagManager
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 
@@ -621,8 +621,6 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
-
-
             { --Andothren, Guild of Mages
                 name = "Andothren",
                 position = {7847, 4297, 15203},
@@ -632,8 +630,6 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
-
-
             { --Firewatch, Guild of Mages
                 name = "Firewatch",
                 position = {5188, 2511, 10842},
@@ -643,8 +639,6 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
-
-
             { --Helnim, Guild of Mages
                 name = "Helnim",
                 position = {4730, 3631, 12660},
@@ -654,8 +648,6 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
-
-
             { --Old Ebonheart, Guild of Mages
                 name = "Old Ebonheart",
                 position = {4295, 4496, 15234},
@@ -772,7 +764,6 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
-
             --SHOTN
             { --Karthwasten, Guild of Fighters
                 name = "Karthwasten",
@@ -783,7 +774,6 @@ local scenarios = {
                     plugins = { "Sky_Main.esm" }
                 }
             },
-
         },
         items = {
             {
@@ -874,10 +864,23 @@ local scenarios = {
         id = "imperialLegion",
         name = "Faction: Imperial Legion",
         description = "You are a recruit of the Imperial Legion, awaiting orders in Gnisis.",
-        { --Imperial Legion - Gnisis, Madach Tradehouse
-            position = {393, -574, -2046},
-            orientation =2.03,
-            cellId = "Gnisis, Madach Tradehouse"
+        locations = {
+            {
+                position = {103, 1043, -894},
+                orientation = 1,
+                cellId = "Gnisis, Madach Tradehouse",
+                requirements = {
+                    excludedPlugins = { "Beautiful cities of Morrowind.ESP" }
+                }
+            },
+            { --Imperial Legion - Gnisis, Madach Tradehouse
+                position = {393, -574, -2046},
+                orientation =2.03,
+                cellId = "Gnisis, Madach Tradehouse",
+                requirements = {
+                    plugins = { "Beautiful cities of Morrowind.ESP" }
+                }
+            },
         },
         items = {
             {
@@ -1328,6 +1331,16 @@ local scenarios = {
                 id = "t_com_compass_01",
                 count = 1,
                 noDuplicates = true,
+            },
+            {
+                id = "t_com_spyglass01",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "T_Com_Cm_Hat_04",
+                count = 1,
+                noDuplicates = true,
             }
         },
     },
@@ -1438,10 +1451,21 @@ local scenarios = {
                 orientation = 0,
                 cellId = "Maar Gan, Andus Tradehouse"
             },
-            { --Imperial Legion - Gnisis, Madach Tradehouse
-                position = {393, -574, -2046},
-                orientation =2.03,
-                cellId = "Gnisis, Madach Tradehouse"
+            { --Gnisis, Madach Tradehouse
+                position = {-57, 280, -125},
+                orientation =-2,
+                cellId = "Gnisis, Madach Tradehouse",
+                requirements = {
+                    excludedPlugins = { "Beautiful cities of Morrowind.ESP" }
+                }
+            },
+            { --Commoner - Gnisis, Madach Tradehouse
+                position = {-283, -999, -1718},
+                orientation =0.27,
+                cellId = "Gnisis, Madach Tradehouse",
+                requirements = {
+                    plugins = { "Beautiful cities of Morrowind.ESP" }
+                }
             },
             { --Suran, Suran Tradehouse
                 position = {4, 240, 519},
@@ -1474,7 +1498,26 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             }
-        }
+        },
+        onStart = function()
+            --find the nearest publican in the cell and set their disposition to 80
+            ---@param ref tes3reference
+            for ref in tes3.player.cell:iterateReferences(tes3.objectType.npc) do
+                local class = ref.object.class
+                if TagManager.hasId{ id = class.id, tag = "publican"} then
+                    if tes3.modDisposition then
+                        local disposition = ref.object.baseDisposition
+                        local change = 80 - disposition
+                        tes3.modDisposition{
+                            reference = ref,
+                            value = change
+                        }
+                    end
+                    ref.mobile.talkedTo = true
+                    return
+                end
+            end
+        end
     },
     {
         id = "pilgrimage",
@@ -1713,11 +1756,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-
             itemPicks.fancyOutfit,
-            -- {id = "expensive_pants_03", noDuplicates = true},
-            -- {id = "extravagant_shirt_02", noDuplicates = true},
-            -- {id = "expensive_shoes_02", noDuplicates = true},
         },
         time = 17,
         onStart = function()

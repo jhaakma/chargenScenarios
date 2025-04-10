@@ -5,26 +5,26 @@ local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
     {
-        id = "oldEbonheartAlley",
-        name = "Old Ebonheart Alley",
-        description = "You are playing dice in an alley in Old Ebonheart.",
-        journalEntry = "I've been playing dice in an alley in Old Ebonheart.",
-        location = {
-            position = {61567, -150436, 1024},
-            orientation = 0,
-            cellId = "Old Ebonheart, Alley"
+        id = "oldEbonheart",
+        name = "Old Ebonheart",
+        description = "You have just stepped off the boat at Old Ebonheart.",
+        journalEntry = "I have just stepped off the boat at Old Ebonheart. Time to find my way around the city.",
+        location = { --Stepping off the boat in Old Ebonheart
+            position = {60970, -144577, 341},
+            orientation =1.41,
         },
         items = {
-            itemPicks.gold(25),
+            itemPicks.gold(50),
             {
-                id = "T_De_Drink_LiquorLlotham_01",
-                count = 3
-            },
-            {
-                id = "T_Com_Dice_01",
+                id = "t_sc_mapindorillandsnorthwesttr",
                 count = 1,
                 noDuplicates = true,
             },
+            {
+                id = "T_Com_Cm_Hat_04",
+                count = 1,
+                noDuplicates = true,
+            }
         }
     },
     {
