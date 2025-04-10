@@ -30,21 +30,39 @@ local scenarios = {
     {
         id = "firewatchCollege",
         name = "College of Firewatch",
-        description = "You are a student at the College of Firewatch.",
-        journalEntry = "I have just enrolled at the College of Firewatch.",
-        location = {
-            position = {5718, 3587, 12401},
-            orientation = 0,
+        description = "You are a prospective student at the College of Firewatch.",
+        journalEntry = "I have finally saved up enough to enroll at the College of Firewatch. I should speak to Marilus Arjus and decide what course to enrol in.",
+        location =     { --Firewatch, College
+            position = {5182, 3518, 12098},
+            orientation =3.14,
             cellId = "Firewatch, College"
         },
         items = {
-            itemPicks.gold(100),
+            itemPicks.gold(1500),
             {
-                id = "T_Sc_GuideToFirewatchTR",
+                id = "TR_m1_FW_College_EnrollmentInfo",
                 count = 1,
                 noDuplicates = true,
             },
-        }
+            {
+                id = "potion_t_bug_musk_01",
+                count = 1,
+                noDuplicates = true,
+            }
+        },
+        onStart = function()
+            local marilus = tes3.getReference("TR_m1_Marilus_Arjus")
+            if marilus then
+                local currentDisp = marilus.object.baseDisposition
+                if currentDisp < 50 then
+                    local change = 50 - currentDisp
+                    tes3.modDisposition{
+                        reference = marilus,
+                        value = change
+                    }
+                end
+            end
+        end
     },
     {
         id = "dreynimSpa",
