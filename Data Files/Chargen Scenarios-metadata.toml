@@ -3,7 +3,7 @@ name = "Chargen Scenarios"
 description = "An alternate start / chargen overhaul mod for Morrowind."
 repository = "https://github.com/jhaakma/chargenScenarios"
 authors = [ "Merlord",]
-version = "0.2.0"
+version = "0.2.1"
 
 [dependencies]
 assets = [ "MWSE\\mods\\mer\\chargenScenarios",]
