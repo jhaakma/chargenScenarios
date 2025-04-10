@@ -1,11 +1,12 @@
 ---@class (exact) ChargenScenariosItemPickInput
 ---@field description? string A description of the item. Required if using multiple ids
 ---@field id? string The id of the item
----@field ids? table<number, string> The ids of multiple items. If this is used instead of 'id', one will be chosen at random.
+---@field ids? string[] The ids of multiple items. If this is used instead of 'id', one will be chosen at random.
 ---@field count? number The number of items to add. Only useful for random pick methods. Default is 1
 ---@field requirements? ChargenScenariosRequirementsInput The requirements for the item
 ---@field noDuplicates? boolean If true, the same item will not be added if it is already in the player's inventory
 ---@field noSlotDuplicates? boolean If true, the same item will not be added if an item of the same type is already in the player's inventory
+---@field noListDuplicates? boolean If true, the same item will not be added if any items in the itemPick ids list are already in the player's inventory
 ---@field pickMethod? ChargenScenarios.ItemPickMethod The method for picking an item. Default is 'random'
 ---@field pickOneOnly? boolean If true, when using pickMethod random and count > 1, the same item will be added multiple times
 ---@field data? table Additional data added to the item pick. Will only add data to one item
@@ -42,6 +43,7 @@ local ItemPick = {
             requirements = { type = Requirements.schema, required = false },
             noDuplicates = { type = "boolean", required = false },
             noSlotDuplicates = { type = "boolean", required = false },
+            noListDuplicates = { type = "boolean", required = false },
             pickMethod = { type = "string", required = false },
         }
     }
@@ -111,6 +113,7 @@ function ItemPick:new(data)
         requirements = data.requirements and Requirements:new(data.requirements),
         noDuplicates = data.noDuplicates,
         noSlotDuplicates = data.noSlotDuplicates,
+        noListDuplicates = data.noListDuplicates,
         pickMethod = data.pickMethod or "random",
         pickOneOnly = data.pickOneOnly,
         data = data.data,
@@ -186,11 +189,10 @@ local function isEquippableType(item)
 end
 
 ---Check if the player has an item of the same type and slot/weapontype
----@param item tes3clothing|tes3armor|tes3weapon
+---@param item ChargenScenarios.ItemPickItem
 local function playerHasSameItemType(item)
     if not isEquippableType(item) then return false end
-    local player = tes3.player
-    for _, stack in pairs(player.object.inventory) do
+    for _, stack in pairs(tes3.player.object.inventory) do
         if stack.object.objectType == item.objectType then
             if item.objectType == tes3.objectType.armor or item.objectType == tes3.objectType.clothing then
                 if stack.object.slot == item.slot then
@@ -206,54 +208,92 @@ local function playerHasSameItemType(item)
     return false
 end
 
+function ItemPick:playerHasListDuplicate()
+    for _, id in ipairs(self.ids) do
+        if tes3.player.object.inventory:contains(id) then
+            logger:debug("Player already has item from list, skipping")
+            return true
+        end
+    end
+    return false
+end
 
-function ItemPick:giveToPlayer()
-    self:resolveItems()
-    for item, count in pairs(self.resolvedItems) do
-        if self.noDuplicates and tes3.player.object.inventory:contains(item) then
-            logger:debug("Player already has item, skipping %s", item)
-        elseif self.noSlotDuplicates and playerHasSameItemType(item) then
-            logger:debug("Player already has item of same type, skipping %s", item)
-        elseif tes3.player.object.race.isBeast and item.isUsableByBeasts == false then
-            logger:debug("Beast cannot use %s, adding gold value instead", item)
-            tes3.addItem{
-                reference = tes3.player,
-                item = "gold_001",
-                count = item.value,
-                playSound = false,
-            }
-        else
-            logger:debug("Adding item to player inventory: %s", item)
-            tes3.addItem{
-                reference = tes3.player,
+---Add the item to the player's inventory if it passes the skip flag checks
+---@param item ChargenScenarios.ItemPickItem
+---@param count number
+function ItemPick:checkAndGiveItem(item, count)
+    logger:debug("Checking item: %s. Flags:%s%s%s", item,
+        self.noDuplicates and " noDuplicates" or "",
+        self.noSlotDuplicates and " noSlotDuplicates" or "",
+        self.noListDuplicates and " noListDuplicates" or ""
+    )
+
+
+    if self.noDuplicates and tes3.player.object.inventory:contains(item) then
+        logger:debug("Player already has item, skipping %s", item)
+        return
+    end
+
+    if self.noSlotDuplicates and playerHasSameItemType(item) then
+        logger:debug("Player already has item of same type, skipping %s", item)
+        return
+    end
+
+    if tes3.player.object.race.isBeast and item.isUsableByBeasts == false then
+        logger:debug("Beast cannot use %s, adding gold value instead", item)
+        tes3.addItem{
+            reference = tes3.player,
+            item = "gold_001",
+            count = item.value,
+            playSound = false,
+        }
+    else
+        logger:debug("Adding item to player inventory: %s", item)
+        tes3.addItem{
+            reference = tes3.player,
+            item = item,
+            count = count,
+            playSound = false,
+        }
+        if self.data then
+            local itemData = tes3.addItemData{
+                to = tes3.player,
                 item = item,
-                count = count,
-                playSound = false,
-            }
-            if self.data then
-                local itemData = tes3.addItemData{
-                    to = tes3.player,
-                    item = item,
 
-                }
-                for k, v in pairs(self.data) do
-                    itemData.data[k] = v
-                end
+            }
+            for k, v in pairs(self.data) do
+                itemData.data[k] = v
             end
-            if self.ammo then
-                for _, ammoData in ipairs(self.ammo) do
-                    if ammoData.weaponId:lower() == item.id:lower() then
-                        logger:debug("Adding ammo to player inventory: %s", ammoData.ammoId)
-                        tes3.addItem{
-                            reference = tes3.player,
-                            item = ammoData.ammoId,
-                            count = ammoData.count,
-                            playSound = false,
-                        }
-                    end
+        end
+        if self.ammo then
+            for _, ammoData in ipairs(self.ammo) do
+                if ammoData.weaponId:lower() == item.id:lower() then
+                    logger:debug("Adding ammo to player inventory: %s", ammoData.ammoId)
+                    tes3.addItem{
+                        reference = tes3.player,
+                        item = ammoData.ammoId,
+                        count = ammoData.count,
+                        playSound = false,
+                    }
                 end
             end
         end
+    end
+end
+
+function ItemPick:giveToPlayer()
+    self:resolveItems()
+    if self.noListDuplicates then
+        logger:debug("Checking for list duplicates")
+        --log all ids
+        logger:debug("ItemPick ids: %s", table.concat(self.ids, ", "))
+        if self:playerHasListDuplicate() then
+            logger:debug("Player already has item from list, skipping")
+            return
+        end
+    end
+    for item, count in pairs(self.resolvedItems) do
+        self:checkAndGiveItem(item, count)
     end
 end
 

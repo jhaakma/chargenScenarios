@@ -244,9 +244,11 @@ end
 function Scenario:doFactions()
     if self.factions then
         for _, factionData in ipairs(self.factions) do
-            local redoran = tes3.getFaction(factionData.id)
-            redoran.playerJoined = true
-            redoran.playerRank = factionData.rank or 0
+            local faction = tes3.getFaction(factionData.id)
+            if faction then
+                faction.playerJoined = true
+                faction.playerRank = factionData.rank or 0
+            end
         end
     end
 end

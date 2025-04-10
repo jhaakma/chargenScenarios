@@ -1,5 +1,6 @@
 
 local Scenario = require("mer.chargenScenarios.component.Scenario")
+local itemPicks = require("mer.chargenScenarios.util.itemPicks")
 
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
@@ -14,10 +15,7 @@ local scenarios = {
             cellId = "Old Ebonheart, Alley"
         },
         items = {
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
             {
                 id = "T_De_Drink_LiquorLlotham_01",
                 count = 3
@@ -40,59 +38,13 @@ local scenarios = {
             cellId = "Firewatch, College"
         },
         items = {
-            {
-                id = "gold_001",
-                count = 100,
-            },
+            itemPicks.gold(100),
             {
                 id = "T_Sc_GuideToFirewatchTR",
                 count = 1,
                 noDuplicates = true,
             },
         }
-    },
-    {
-        id = "caravanGuard",
-        name = "Caravan Guard",
-        description = "You are guarding a caravan in Arvud.",
-        journalEntry = "I am guarding a caravan in Arvud.",
-        location = {
-            position = {-29151, -210575, 604},
-            orientation = 0,
-        },
-        items = {
-            {
-                id = "T_De_Guarskin_Cuirass_01",
-                count = 1,
-                noSlotDuplicates = true,
-            },
-        }
-    },
-    {
-        id = "kemelZeRuins",
-        name = "Kemel-Ze Ruins",
-        description = "You are exploring the ruins of Kemel-Ze.",
-        journalEntry = "I am exploring the ruins of Kemel-Ze.",
-        location = {
-            position = {182058, -8715, 5104},
-            orientation = 0,
-        },
-        items = {
-            {
-                id = "bk_tamrielicreligions",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "gold_001",
-                count = 25,
-            },
-            {
-                id = "silver dagger",
-                count = 1,
-                noDuplicates = true,
-            },
-        },
     },
     {
         id = "dreynimSpa",
@@ -123,7 +75,7 @@ local scenarios = {
     },
     {
         id = "arrivingInNivalis",
-        name = "Arriving in Nivalis",
+        name = "Nivalis",
         description = "You have just arrived at the Imperial settlement of Nivalis.",
         journalEntry = "I have just arrived at the Imperial settlement of Nivalis.",
         location = {
@@ -136,10 +88,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 55,
-            },
+            itemPicks.gold(50),
             {
 
                 id = "T_Imp_ColFur_Boots_01",
@@ -150,7 +99,7 @@ local scenarios = {
     },
     {
         id = "sadasPlantation",
-        name = "Sadas Plantation",
+        name = "Plantation Slave",
         description = "You are a slave working on the Sadas Plantation.",
         journalEntry = "Master Sadas has me working on his plantation. I need to keep my head down.",
         location = {
@@ -179,37 +128,6 @@ local scenarios = {
         },
     },
     {
-        id = "workingOnTheDocks",
-        name = "Working on the Docks",
-        description = "You are a dock worker in Andothren.",
-        journalEntry = "I am working as a dock worker in Andothren. The work is hard but the pay is... well, it's work.",
-        location = {
-            position = {3016, -125842, 544},
-            orientation = 270,
-        },
-        items = {
-            {
-                id = "gold_001",
-                count = 15,
-            },
-            {
-                id = "T_Com_Mallet_01",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "misc_hook",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "T_Com_Var_Harpoon_01",
-                count = 1,
-                noDuplicates = true,
-            },
-        },
-    },
-    {
         id = "teynCensus",
         name = "Teyn Census Office",
         description = "You are being processed at the census office in Teyn.",
@@ -220,10 +138,7 @@ local scenarios = {
             cellId = "Teyn, Census and Excise Office"
         },
         items = {
-            {
-                id = "gold_001",
-                count = 75,
-            },
+            itemPicks.gold(75),
             {
                 id = "T_IngFood_Bread_01",
                 count = 1,
@@ -247,10 +162,7 @@ local scenarios = {
                 count = 2,
                 noDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 100,
-            },
+            itemPicks.gold(100),
             {
                 id = "iron dagger",
                 count = 1,
@@ -269,8 +181,297 @@ local scenarios = {
                 end
             end
         end,
-    }
+    },
+    {
+        id = "bakery",
+        name = "Buying Fresh Bread",
+        description = "You have stopped by a local bakery to buy some fresh bread.",
+        journalEntry = "I have arrived at the bakery. I should see what they have available.",
+        locations = {
+            {
+             --Vhul, Bakers' Hall
+                name = "Vhul",
+                position = {111, 52, -126},
+                orientation =2.86,
+                cellId = "Vhul, Bakers' Hall"
+            },
+            { --Karthwasten, Lelena Aurtius: Baker
+                name = "Karthwasten",
+                position = {-752, 74, 2},
+                orientation =-0.14,
+                cellId = "Karthwasten, Lelena Aurtius: Baker"
+            },
+        },
+        items = {
+            itemPicks.gold(30)
+        },
+    },
+    {
+        id = "erothHermit",
+        name = "Hermit of Eroth",
+        description = "You are a hermit living on the Island of Eroth. You have few possessions and no friends, but that's just the way you like it.",
+        location ={ --Living as a hermit on Eroth Island
+            position = {357102, -31316, 361},
+            orientation =0.59,
+        },
+        items = {
+            {
+                id = "ashfall_bedroll",
+                count = 1,
+                noDuplicates = true,
+            }
+        }
+    },
 
+    {
+        id = "botheanFalls",
+        name = "Boethian Falls Pilgrimage",
+        description = "You are on a pilgrimage to the Boethian Falls.",
+        location =     { --Visiting the Boethian Falls
+            position = {265250, 4529, 19},
+            orientation =-2.48,
+        },
+        items = {
+            {
+                id = "T_IngFlor_BlackrosePetal_01",
+                count = 1,
+            },
+            itemPicks.gold(50),
+        },
+        journalEntry = "I have made it to the Boethian Falls. I should find the shrine and offer a black rose to complete my pilgrimage.",
+    },
+
+    {
+        id = "leftForDead",
+        name = "Left for Dead",
+        description = "While travelling to the fort of Ammar, you were attacked by bandits. You have been left for dead on the side of the road.",
+        journalEntry = "I have been attacked by bandits. I should find a way to get back to civilization.",
+        location = { --Left for dead on the side of the road
+            position = {195622, -74295, 478},
+            orientation =-0.27,
+        },
+        onStart = function()
+            tes3.setStatistic{
+                reference = tes3.player,
+                name = "health",
+                current = 5,
+            }
+            tes3.playAnimation{
+                reference=tes3.player,
+                group=tes3.animationGroup.knockOut,
+                startFlag = tes3.animationStartFlag.immediate,
+                loopCount = 1
+            }
+        end
+    },
+
+    {
+        id = "necromCatacombs",
+        name = "Necrom Catacombs",
+        description = "You are in Necrom, exploring the catacombs beneath the city.",
+        location = { --Necrom, Catacombs: First Chamber
+            position = {134, 1287, -446},
+            orientation =-3.09,
+            cellId = "Necrom, Catacombs: First Chamber"
+        },
+        items = {
+            itemPicks.gold(50),
+            {
+                id = "light_com_torch_01_256",
+                count = 3,
+            },
+            {
+                id = "pick_apprentice_01",
+                count = 1,
+            }
+        },
+    },
+
+    {
+        id = "akamoraTemple",
+        name = "Akamora Temple",
+        description = "You are in the temple of Akamora, praying to the gods.",
+        journalEntry = "I have arrived at the temple of Akamora.",
+        location = { --Praying at the temple of Akamora
+            position = {4544, 3322, 11970},
+            orientation =-2.35,
+            cellId = "Akamora, Temple"
+        },
+        items = {
+            itemPicks.gold(50),
+            {
+                id = "bk_LivesOfTheSaints",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "common_robe_05",
+                count = 1,
+                noSlotDuplicates = true,
+            }
+        },
+    },
+
+    {
+        id = "portTelvannis",
+        name = "Port Telvannis",
+        description = "You are seeking access to Port Telvannis. You have your hospitality papers, hopefully they will be enough.",
+        location = { --Seeking access into Port Telvannis
+            position = {3589, 4561, 12289},
+            orientation =0,
+            cellId = "Port Telvannis, The Avenue"
+        },
+        items = {
+            itemPicks.gold(50),
+            {
+                id = "TR_m1_sc_T_hospitalitypapers",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+    },
+
+    {
+        id = "arrivedInAnvil",
+        name = "Anvil by Carriage",
+        description = "You have just arrived in the city of Anvil after a long journey by carriage from Hal Sadek.",
+        journalEntry = "I have just arrived in the city of Anvil after a long journey by carriage from Hal Sadek. I should seek food, drink and information about the city at the Caravan Stop nearby.",
+        location =  { --Anvil, Marina
+            position = {-976885, -446000, 426},
+            orientation =-1.39,
+        },
+    },
+
+    {
+        id = "workingOnTheDocks",
+        name = "Anvil Dock Worker",
+        description = "You are at the docks of Anvil, looking for work.",
+        journalEntry = "I have arrived at the Anvil Docks. I should chat to Kharag gro-Uratag, I hear he needs help looking for work too.",
+        location =     { --Anvil, Port Quarter
+            position = {-993310, -449487, 193},
+            orientation =-0.82,
+        },
+        items = {
+            itemPicks.gold(15),
+            {
+                id = "T_Com_Mallet_01",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "misc_hook",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "T_Com_Var_Harpoon_01",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+    },
+
+    {
+        id = "market",
+        name = "Market Shopping",
+        description = "You are shopping for a new outfit at an open-air market in Meralag.",
+        location = { --Browsing an Indoril open-air market
+            position = {209924, -174964, 539},
+            orientation =0.14,
+        },
+        items = {
+            itemPicks.gold(100),
+            {
+                id = "T_IngFood_Bread_01",
+                count = 1,
+                noDuplicates = true,
+            },
+        }
+    },
+
+    {
+        location =     { --Getting directions at a waystation
+            position = {4461, 3242, 12242},
+            orientation =0.3,
+            cellId = "Telvanni Waystation"
+            --Notes: Start with guide to the sacred lands region
+        },
+        id = "waystation",
+        name = "Telvanni Waystation",
+        description = "You are at a Telvanni waystation, seeking directions to the sacred lands.",
+        items = {
+            itemPicks.gold(50),
+            itemPicks.robe,
+            {
+                id = "T_Sc_GuideToNecrom",
+                count = 1,
+                noDuplicates = true,
+            },
+        },
+    },
+
+    {
+        id = "astrologicalSociety",
+        name = "Astrological Society",
+        description = "You are a prospective member of the Imperial Astrological Society in Anvil.",
+        journalEntry = "I have arrived at the Imperial Astrological Society in Anvil. I should speak to Sarria Caviran about joining.",
+        location = { --Anvil, Imperial Astrological Society
+            position = {2311, 159, 17474},
+            orientation =0.43,
+            cellId = "Anvil, Imperial Astrological Society"
+        },
+        items = {
+            {
+                id = "t_com_spyglass01",
+            },
+            itemPicks.gold(40),
+            {
+                id = "T_IngFood_Bread_01",
+                count = 1,
+                noDuplicates = true,
+            },
+        }
+    },
+
+    {
+        id = "bountyHunter",
+        name = "Bounty Hunter",
+        description = "You are a bounty hunter in Karthwasten, tasked with hunting down a fugitive.",
+        journalEntry = "I should speak to Hadnar White-Wind about the bounty on Dovica, or ask about other available bounties.",
+        topics = { "Dovica" },
+        location =     { --Karthwasten, Guard Barracks
+            position = {1300, -1302, 642},
+            orientation =-1.72,
+            cellId = "Karthwasten, Guard Barracks"
+        },
+        items = {
+            itemPicks.gold(50),
+        },
+    },
+    {
+        id = "houseOfMara",
+        name = "House of Mara",
+        description = "You are at the House of Mara in Dragonstar, seeking guidance and wisdom.",
+        journalEntry = "I have arrived at the House of Mara in Dragonstar. I should speak to the priestess Helle.",
+        location =     { --Dragonstar East, House of Mara
+            position = {3844, 3965, 15738},
+            orientation =1.6,
+            cellId = "Dragonstar East, House of Mara"
+        },
+        items = {
+            itemPicks.coinpurse,
+            {
+                id = "common_robe_05",
+                count = 1,
+                noSlotDuplicates = true,
+            },
+            {
+                id = "bk_LivesOfTheSaints",
+                count = 1,
+                noDuplicates = true,
+            },
+        }
+    },
 }
 
 for _, scenario in ipairs(scenarios) do

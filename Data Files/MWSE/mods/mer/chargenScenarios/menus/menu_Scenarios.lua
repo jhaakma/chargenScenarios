@@ -115,13 +115,13 @@ local function onClickScenario(scenario)
     local header = menu:findChild(descriptionHeaderID)
     header.text = scenario.name
 
-    local description = menu:findChild(descriptionID)
+    local description = menu:findChild(descriptionID) --[[@as tes3uiElement]]
     description.text = table.concat({
         scenario.description,
         scenario.requirements:getDescription()
     }, "\n\n")
 
-    local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton"))
+    local okayButton = menu:findChild(tes3ui.registerID("Mer_ScenarioSelectorMenu_okayButton")) --[[@as tes3uiElement]]
 
     local scenarioValid = scenario:checkRequirements()
 
@@ -135,7 +135,7 @@ local function onClickScenario(scenario)
         okayButton.disabled = false
     end
 
-    local locationDropdownBlock = menu:findChild(locationDropdownBlockID)
+    local locationDropdownBlock = menu:findChild(locationDropdownBlockID) --[[@as tes3uiElement]]
     locationDropdownBlock:destroyChildren()
 
     local validLocations = scenario:getValidLocations()
@@ -217,6 +217,7 @@ end
 ---@param onScenarioSelected fun(scenario: ChargenScenariosScenario)
 ---@param currentScenario ChargenScenariosScenario
 local function populateScenarioList(listBlock, list, onScenarioSelected, currentScenario)
+    local validScenarios = 0
     for _, scenario in ipairs(list) do
         if scenario:isVisible() then
             local scenarioButton = listBlock:createTextSelect{
@@ -241,10 +242,12 @@ local function populateScenarioList(listBlock, list, onScenarioSelected, current
                     scenarioButton:triggerEvent("mouseClick")
                 end)
             end
+            validScenarios = validScenarios + 1
         else
             logger:debug("Scenario %s is hidden or has no valid locations", scenario.name)
         end
     end
+    logger:debug("Found %s valid scenarios", validScenarios)
 end
 
 ---@param parent tes3uiElement

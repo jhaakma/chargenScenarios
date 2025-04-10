@@ -1,6 +1,9 @@
 
 ---@type table<string, ChargenScenariosItemPickInput>
 local ItemPicks = {
+    gold = {
+        id = "gold_001",
+    },
     boots = {
         description = "Boots",
         ids = {
@@ -101,7 +104,7 @@ local ItemPicks = {
             "AB_w_ChitinMace",        --blunt
             "chitin short bow",       --marksman
         },
-        noDuplicates = true,
+        noSlotDuplicates = true,
         pickMethod = "bestForClass",
         ammo = {
             { weaponId = "chitin short bow", ammoId = "chitin arrow", count = 40 }
@@ -122,9 +125,14 @@ local ItemPicks = {
     robe = {
         description = "Robe",
         ids = {
+            "common_robe_01",
             "common_robe_02",
+            "common_robe_02_h",
+            "common_robe_02_hh",
+            "common_robe_02_rr",
             "common_robe_03",
-            "common_robe_04",
+            "common_robe_03_a",
+            "common_robe_03_b",
             "common_robe_05",
             "common_robe_05_a",
             "common_robe_05_b",
@@ -141,7 +149,7 @@ local ItemPicks = {
             "chitin war axe"
         },
         pickMethod = 'firstValid',
-        noDuplicates = true,
+        noListDuplicates = true,
     },
     fishingPole = {
         description = "Fishing Pole",
@@ -150,7 +158,7 @@ local ItemPicks = {
             "misc_de_fishing_pole"
         },
         pickMethod = 'firstValid',
-        noDuplicates = true,
+        noListDuplicates = true,
     },
     fishMeat = {
         description = "Fish Meat",
@@ -168,12 +176,17 @@ local ItemPicks = {
             "T_Com_Var_Cleaver_01"
         },
         pickMethod = 'firstValid',
-        noDuplicates = true,
+        noListDuplicates = true,
     },
     lute = {
         description = "Lute",
-        id = "misc_de_lute_01",
-        noDuplicates = true,
+        ids = {
+            "misc_de_lute_01",
+            "t_imp_lute_01",
+            "t_com_lute_01",
+            "ab_mus_delutethin",
+        },
+        noListDuplicates = true,
     },
     soulGems = {
         description = "Soul Gem",
@@ -209,10 +222,21 @@ local ItemPicks = {
             "ashfall_meat_kag"
         },
         pickOneOnly = true
+    },
+    fancyOutfit = {
+        description = "Fancy Outfit",
+        ids = {
+            "expensive_pants_03",
+            "extravagant_shirt_02",
+            "expensive_shoes_02",
+        },
+        noDuplicates = true,
+        pickMethod = "all",
     }
 }
 
 ---@class (exact) ChargenScenarios.Util.ItemPicks
+---@field gold ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field boots ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field cuirass ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field leftGauntlet ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
@@ -234,6 +258,7 @@ local ItemPicks = {
 ---@field booze ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field coinpurse ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field meat ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field fancyOutfit ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 local out = setmetatable({}, {
     __index = function(self, key)
         local itemList = table.deepcopy(ItemPicks[key])

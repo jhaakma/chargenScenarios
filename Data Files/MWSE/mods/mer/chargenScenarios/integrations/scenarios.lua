@@ -20,6 +20,198 @@ local excludesOaabShipwreck = {
     excludedPlugins = {"OAAB - Shipwrecks.ESP"},
 }
 
+local taverns = {
+    { --Ald-ruhn, Ald Skar Inn
+        position = {556, -1140, 2},
+        orientation =-3,
+        cellId = "Ald-ruhn, Ald Skar Inn"
+    },
+    { --Balmora, Lucky Lockup
+        position = {190, 1244, -505},
+        orientation =-3,
+        cellId = "Balmora, Lucky Lockup"
+    },
+    { --Caldera, Shenk's Shovel
+        position = {254, -299, 130},
+        orientation =-1,
+        cellId = "Caldera, Shenk's Shovel"
+    },
+    { --Dagon Fel, The End of the World
+        position = {-111, 330, 386},
+        orientation =-2,
+        cellId = "Dagon Fel, The End of the World"
+    },
+    { --Ebonheart, Six Fishes
+        position = {202, 565, 2},
+        orientation =-4,
+        cellId = "Ebonheart, Six Fishes"
+    },
+    { --Gnisis, Madach Tradehouse
+        position = {24, 646, -126},
+        orientation =-4,
+        cellId = "Gnisis, Madach Tradehouse"
+    },
+    { --Maar Gan, Andus Tradehouse
+        position = {186, 33, 2},
+        orientation =-1,
+        cellId = "Maar Gan, Andus Tradehouse"
+    },
+    { --Molag Mar, The Pilgrim's Rest
+        position = {-508, -375, 2},
+        orientation =-1,
+        cellId = "Molag Mar, The Pilgrim's Rest"
+    },
+    {  --Pelagiad
+        position = {407, 236, 105},
+        orientation = 0,
+        cellId = "Pelagiad, Halfway Tavern"
+    },
+    { --Sadrith Mora, Gateway Inn
+        position = {4009, 4318, 766},
+        orientation =0,
+        cellId = "Sadrith Mora, Gateway Inn"
+    },
+    { --Suran, Desele's House of Earthly Delights
+        position = {324, -247, 7},
+        orientation =-2,
+        cellId = "Suran, Desele's House of Earthly Delights"
+    },
+    { --Tel Mora, The Covenant
+        position = {1315, -364, 606},
+        orientation =0,
+        cellId = "Tel Mora, The Covenant"
+    },
+    { --Vivec, The Lizard's Head
+        position = {-231, -9, -126},
+        orientation =1,
+        cellId = "Vivec, The Lizard's Head"
+    },
+
+    --TR
+    { --Aimrah, The Sailors' Inn
+        position = {3768, 3434, 14681},
+        orientation =-1,
+        cellId = "Aimrah, The Sailors' Inn"
+    },
+
+    { --Hunted Hound Inn
+        position = {4206, 3500, 15554},
+        orientation =-2,
+        cellId = "Hunted Hound Inn"
+    },
+
+
+    { --The Inn Between
+        position = {3838, 4137, 14466},
+        orientation =0,
+        cellId = "The Inn Between"
+    },
+
+
+    { --Akamora, The Laughing Goblin
+        position = {3059, 3518, 130},
+        orientation =1,
+        cellId = "Akamora, The Laughing Goblin"
+    },
+
+
+    { --Almas Thirr, Limping Scrib
+        position = {654, -543, 2},
+        orientation =-1,
+        cellId = "Almas Thirr, Limping Scrib"
+    },
+
+
+    { --Andothren, The Dancing Cup
+        position = {4306, 4122, 13959},
+        orientation =1,
+        cellId = "Andothren, The Dancing Cup"
+    },
+
+
+    { --Bodrum, Varalaryn Tradehouse
+        position = {831, -1390, -382},
+        orientation =-3,
+        cellId = "Bodrum, Varalaryn Tradehouse"
+    },
+
+
+    { --Bosmora, The Starlight Inn
+        position = {4095, 5119, 15558},
+        orientation =3,
+        cellId = "Bosmora, The Starlight Inn"
+    },
+
+
+    { --Firewatch, The Queen's Cutlass
+        position = {6271, 3678, 16258},
+        orientation =0,
+        cellId = "Firewatch, The Queen's Cutlass"
+    },
+
+
+    { --Helnim, The Red Drake
+        position = {4465, 4135, 14850},
+        orientation =-2,
+        cellId = "Helnim, The Red Drake"
+    },
+
+
+    { --Necrom, Pilgrim's Respite
+        position = {3692, 2306, 12162},
+        orientation =1,
+        cellId = "Necrom, Pilgrim's Respite"
+    },
+
+
+    { --Old Ebonheart, The Moth and Tiger
+        position = {-809, 387, 2},
+        orientation =1,
+        cellId = "Old Ebonheart, The Moth and Tiger"
+    },
+
+
+    { --Port Telvannis, The Lost Crab Tavern
+        position = {3934, 4538, 14114},
+        orientation =-4,
+        cellId = "Port Telvannis, The Lost Crab Tavern"
+    },
+
+
+    { --Ranyon-ruhn, The Dancing Jug
+        position = {4263, 4003, 15170},
+        orientation =-1,
+        cellId = "Ranyon-ruhn, The Dancing Jug"
+    },
+
+
+    { --Sailen, The Toiling Guar
+        position = {3298, 3754, 11266},
+        orientation =1,
+        cellId = "Sailen, The Toiling Guar"
+    },
+
+
+    { --Tel Ouada, The Magic Mudcrab
+        position = {-749, -956, -510},
+        orientation =-1,
+        cellId = "Tel Ouada, The Magic Mudcrab"
+    },
+
+
+    { --Vhul, The Howling Hound
+        position = {3639, 3889, 15554},
+        orientation =0,
+        cellId = "Vhul, The Howling Hound"
+    },
+
+    { --Anvil, Three Sturgeons Pub
+        position = {4170, 4083, 15714},
+        orientation =-1.54,
+        cellId = "Anvil, Three Sturgeons Pub"
+    },
+}
+
 ---@type ChargenScenariosScenarioInput[]
 local scenarios = {
     {
@@ -87,10 +279,7 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25)
         },
     },
     {
@@ -183,10 +372,7 @@ local scenarios = {
                 },
                 count = 4
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
         },
     },
     {
@@ -486,10 +672,7 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
             itemPicks.robe,
         },
 
@@ -499,7 +682,13 @@ local scenarios = {
         name = "Faction: Fighters Guild",
         description = "You are an associate of the Fighters Guild.",
         factions = {
-            { id = "Fighters Guild"}
+            { id = "Fighters Guild" },
+            { id = "T_Sky_FightersGuild" }
+        },
+        topics = {
+            "join the Fighters Guild",
+            "advancement",
+            "orders",
         },
         journalEntry = "I have joined the Fighters Guild. I should speak with the guild steward to see what duties they have for me.",
         locations = {
@@ -507,7 +696,7 @@ local scenarios = {
                 position = {-901, -379, -764},
                 orientation =0,
                 name = "Ald-Rhun",
-                cellId = "Ald-ruhn, Guild of Fighters"
+                cellId = "Ald-ruhn, Guild of Fighters",
             },
             {
                 position = {304, 293, -377},
@@ -583,16 +772,25 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
+
+            --SHOTN
+            { --Karthwasten, Guild of Fighters
+                name = "Karthwasten",
+                position = {4817, 3730, 15874},
+                orientation =-1.5,
+                cellId = "Karthwasten, Guild of Fighters",
+                requirements = {
+                    plugins = { "Sky_Main.esm" }
+                }
+            },
+
         },
         items = {
             {
                 id = "p_restore_health_s",
                 count = 4,
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
         }
     },
     {
@@ -631,10 +829,17 @@ local scenarios = {
         id = "imperialCult",
         name = "Faction: Imperial Cult",
         description = "You are a layman of the Imperial Cult.",
-        location = { --Ebonheart, Imperial Chapels
-            position = {366, -638, 2},
-            orientation =0,
-            cellId = "Ebonheart, Imperial Chapels"
+        locations = {
+            { --Ebonheart, Imperial Chapels
+                position = {366, -638, 2},
+                orientation =0,
+                cellId = "Ebonheart, Imperial Chapels"
+            },
+            { --Karthwasten, Imperial Cult Chapel
+                position = {4959, 4016, 15874},
+                orientation =3.08,
+                cellId = "Karthwasten, Imperial Cult Chapel"
+            },
         },
         items = {
             {
@@ -647,10 +852,7 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
         },
         topics = {
             "Imperial cult",
@@ -672,9 +874,9 @@ local scenarios = {
         id = "imperialLegion",
         name = "Faction: Imperial Legion",
         description = "You are a recruit of the Imperial Legion, awaiting orders in Gnisis.",
-        location = { --Gnisis, Madach Tradehouse
-            position = {103, 1043, -894},
-            orientation = 1,
+        { --Imperial Legion - Gnisis, Madach Tradehouse
+            position = {393, -574, -2046},
+            orientation =2.03,
             cellId = "Gnisis, Madach Tradehouse"
         },
         items = {
@@ -933,10 +1135,7 @@ local scenarios = {
                 id = "ashfall_firewood",
                 count = 8
             },
-            {
-                id = "gold_001",
-                count = 25,
-            },
+            itemPicks.gold(25),
         },
         time = 15,
     },
@@ -958,10 +1157,7 @@ local scenarios = {
             }
         },
         items = {
-            {
-                id = "gold_001",
-                count = 20
-            }
+            itemPicks.gold(25),
         },
         onStart = function()
             timer.start{
@@ -1160,6 +1356,7 @@ local scenarios = {
         },
         locations = {
             { --Camping - South of Vivec
+
                 requirements = {
                     plugins = { "Ashfall.esp" }
                 },
@@ -1241,9 +1438,9 @@ local scenarios = {
                 orientation = 0,
                 cellId = "Maar Gan, Andus Tradehouse"
             },
-            { --Gnisis, Madach Tradehouse
-                position = {-57, 280, -125},
-                orientation =-2,
+            { --Imperial Legion - Gnisis, Madach Tradehouse
+                position = {393, -574, -2046},
+                orientation =2.03,
                 cellId = "Gnisis, Madach Tradehouse"
             },
             { --Suran, Suran Tradehouse
@@ -1334,10 +1531,7 @@ local scenarios = {
             fargoth.object.baseDisposition = 0
         end,
         items = {
-            {
-                id = "gold_001",
-                count = 50, --enough to pay for stealing if you get caught pickpocketing fargoth while he's down
-            },
+            itemPicks.gold(50)
         },
     },
     {
@@ -1358,10 +1552,7 @@ local scenarios = {
                 id = "ingred_moon_sugar_01",
                 count = 2
             },
-            {
-                id = "gold_001",
-                count = 69,
-            },
+            itemPicks.gold(69)
         },
         time = 18,
         journalEntry = "I've spent nearly all my money at Desele's House of Earthly Delights... I should probably head home before I'm completely broke.",
@@ -1376,14 +1567,6 @@ local scenarios = {
                 name = "Hla Oad",
                 position = {-48464, -38956, 211},
                 orientation =-2,
-            },
-            {
-                name = "Dragonhead Point",
-                position = {330424, -29432, 784},
-                orientation = 0,
-                requirements = {
-                    plugins = {"TR_Mainland.esm"},
-                },
             },
             { --Seyda Neen Outskirts
                 name = "Seyda Neen Outskirts",
@@ -1400,8 +1583,26 @@ local scenarios = {
                 position = {142783, -54841, 26},
                 orientation =-2,
             },
+            {
+                name = "Dragonhead Point",
+                position = {330424, -29432, 784},
+                orientation = 0,
+                requirements = {
+                    plugins = {"TR_Mainland.esm"},
+                },
+            },
+            { --Fishing on the beach
+                name = "Fort Frostmoth",
+                position = {-175695, 137803, 71},
+                orientation =3.02,
+                requirements = {
+                    plugins = {"TR_Mainland.esm"},
+                },
+            },
+
         },
         items = {
+            itemPicks.gold(20),
             itemPicks.fishingPole,
             {
                 id = "ingred_scales_01",
@@ -1410,10 +1611,6 @@ local scenarios = {
             {
                 id = "ingred_crab_meat_01",
                 count = 2
-            },
-            {
-                id = "gold_001",
-                count = 15
             },
             {
                 id = "mer_bug_spinner2",
@@ -1453,10 +1650,7 @@ local scenarios = {
                 id = "p_restore_fatigue_c",
                 count = 1
             },
-            {
-                id = "gold_001",
-                count = 20,
-            },
+            itemPicks.gold(25),
         }
     },
     {
@@ -1475,205 +1669,39 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 70
-            },
+            itemPicks.gold(70),
             {id = "silver dagger",}
         },
         time = 19,
     },
     {
+        id = "patron",
+        name = "Tavern Patron",
+        description = "You are a patron at a tavern, enjoying a drink and some food.",
+        locations = taverns,
+        items = {
+            itemPicks.booze(3),
+            itemPicks.coinpurse
+        }
+    },
+    {
         id = "bard",
         name = "Performer",
-        description = "You are a bard performing in a tavern",
+        description = "You are a bard performing in a tavern.",
         journalEntry = "I've been practicing \"Beneath the Mushroom tree\" on my lute. I should speak to the innkeeper to see if I can perform at the tavern.",
-        locations = {
-            { --Ald-ruhn, Ald Skar Inn
-                position = {556, -1140, 2},
-                orientation =-3,
-                cellId = "Ald-ruhn, Ald Skar Inn"
-            },
-            { --Balmora, Lucky Lockup
-                position = {190, 1244, -505},
-                orientation =-3,
-                cellId = "Balmora, Lucky Lockup"
-            },
-            { --Caldera, Shenk's Shovel
-                position = {254, -299, 130},
-                orientation =-1,
-                cellId = "Caldera, Shenk's Shovel"
-            },
-            { --Dagon Fel, The End of the World
-                position = {-111, 330, 386},
-                orientation =-2,
-                cellId = "Dagon Fel, The End of the World"
-            },
-            { --Ebonheart, Six Fishes
-                position = {202, 565, 2},
-                orientation =-4,
-                cellId = "Ebonheart, Six Fishes"
-            },
-            { --Gnisis, Madach Tradehouse
-                position = {24, 646, -126},
-                orientation =-4,
-                cellId = "Gnisis, Madach Tradehouse"
-            },
-            { --Maar Gan, Andus Tradehouse
-                position = {186, 33, 2},
-                orientation =-1,
-                cellId = "Maar Gan, Andus Tradehouse"
-            },
-            { --Molag Mar, The Pilgrim's Rest
-                position = {-508, -375, 2},
-                orientation =-1,
-                cellId = "Molag Mar, The Pilgrim's Rest"
-            },
-            {  --Pelagiad
-                position = {407, 236, 105},
-                orientation = 0,
-                cellId = "Pelagiad, Halfway Tavern"
-            },
-            { --Sadrith Mora, Gateway Inn
-                position = {4009, 4318, 766},
-                orientation =0,
-                cellId = "Sadrith Mora, Gateway Inn"
-            },
-            { --Suran, Desele's House of Earthly Delights
-                position = {324, -247, 7},
-                orientation =-2,
-                cellId = "Suran, Desele's House of Earthly Delights"
-            },
-            { --Tel Mora, The Covenant
-                position = {1315, -364, 606},
-                orientation =0,
-                cellId = "Tel Mora, The Covenant"
-            },
-            { --Vivec, The Lizard's Head
-                position = {-231, -9, -126},
-                orientation =1,
-                cellId = "Vivec, The Lizard's Head"
-            },
-
-            --TR
-            { --Aimrah, The Sailors' Inn
-                position = {3768, 3434, 14681},
-                orientation =-1,
-                cellId = "Aimrah, The Sailors' Inn"
-            },
-
-            { --Hunted Hound Inn
-                position = {4206, 3500, 15554},
-                orientation =-2,
-                cellId = "Hunted Hound Inn"
-            },
-
-
-            { --The Inn Between
-                position = {3838, 4137, 14466},
-                orientation =0,
-                cellId = "The Inn Between"
-            },
-
-
-            { --Akamora, The Laughing Goblin
-                position = {3059, 3518, 130},
-                orientation =1,
-                cellId = "Akamora, The Laughing Goblin"
-            },
-
-
-            { --Almas Thirr, Limping Scrib
-                position = {654, -543, 2},
-                orientation =-1,
-                cellId = "Almas Thirr, Limping Scrib"
-            },
-
-
-            { --Andothren, The Dancing Cup
-                position = {4306, 4122, 13959},
-                orientation =1,
-                cellId = "Andothren, The Dancing Cup"
-            },
-
-
-            { --Bodrum, Varalaryn Tradehouse
-                position = {831, -1390, -382},
-                orientation =-3,
-                cellId = "Bodrum, Varalaryn Tradehouse"
-            },
-
-
-            { --Bosmora, The Starlight Inn
-                position = {4095, 5119, 15558},
-                orientation =3,
-                cellId = "Bosmora, The Starlight Inn"
-            },
-
-
-            { --Firewatch, The Queen's Cutlass
-                position = {6271, 3678, 16258},
-                orientation =0,
-                cellId = "Firewatch, The Queen's Cutlass"
-            },
-
-
-            { --Helnim, The Red Drake
-                position = {4465, 4135, 14850},
-                orientation =-2,
-                cellId = "Helnim, The Red Drake"
-            },
-
-
-            { --Necrom, Pilgrim's Respite
-                position = {3692, 2306, 12162},
-                orientation =1,
-                cellId = "Necrom, Pilgrim's Respite"
-            },
-
-
-            { --Old Ebonheart, The Moth and Tiger
-                position = {-809, 387, 2},
-                orientation =1,
-                cellId = "Old Ebonheart, The Moth and Tiger"
-            },
-
-
-            { --Port Telvannis, The Lost Crab Tavern
-                position = {3934, 4538, 14114},
-                orientation =-4,
-                cellId = "Port Telvannis, The Lost Crab Tavern"
-            },
-
-
-            { --Ranyon-ruhn, The Dancing Jug
-                position = {4263, 4003, 15170},
-                orientation =-1,
-                cellId = "Ranyon-ruhn, The Dancing Jug"
-            },
-
-
-            { --Sailen, The Toiling Guar
-                position = {3298, 3754, 11266},
-                orientation =1,
-                cellId = "Sailen, The Toiling Guar"
-            },
-
-
-            { --Tel Ouada, The Magic Mudcrab
-                position = {-749, -956, -510},
-                orientation =-1,
-                cellId = "Tel Ouada, The Magic Mudcrab"
-            },
-
-
-            { --Vhul, The Howling Hound
-                position = {3639, 3889, 15554},
-                orientation =0,
-                cellId = "Vhul, The Howling Hound"
-            },
-        },
+        locations = taverns,
         items = {
+            itemPicks.gold(25),
+            {
+                id = "bk_bardic_inspiration",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "bk_bardic_inspiration_2",
+                count = 1,
+                noDuplicates = true,
+            },
             {
                 id = "bk_redbookofriddles",
                 count = 1,
@@ -1685,13 +1713,11 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
-            {
-                id = "gold_001",
-                count = 45
-            },
-            {id = "expensive_pants_03", noDuplicates = true},
-            {id = "extravagant_shirt_02", noDuplicates = true},
-            {id = "expensive_shoes_02", noDuplicates = true},
+
+            itemPicks.fancyOutfit,
+            -- {id = "expensive_pants_03", noDuplicates = true},
+            -- {id = "extravagant_shirt_02", noDuplicates = true},
+            -- {id = "expensive_shoes_02", noDuplicates = true},
         },
         time = 17,
         onStart = function()
@@ -1837,6 +1863,7 @@ local scenarios = {
             cellId = "Vivec, Library of Vivec"
         },
         items = {
+            itemPicks.gold(50),
             {
                 id = "bk_BriefHistoryEmpire3",
                 noDuplicates = true,
@@ -1844,10 +1871,6 @@ local scenarios = {
             {
                 id = "common_robe_03_a",
                 noSlotDuplicates = true,
-            },
-            {
-                id = "gold_001",
-                count = 50
             },
         },
     },
