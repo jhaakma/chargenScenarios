@@ -898,6 +898,11 @@ local scenarios = {
         onStart = function()
             timer.delayOneFrame(function()
                 tes3.equip{ reference = tes3.player, item = "imperial_chain_cuirass" }
+                tes3.findGlobal("WearingLegionUni").value = 1
+                local darius = tes3.getReference("general darius")
+                if darius then
+                    darius.mobile.talkedTo = true
+                end
             end)
         end,
         factions = {
