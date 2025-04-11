@@ -219,6 +219,12 @@ local scenarios = {
                 orientation =-0.14,
                 cellId = "Karthwasten, Lelena Aurtius: Baker"
             },
+            { --Old Ebonheart, Gul-Ei's Pantry
+                name = "Old Ebonheart",
+                position = {4309, 4124, 15405},
+                orientation =-1.62,
+                cellId = "Old Ebonheart, Gul-Ei's Pantry"
+            },
         },
         items = {
             itemPicks.gold(30)
