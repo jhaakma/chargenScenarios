@@ -13,6 +13,7 @@ local Requirements = {
         name = "Requirements",
         fields = {
             plugins = { type = "table", childType = "string", required = false },
+            excludedPlugins = { type = "table", childType = "string", required = false },
             classes = { type = "table", childType = "string", required = false },
             races = { type = "table", childType = "string", required = false },
         }
@@ -35,6 +36,7 @@ function Requirements:new(data)
     --If no data provided, return an empty requirements object where check() always returns true
     if data then
         requirements.plugins = data.plugins or {}
+        requirements.excludedPlugins = data.excludedPlugins or {}
         requirements.classes = convertArrayToDict(data.classes or {})
         requirements.races = convertArrayToDict(data.races or {})
     end
