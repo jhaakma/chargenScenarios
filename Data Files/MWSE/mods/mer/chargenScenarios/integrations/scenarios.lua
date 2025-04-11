@@ -1341,6 +1341,16 @@ local scenarios = {
                 id = "T_Com_Cm_Hat_04",
                 count = 1,
                 noDuplicates = true,
+            },
+            {
+                id = "p_water_walking_s",
+                count = 1,
+                noDuplicates = true,
+            },
+            {
+                id = "p_water_breathing_s",
+                count = 1,
+                noDuplicates = true,
             }
         },
     },
