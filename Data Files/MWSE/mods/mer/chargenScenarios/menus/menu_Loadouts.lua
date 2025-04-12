@@ -18,6 +18,16 @@ local LoadoutsMenu = {
     LOADOUT_LIMIT_LABEL_ID = "ChargenScenarios_LoadoutsMenu_limitLabel",
 }
 
+local function getNumActiveLoadouts(loadouts)
+    local active = 0
+    for _, itemList in ipairs(loadouts) do
+        if itemList.active and not itemList.defaultActive then
+            active = active + 1
+        end
+    end
+    return active
+end
+
 ---@type ChargenScenarios.ChargenMenu.config
 local menu = {
     id = "loadoutsMenu",
@@ -25,7 +35,7 @@ local menu = {
     priority = -1500,
     buttonLabel = "Items",
     getButtonValue = function(self)
-        return "Starting Gear"
+        return string.format("Loadouts Active: %d", getNumActiveLoadouts(Loadouts.getLoadouts()))
     end,
     getTooltip = function(self)
         local loadouts = Loadouts.getLoadouts()
@@ -71,15 +81,7 @@ local menu = {
 }
 ChargenMenu.register(menu)
 
-local function getNumActiveLoadouts(loadouts)
-    local active = 0
-    for _, itemList in ipairs(loadouts) do
-        if itemList.active and not itemList.defaultActive then
-            active = active + 1
-        end
-    end
-    return active
-end
+
 
 local function updateLimitLabel(loadouts)
     logger:debug("Updating loadout limit label")

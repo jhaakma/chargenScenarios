@@ -156,7 +156,7 @@ local function modifyStatReviewMenu(e)
 
     --Add scenario and background button
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-        if chargenMenu:isActive() and chargenMenu:isEnabled() then
+        if chargenMenu:isActive() then
             createChargenMenuButton(parent, chargenMenu)
         end
     end

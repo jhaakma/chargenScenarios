@@ -44,10 +44,12 @@ event.register("loaded", function()
     selectedScenario = nil
 end)
 
+---@return ChargenScenariosScenario
 function Scenario.getSelectedScenario()
-    return selectedScenario
+    return selectedScenario or Scenario.registeredScenarios.vanilla
 end
 
+---@param scenario ChargenScenariosScenario
 function Scenario.setSelectedScenario(scenario)
     selectedScenario = scenario
 end

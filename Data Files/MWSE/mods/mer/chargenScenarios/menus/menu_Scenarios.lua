@@ -63,18 +63,12 @@ local menu = {
     end,
     validate = function(self)
         local scenario = Scenario.getSelectedScenario()
-        return scenario and scenario:checkRequirements()
+        return scenario == nil or scenario:checkRequirements()
     end,
     onStart = function(self)
         local scenario = Scenario.getSelectedScenario()
-        if not scenario then
-            scenario = Scenario.registeredScenarios.vanilla
-        end
-
-        if scenario then
-            logger:debug("Starting scenario: %s", scenario.name)
-            scenario:start()
-        end
+        logger:debug("Starting scenario: %s", scenario.name)
+        scenario:start()
     end,
 }
 ChargenMenu.register(menu)

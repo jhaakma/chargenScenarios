@@ -55,9 +55,9 @@ local function registerModConfig()
 
     --A page for enabling/disabling each registered menu
     local menuSettings = template:createSideBarPage("Menu Settings")
-    menuSettings.description = "Enable or disable each menu."
+    menuSettings.description = "Enable or disable each menu. If disabled, the menu will not appear in the chargen sequence, but can still be selected in the final summary menu."
 
-    for _, menu in pairs(ChargenMenu.registeredMenus) do
+    for _, menu in ipairs(ChargenMenu.orderedMenus) do
         menuSettings:createYesNoButton{
             label = menu.name,
             description = string.format("Enable the %s menu.", menu.buttonLabel),

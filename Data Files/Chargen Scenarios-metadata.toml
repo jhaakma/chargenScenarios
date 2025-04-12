@@ -17,10 +17,6 @@ mwse-module = "CraftingFramework"
 version = "^1.33.2"
 url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"
 
-[dependencies.mods."MWSE Character Creation Name Generator"]
-mwse-module = "Aleist3r.Character Creation Name Generator"
-url = "https://www.nexusmods.com/morrowind/mods/46189?tab=files"
-
 [dependencies.mods."Randomised Chargen"]
 mwse-module = "RandomChargen"
 url = "https://www.nexusmods.com/morrowind/mods/46915?tab=files"

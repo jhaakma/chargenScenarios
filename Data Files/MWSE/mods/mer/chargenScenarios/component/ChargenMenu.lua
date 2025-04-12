@@ -65,13 +65,17 @@ function ChargenMenu.new(data)
     return menu
 end
 
+
 function ChargenMenu:okCallback()
     logger:debug("Pressed ok in %s menu, moving to next menu", self.id)
     self:setCompleted()
     ---@type ChargenScenarios.ChargenMenu | nil
     local nextMenu
+    local foundThisMenu = false
     for i, menu in ipairs(ChargenMenu.orderedMenus) do
-        if (menu == self) and #ChargenMenu.orderedMenus > i then
+        logger:debug("Checking menu %s", menu.id)
+        if menu == self then foundThisMenu = true end
+        if foundThisMenu and #ChargenMenu.orderedMenus > i then
             local thisMenu = ChargenMenu.orderedMenus[i + 1]
             if thisMenu:isActive() and thisMenu:isEnabled() and not thisMenu:getCompleted() then
                 nextMenu = thisMenu

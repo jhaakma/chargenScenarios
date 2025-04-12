@@ -46,6 +46,7 @@ local mcmDefault = {
 
     --- The list of registered clutter groups
     registeredClutterGroups = {},
+    chargenScenariosMenu_extrasMenu = false,
 }
 
 
