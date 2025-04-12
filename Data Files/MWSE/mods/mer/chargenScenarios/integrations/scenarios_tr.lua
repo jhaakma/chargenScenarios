@@ -24,7 +24,10 @@ local scenarios = {
                 id = "T_Com_Cm_Hat_04",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
     {
@@ -48,7 +51,10 @@ local scenarios = {
                 id = "potion_t_bug_musk_01",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         onStart = function()
             local marilus = tes3.getReference("TR_m1_Marilus_Arjus")
@@ -89,6 +95,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -113,6 +122,8 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
         },
     },
     {
@@ -140,6 +151,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         requirements = {
             races = {"Argonian", "Khajiit"},
@@ -162,6 +176,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -186,6 +203,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 21,
         onStart = function()
@@ -224,10 +244,13 @@ local scenarios = {
                 position = {4309, 4124, 15405},
                 orientation =-1.62,
                 cellId = "Old Ebonheart, Gul-Ei's Pantry"
-            },
+            }
         },
         items = {
-            itemPicks.gold(30)
+            itemPicks.gold(30),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -243,7 +266,10 @@ local scenarios = {
                 id = "ashfall_bedroll",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
 
@@ -261,6 +287,9 @@ local scenarios = {
                 count = 1,
             },
             itemPicks.gold(50),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         journalEntry = "I have made it to the Boethian Falls. I should find the shrine and offer a black rose to complete my pilgrimage.",
     },
@@ -301,14 +330,21 @@ local scenarios = {
         items = {
             itemPicks.gold(50),
             {
-                id = "light_com_torch_01_256",
-                count = 3,
-            },
-            {
                 id = "pick_apprentice_01",
                 count = 1,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
+        --equip torch
+        onStart = function()
+            tes3.equip{
+                item = "light_com_torch_01_256",
+                reference = tes3.player,
+                addItem = true,
+            }
+        end,
     },
 
     {
@@ -332,7 +368,10 @@ local scenarios = {
                 id = "common_robe_05",
                 count = 1,
                 noSlotDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
 
@@ -352,6 +391,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
 
@@ -363,6 +405,12 @@ local scenarios = {
         location =  { --Anvil, Marina
             position = {-976885, -446000, 426},
             orientation =-1.39,
+        },
+        items = {
+            itemPicks.gold(50),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
 
@@ -392,6 +440,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
 
@@ -410,6 +461,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
 
@@ -431,6 +485,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
 
@@ -454,6 +511,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
 
@@ -470,6 +530,9 @@ local scenarios = {
         },
         items = {
             itemPicks.gold(50),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -494,6 +557,9 @@ local scenarios = {
                 count = 1,
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
 }

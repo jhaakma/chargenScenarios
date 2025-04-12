@@ -37,8 +37,8 @@ local taverns = {
         cellId = "Caldera, Shenk's Shovel"
     },
     { --Dagon Fel, The End of the World
-        position = {-111, 330, 386},
-        orientation =-2,
+        position = {-509, -12, 130},
+        orientation =1.57,
         cellId = "Dagon Fel, The End of the World"
     },
     { --Ebonheart, Six Fishes
@@ -191,14 +191,6 @@ local taverns = {
         cellId = "Sailen, The Toiling Guar"
     },
 
-
-    { --Tel Ouada, The Magic Mudcrab
-        position = {-749, -956, -510},
-        orientation =-1,
-        cellId = "Tel Ouada, The Magic Mudcrab"
-    },
-
-
     { --Vhul, The Howling Hound
         position = {3639, 3889, 15554},
         orientation =0,
@@ -252,6 +244,9 @@ local scenarios = {
                 },
                 count = 3
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         journalEntry = "The authorities are after me, and there's a price on my head. The next move is clear: either sell these gems and gather enough money to pay the fine, or track down the Thieves Guild. I've heard they can clear my name... for the right price. Either way, I can't stay hidden forever.",
     },
@@ -279,7 +274,10 @@ local scenarios = {
                 count = 1,
                 noSlotDuplicates = true,
             },
-            itemPicks.gold(25)
+            itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -311,6 +309,9 @@ local scenarios = {
                 count = 30,
             },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -338,6 +339,9 @@ local scenarios = {
                 noDuplicates = true,
             },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         requirements = requiresBeastRace,
     },
@@ -373,6 +377,9 @@ local scenarios = {
                 count = 4
             },
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -537,16 +544,7 @@ local scenarios = {
             },
         },
         items = {
-            {
-                id = "silver dagger",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "light_com_torch_01_256",
-                count = 1,
-                noDuplicates = true,
-            },
+            itemPicks.silverWeapon,
             {
                 id = "pick_apprentice_01",
                 count = 1,
@@ -558,6 +556,9 @@ local scenarios = {
                 noDuplicates = true,
             },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         journalEntry = "I've found an ancestral tomb, its secrets untouched for who knows how long. Whatever spirits haunt this place won't care if I help myself to a little of what's left behind… right?",
         onStart = function()
@@ -566,6 +567,11 @@ local scenarios = {
                 type = timer.game,
                 callback = "mer_scenarios_ghostTimer",
                 persist = true
+            }
+            tes3.equip{
+                item = "light_com_torch_01_256",
+                reference = tes3.player,
+                addItem = true,
             }
         end
     },
@@ -666,6 +672,9 @@ local scenarios = {
             },
             itemPicks.gold(25),
             itemPicks.robe,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
 
     },
@@ -781,6 +790,9 @@ local scenarios = {
                 count = 4,
             },
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
     {
@@ -803,6 +815,9 @@ local scenarios = {
                 count = 2,
             },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "join the Thieves Guild",
@@ -843,6 +858,9 @@ local scenarios = {
                 noSlotDuplicates = true,
             },
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "Imperial cult",
@@ -887,7 +905,10 @@ local scenarios = {
                 id = "imperial_chain_cuirass",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "join the Imperial Legion",
@@ -955,7 +976,10 @@ local scenarios = {
                 id = "netch_leather_cuirass",
                 count = 1,
                 noSlotDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "join the Morag Tong",
@@ -981,7 +1005,10 @@ local scenarios = {
         },
         items = {
             itemPicks.robe,
-            itemPicks.soulGems(3)
+            itemPicks.soulGems(3),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "join House Telvanni",
@@ -1018,7 +1045,10 @@ local scenarios = {
             {
                 id = "sc_paper plain",
                 count = 3,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         topics = {
             "join House Hlaalu",
@@ -1046,7 +1076,10 @@ local scenarios = {
                 id = "bonemold_gah-julan_helm",
                 count = 1,
                 noSlotDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         factions = {
             { id = "Redoran" }
@@ -1079,6 +1112,9 @@ local scenarios = {
                 id = "ashfall_tent_ashl_m",
                 noDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         onStart = function (self)
             --Add disposition to nearby Ashlanders
@@ -1144,6 +1180,9 @@ local scenarios = {
                 count = 8
             },
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 15,
     },
@@ -1166,6 +1205,9 @@ local scenarios = {
         },
         items = {
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         onStart = function()
             timer.start{
@@ -1357,7 +1399,10 @@ local scenarios = {
                 id = "p_water_breathing_s",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -1382,6 +1427,9 @@ local scenarios = {
             { id = "misc_com_iron_ladle" },
             { id = "ashfall_flintsteel" },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         locations = {
             { --Camping - South of Vivec
@@ -1449,6 +1497,9 @@ local scenarios = {
             itemPicks.meat(3),
             {id = "ashfall_flintsteel"},
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -1513,7 +1564,10 @@ local scenarios = {
                 id = "misc_de_tankard_01",
                 count = 1,
                 noDuplicates = true,
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         onStart = function()
             --find the nearest publican in the cell and set their disposition to 80
@@ -1559,6 +1613,9 @@ local scenarios = {
                 count = 2
             },
             itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         journalEntry = "I have made a pilgrimage to the Fields of Kummu. I should read my copy of The Pilgrim's Path and make my offering.",
     },
@@ -1590,7 +1647,10 @@ local scenarios = {
             fargoth.object.baseDisposition = 0
         end,
         items = {
-            itemPicks.gold(50)
+            itemPicks.gold(50),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -1611,7 +1671,10 @@ local scenarios = {
                 id = "ingred_moon_sugar_01",
                 count = 2
             },
-            itemPicks.gold(69)
+            itemPicks.gold(69),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 18,
         journalEntry = "I've spent nearly all my money at Desele's House of Earthly Delights... I should probably head home before I'm completely broke.",
@@ -1678,6 +1741,9 @@ local scenarios = {
             },
             itemPicks.fishMeat(3),
             itemPicks.knife,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 17,
     },
@@ -1710,6 +1776,9 @@ local scenarios = {
                 count = 1
             },
             itemPicks.gold(25),
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
     {
@@ -1729,7 +1798,10 @@ local scenarios = {
                 noDuplicates = true,
             },
             itemPicks.gold(70),
-            {id = "silver dagger",}
+            {id = "silver dagger"},
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 19,
     },
@@ -1740,7 +1812,10 @@ local scenarios = {
         locations = taverns,
         items = {
             itemPicks.booze(3),
-            itemPicks.coinpurse
+            itemPicks.coinpurse,
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         }
     },
     {
@@ -1851,6 +1926,9 @@ local scenarios = {
                 pickMethod = "firstValid",
                 count = 1,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 18,
         spells = {
@@ -1896,6 +1974,9 @@ local scenarios = {
                 id = "potion_skooma_01",
                 count = 1
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         time = 21,
         onStart = function()
@@ -1927,6 +2008,9 @@ local scenarios = {
                 id = "common_robe_03_a",
                 noSlotDuplicates = true,
             },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
     },
     {
@@ -1974,7 +2058,10 @@ local scenarios = {
                 data = {
                     waterAmount = 30
                 }
-            }
+            },
+            itemPicks.randomPants,
+            itemPicks.randomShirt,
+            itemPicks.randomShoes,
         },
         weather = tes3.weather.ash,
         time = 20,

@@ -103,7 +103,7 @@ local itemListInputs = {
             { id = "pick_apprentice_01", count = 2, },
             { id = "probe_apprentice_01", count = 2, },
         }
-    }
+    },
 }
 
 

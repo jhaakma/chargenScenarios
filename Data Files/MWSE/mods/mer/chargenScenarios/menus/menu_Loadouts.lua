@@ -61,9 +61,10 @@ local menu = {
         timer.start{
             duration = 0.5,
             callback = function()
+                Loadouts.removeCommonClothing()
                 Loadouts.doItems()
                 Loadouts.equipBestItemForEachSlot()
-                Loadouts.addAndEquipCommonClothing()
+                --Loadouts.addAndEquipCommonClothing()
             end
         }
     end,

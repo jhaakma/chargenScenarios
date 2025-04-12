@@ -110,6 +110,17 @@ local ItemPicks = {
             { weaponId = "chitin short bow", ammoId = "chitin arrow", count = 40 }
         }
     },
+    silverWeapon = {
+        description = "Silver Weapon",
+        ids = {
+            "silver spear",
+            "silver dagger",
+            "silver shortsword",
+            "silver longsword",
+        },
+        noDuplicates = true,
+        pickMethod = "bestForClass",
+    },
     hood = {
         description = "Hood",
         ids = {
@@ -232,6 +243,62 @@ local ItemPicks = {
         },
         noDuplicates = true,
         pickMethod = "all",
+    },
+    randomShirt = {
+        description = "Common Shirt",
+        ids = {
+            "common_shirt_01",
+            "common_shirt_01_a",
+            "common_shirt_01_e",
+            "common_shirt_01_u",
+            "common_shirt_01_z",
+            "common_shirt_02",
+            "common_shirt_02_h",
+            "common_shirt_02_hh",
+            "common_shirt_02_r",
+            "common_shirt_02_rr",
+            "common_shirt_02_t",
+            "common_shirt_02_tt",
+            "common_shirt_03",
+            "common_shirt_03_b",
+            "common_shirt_03_c",
+            "common_shirt_04",
+            "common_shirt_04_a",
+            "common_shirt_04_b",
+            "common_shirt_04_c",
+            "common_shirt_05",
+        },
+        noSlotDuplicates = true,
+    },
+    randomPants = {
+        description = "Common Pants",
+        ids = {
+            "common_pants_01",
+            "common_pants_01_a",
+            "common_pants_01_e",
+            "common_pants_01_u",
+            "common_pants_01_z",
+            "common_pants_02",
+            "common_pants_02_hentus",
+            "common_pants_03",
+            "common_pants_03_b",
+            "common_pants_03_c",
+            "common_pants_04",
+            "common_pants_04_b",
+            "common_pants_05",
+        },
+        noSlotDuplicates = true,
+    },
+    randomShoes = {
+        description = "Common Shoes",
+        ids = {
+            "common_shoes_01",
+            "common_shoes_02",
+            "common_shoes_03",
+            "common_shoes_04",
+            "common_shoes_05",
+        },
+        noSlotDuplicates = true,
     }
 }
 
@@ -247,6 +314,7 @@ local ItemPicks = {
 ---@field helm ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field shield ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field weapon ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field silverWeapon ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field hood ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field robe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field axe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
@@ -259,6 +327,9 @@ local ItemPicks = {
 ---@field coinpurse ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field meat ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field fancyOutfit ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomShirt ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomPants ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomShoes ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 local out = setmetatable({}, {
     __index = function(self, key)
         local itemList = table.deepcopy(ItemPicks[key])

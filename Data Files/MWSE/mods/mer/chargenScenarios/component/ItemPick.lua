@@ -199,6 +199,26 @@ local function playerHasSameItemType(item)
                 if stack.object.slot == item.slot then
                     return true
                 end
+                --Gauntlets and bracers have same slot
+                if item.objectType == tes3.objectType.armor then
+                    if item.slot == tes3.armorSlot.leftGauntlet then
+                        if stack.object.slot == tes3.armorSlot.leftBracer then
+                            return true
+                        end
+                    elseif item.slot == tes3.armorSlot.leftBracer then
+                        if stack.object.slot == tes3.armorSlot.leftGauntlet then
+                            return true
+                        end
+                    elseif item.slot == tes3.armorSlot.rightGauntlet then
+                        if stack.object.slot == tes3.armorSlot.rightBracer then
+                            return true
+                        end
+                    elseif item.slot == tes3.armorSlot.rightBracer then
+                        if stack.object.slot == tes3.armorSlot.rightGauntlet then
+                            return true
+                        end
+                    end
+                end
             elseif item.objectType == tes3.objectType.weapon then
                 if stack.object.type == item.type then
                     return true

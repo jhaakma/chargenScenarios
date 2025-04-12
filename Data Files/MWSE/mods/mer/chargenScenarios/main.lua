@@ -18,20 +18,20 @@ event.register("initialized", function()
 end)
 
 
----@param e loadEventData
-event.register("load", function(e)
-    if e.newGame then
-        if common.config.mcm.enabled then
-            tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_shoes_01")}
-            tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_shirt_01")}
-            tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_pants_01")}
-        else
-            tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_shoes_01")}
-            tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_shirt_01")}
-            tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_pants_01")}
-        end
-    end
-end)
+-- ---@param e loadEventData
+-- event.register("loaded", function(e)
+--     if e.newGame then
+--         if common.config.mcm.enabled then
+--             tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_shoes_01")}
+--             tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_shirt_01")}
+--             tes3.getObject("player").inventory:removeItem{item = tes3.getObject("common_pants_01")}
+--         else
+--             tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_shoes_01")}
+--             tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_shirt_01")}
+--             tes3.getObject("player").inventory:addItem{item = tes3.getObject("common_pants_01")}
+--         end
+--     end
+-- end)
 
 --Run Unit tests
 require('mer.chargenScenarios.test.unitTests')

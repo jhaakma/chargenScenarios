@@ -151,14 +151,17 @@ function Loadouts.equipBestItemForEachSlot()
     for _, slot in pairs(tes3.armorSlot) do
         local item = Loadouts.getBestItemInSlot(tes3.objectType.armor, slot)
         if item then
-            if playerCanEquip(item) then
+            local isShield = item.objectType == tes3.objectType.armor
+                and item.slot == tes3.armorSlot.shield
+
+            if playerCanEquip(item) and not isShield then
                 logger:debug("Equipping best armor %s to player", item.id)
                 tes3.equip{
                     item = item,
                     reference = tes3.player,
                 }
             else
-                logger:debug("Beast - cannot equip best armor %s", item.id)
+                logger:debug("not equipping armor %s", item.id)
             end
         end
     end
@@ -173,66 +176,37 @@ function Loadouts.equipBestItemForEachSlot()
     end
 end
 
-function Loadouts.addAndEquipCommonClothing()
-    logger:debug("Adding and equipping common clothing")
-    local items = {
-        {
-            id = "common_pants_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.pants,
-        },
-        {
-            id = "common_shoes_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.shoes,
-            alt = {
-                objectType = tes3.objectType.armor,
-                slot = tes3.armorSlot.boots
-            }
-        },
-        {
-            id = "common_shirt_01",
-            objectType = tes3.objectType.clothing,
-            slot = tes3.clothingSlot.shirt,
+local commonClothing = {
+    {
+        id = "common_pants_01",
+        objectType = tes3.objectType.clothing,
+        slot = tes3.clothingSlot.pants,
+    },
+    {
+        id = "common_shoes_01",
+        objectType = tes3.objectType.clothing,
+        slot = tes3.clothingSlot.shoes,
+        alt = {
+            objectType = tes3.objectType.armor,
+            slot = tes3.armorSlot.boots
         }
+    },
+    {
+        id = "common_shirt_01",
+        objectType = tes3.objectType.clothing,
+        slot = tes3.clothingSlot.shirt,
     }
+}
 
-    for _, item in ipairs(items) do
-        local hasItem = tes3.getEquippedItem{
-            actor = tes3.player,
-            objectType = item.objectType,
-            slot = item.slot
+---Removes default clothing from the player
+function Loadouts.removeCommonClothing()
+    logger:debug("Removing common clothing")
+    for _, item in ipairs(commonClothing) do
+        tes3.removeItem{
+            reference = tes3.player,
+            item = item.id,
+            playSound = false
         }
-        if not hasItem and item.alt then
-            hasItem = tes3.getEquippedItem{
-                actor = tes3.player,
-                objectType = item.alt.objectType,
-                slot = item.alt.slot
-            }
-        end
-
-        if not hasItem then
-            local item = tes3.getObject(item.id)
-            local canEquip = true
-            if tes3.player.object.race.isBeast then
-                canEquip = item.isUsableByBeasts ~= false
-                logger:debug("Beast - can equip %s: %s", item.id, canEquip)
-            end
-
-            if canEquip then
-                logger:debug("Equipping deafult %s to player", item.id)
-                tes3.addItem{
-                    reference = tes3.player,
-                    item = item.id
-                }
-                tes3.equip{
-                    item = item,
-                    reference = tes3.player,
-                }
-            else
-                logger:debug("Beast - cannot equip deafult %s", item.id)
-            end
-        end
     end
 end
 
