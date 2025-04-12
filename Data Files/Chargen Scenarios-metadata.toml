@@ -1,8 +1,9 @@
 [package]
 name = "Chargen Scenarios"
 description = "An alternate start / chargen overhaul mod for Morrowind."
+homepage = "https://www.nexusmods.com/morrowind/mods/56341"
 repository = "https://github.com/jhaakma/chargenScenarios"
-authors = [ "Merlord",]
+authors = [ "Merlord"]
 version = "1.0.0"
 
 [dependencies]
@@ -10,3 +11,17 @@ assets = [ "MWSE\\mods\\mer\\chargenScenarios",]
 
 [dependencies.mwse]
 buildnumber = 4093
+
+[dependencies.mods."The Crafting Framework"]
+mwse-module = "CraftingFramework"
+version = "^1.33.2"
+url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"
+
+[dependencies.mods."MWSE Name Randomiser"]
+mwse-module = "Spammer.LGNNRNPC"
+url = "https://www.nexusmods.com/morrowind/mods/51403?tab=files"
+
+[dependencies.mods."Randomised Chargen"]
+mwse-module = "RandomChargen"
+url = "https://www.nexusmods.com/morrowind/mods/46915?tab=files"
+
