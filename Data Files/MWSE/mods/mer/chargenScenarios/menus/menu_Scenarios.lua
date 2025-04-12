@@ -39,6 +39,15 @@ local menu = {
         local scenario = Scenario.getSelectedScenario()
         return scenario and scenario.name or "None"
     end,
+    getTooltip = function(self)
+        local scenario = Scenario.getSelectedScenario()
+        if scenario then
+            return {
+                header = scenario.name,
+                description = scenario.description
+            }
+        end
+    end,
     createMenu = function(self)
         ScenarioMenu.createScenarioMenu{
             scenarioList = Scenario.registeredScenarios,
@@ -66,7 +75,7 @@ local menu = {
             logger:debug("Starting scenario: %s", scenario.name)
             scenario:start()
         end
-    end
+    end,
 }
 ChargenMenu.register(menu)
 

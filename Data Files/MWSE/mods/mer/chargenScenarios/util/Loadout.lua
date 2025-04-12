@@ -55,6 +55,29 @@ local function getToggleText(active)
     return active and "Remove" or "Add"
 end
 
+function LoadoutUI.clickRow(rowBlock, doOnClick)
+    local itemList = rowBlock:getLuaData("loadout")
+    if not itemList then
+        logger:debug("No loadout found")
+        return
+    end
+    local button = rowBlock:findChild(tes3ui.registerID("ChargenScenarios_LoadoutsMenu_button"))
+    local label = rowBlock:findChild(tes3ui.registerID("ChargenScenarios_LoadoutsMenu_label"))
+    local canClick = rowBlock:getLuaData("canClick")
+    if canClick ~= nil and not canClick(itemList) then
+        tes3.messageBox("You have reached the limit of item packages you can add.")
+        return
+    end
+    itemList.active = not itemList.active
+    button.text = getToggleText(itemList.active)
+    local color = getColor(itemList.active)
+    label.color = color
+    rowBlock:updateLayout()
+    local onClick = rowBlock:getLuaData("onClick")
+    if onClick and doOnClick then
+        onClick()
+    end
+end
 
 ---@param e { parent: tes3uiElement, itemList : ChargenScenarios.ItemList, onClick: fun(), canClick: fun(ChargenScenarios.ItemList):boolean }
 function LoadoutUI.createLoadoutRow(e)
@@ -66,10 +89,16 @@ function LoadoutUI.createLoadoutRow(e)
     outerBlock:register("help", function()
         createLoadoutTooltip(e)
     end)
+    outerBlock:setLuaData("loadout", e.itemList)
+    outerBlock:setLuaData("onClick", e.onClick)
+    outerBlock:setLuaData("canClick", e.canClick)
 
     local color = getColor(e.itemList.active)
 
-    local label = outerBlock:createLabel{ text = e.itemList.name }
+    local label = outerBlock:createLabel{
+        id = "ChargenScenarios_LoadoutsMenu_label",
+        text = e.itemList.name
+    }
     label.borderAllSides = 6
     label.autoWidth = true
     label.autoHeight = true
@@ -77,24 +106,25 @@ function LoadoutUI.createLoadoutRow(e)
     label:register("help", function()
         createLoadoutTooltip(e)
     end)
+    local button
     if not e.itemList.defaultActive then
         local buttonText = getToggleText(e.itemList.active)
-        local button = outerBlock:createButton{ text = buttonText }
+        button = outerBlock:createButton{
+            id = "ChargenScenarios_LoadoutsMenu_button",
+            text = buttonText
+        }
         button.absolutePosAlignX = 1.0
         button.absolutePosAlignY = 0.5
+        button:setLuaData("loadout", e.itemList)
         button:register("mouseClick", function()
-            if not e.canClick(e.itemList) then
-                tes3.messageBox("You have reached the limit of item packages you can add.")
-                return
-            end
-            e.itemList.active = not e.itemList.active
-            button.text = getToggleText(e.itemList.active)
-            local color = getColor(e.itemList.active)
-            label.color = color
-            outerBlock:updateLayout()
-            e.onClick()
+            logger:debug("Clicked %s", e.itemList.name)
+            LoadoutUI.clickRow(outerBlock, true)
         end)
     end
+
+
 end
+
+
 
 return LoadoutUI

@@ -10,7 +10,7 @@ local logger = common.createLogger("ChargenMenu")
 ---@field createMenu fun(self: ChargenScenarios.ChargenMenu) Make sure to call self:okCallback() when clicking ok
 ---@field validate? fun(self: ChargenScenarios.ChargenMenu):boolean Return false if the menu needs to be opened again after other things have changed
 ---@field isActive? fun(self: ChargenScenarios.ChargenMenu):boolean Return false if the menu should not be shown
----@field getTooltip nil|fun(self: ChargenScenarios.ChargenMenu):{ header: string, description: string} Return a tooltip for the menu
+---@field getTooltip nil|fun(self: ChargenScenarios.ChargenMenu):nil|{ header: string, description: string} Return a tooltip for the menu
 ---@field onStart? fun(self: ChargenScenarios.ChargenMenu) Callback triggered when chargen finishes
 
 ---Defines a menu that is added to the chargen sequence

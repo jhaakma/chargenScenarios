@@ -1240,13 +1240,14 @@ local scenarios = {
                 cellId = "Neglected Shipwreck, Cabin",
                 requirements = requiresOaabShipwreck,
             },
-            {  --prelude shipwreck - OAAB
-                name = "Prelude Shipwreck",
-                position = {4170, 4245, 63},
-                orientation = -3,
-                cellId = "Prelude Shipwreck, Cabin",
-                requirements = requiresOaabShipwreck,
-            },
+            --DISABLED - adds skeletons which will kill you instantly
+            -- {  --prelude shipwreck - OAAB
+            --     name = "Prelude Shipwreck",
+            --     position = {4170, 4245, 63},
+            --     orientation = -3,
+            --     cellId = "Prelude Shipwreck, Cabin",
+            --     requirements = requiresOaabShipwreck,
+            -- },
             {  --remote shipwreck - OAAB
                 name = "Remote Shipwreck",
                 position = {-8307, -84454, 93},

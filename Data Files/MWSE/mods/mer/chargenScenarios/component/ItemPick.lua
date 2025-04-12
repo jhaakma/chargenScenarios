@@ -136,6 +136,7 @@ function ItemPick:new(data)
     return itemPick
 end
 
+---@return string
 function ItemPick:getDescription()
     local description = self.description
     if not description then
