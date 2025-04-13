@@ -384,6 +384,9 @@ local scenarios = {
             orientation =0,
             cellId = "Port Telvannis, The Avenue"
         },
+        topics = {
+            "hospitality papers",
+        },
         items = {
             itemPicks.gold(50),
             {
@@ -396,6 +399,7 @@ local scenarios = {
             itemPicks.randomShoes,
         },
     },
+
 
     {
         id = "arrivedInAnvil",

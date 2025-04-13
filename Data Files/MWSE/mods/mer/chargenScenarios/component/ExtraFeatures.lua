@@ -1,11 +1,12 @@
-
+local common = require("mer.chargenScenarios.common")
+local logger = common.createLogger("ExtraFeatures")
 ---@class ChargenScenarios.ExtraFeatures
 local ExtraFeatures = {
     registeredFeatures = {}
 }
 
 ---@class ChargenScenarios.ExtraFeature.callbackParams
----@field goBack fun(success: boolean) call this in a back button to return to Extra Features Menu
+---@field goBack fun() call this in a back button to return to Extra Features Menu
 
 ---@class ChargenScenarios.ExtraFeature
 ---@field id string
@@ -64,7 +65,7 @@ function ExtraFeatures.getFeatureButtons(okCallback)
             text = feature.name,
             callback = function()
                 feature.callback{
-                    goBack = function(success)
+                    goBack = function()
                         ExtraFeatures.openMenu{
                             okCallback = okCallback,
                         }
@@ -93,21 +94,25 @@ function ExtraFeatures.openMenu(e)
         }
     elseif #availableFeatures == 1 then
         availableFeatures[1].callback{
-            goBack = function(success)
+            goBack = function()
                 e.okCallback()
             end,
         }
     else
         tes3ui.showMessageMenu{
-            header = "Extra Features",
+            header = "Extra Features:",
+            message = "Warning: Extra features are not balanced and may conflict or override scenario features. Use with caution.",
             buttons = featureButtons,
         }
     end
 end
 
 function ExtraFeatures.onStart()
+    logger:debug("ExtraFeatures.onStart()")
     for _, feature in pairs(ExtraFeatures.registeredFeatures) do
+        logger:debug("- Checking feature %s", feature.id)
         if feature.onStart then
+            logger:debug("-Running feature %s", feature.id)
             feature.onStart()
         end
     end
@@ -119,7 +124,7 @@ function ExtraFeatures.getTooltip()
     for _, feature in pairs(activeFeatures) do
         local featureTooltip = feature.getTooltip and feature.getTooltip()
         if featureTooltip then
-            tooltip = tooltip .. featureTooltip .. "\n"
+            tooltip = tooltip .. "- " .. featureTooltip .. "\n"
         end
     end
     if tooltip == "" then

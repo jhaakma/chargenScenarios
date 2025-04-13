@@ -117,7 +117,7 @@ end
 local function startGame()
     tes3.runLegacyScript{ script = "RaceCheck" } ---@diagnostic disable-line
     for _, chargenMenu in ipairs(ChargenMenu.orderedMenus) do
-        if chargenMenu.id == "scenarioMenu" or chargenMenu:isActive() and chargenMenu:isEnabled() then
+        if chargenMenu.id == "scenarioMenu" or chargenMenu:isActive() then
             chargenMenu:onStart()
         end
     end

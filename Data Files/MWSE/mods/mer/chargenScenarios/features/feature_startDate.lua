@@ -101,36 +101,30 @@ local function createStartDateMenu(e)
 
     local randomButton = buttonBlock:createButton{ text = "Random" }
     randomButton:register("mouseClick", function()
-        local dateTime = getSavedDateTime()
-        dateTime.daysPassed = math.random(0, 364)
-        dateTime.timeHours = math.random(0, 23)
-        dateSlider.variable.value = dateTime.daysPassed
-        timeSlider.variable.value = dateTime.timeHours
-        dateSlider:setVariableValue(dateTime.daysPassed)
-        timeSlider:setVariableValue(dateTime.timeHours)
-        logger:debug("Randomised date to %s", dateTime.daysPassed)
+        dateSlider:setVariableValue(math.random(0, 364))
+        timeSlider:setVariableValue(math.random(0, 23))
     end)
 
     --cancel - delete the temp data so it doesn't reset time
     local cancelButton = buttonBlock:createButton{ text = "Reset" }
     cancelButton:register("mouseClick", function()
-        local dateTime = getSavedDateTime()
-        dateTime.daysPassed = nil
-        dateTime.timeHours = nil
-        dateTime.isSet = nil
-        menu:destroy()
-        e.okCallback()
+        dateSlider:setVariableValue(228)
+        timeSlider:setVariableValue(9)
     end)
 
     local okButton = buttonBlock:createButton{ text = "Confirm" }
     okButton:register("mouseClick", function()
         menu:destroy()
         local dateTime = getSavedDateTime()
-        dateTime.isSet = true
         e.okCallback()
     end)
 
     menu:updateLayout()
+end
+
+local function isSet()
+    local dateTime = getSavedDateTime()
+    return not (dateTime.daysPassed == 228 and dateTime.timeHours == 9)
 end
 
 ---@type ChargenScenarios.ExtraFeature
@@ -140,13 +134,13 @@ local feature = {
     callback = function(e)
         createStartDateMenu{
             okCallback = function()
-                e.goBack(true)
+                e.goBack()
             end,
         }
     end,
     onStart = function()
         local dateTime = getSavedDateTime()
-        if dateTime.isSet then
+        if isSet() then
             mwse.log("ChargenScenarios: Start Date set to %s", dateTime.daysPassed)
             local month, day = getMonthDay(dateTime.daysPassed)
             tes3.worldController.month.value = month
@@ -157,14 +151,13 @@ local feature = {
     end,
     getTooltip = function()
         local dateTime = getSavedDateTime()
-        if dateTime.isSet then
+        if isSet() then
             local month, day = getMonthDay(dateTime.daysPassed)
-            return string.format("Start Date: %d %s\nStart Time: %02d:00", day+1, getMonthName(month), dateTime.timeHours or 0)
+            return string.format("Start Date: %d %s, %02d:00", day+1, getMonthName(month), dateTime.timeHours or 0)
         end
     end,
     isActive = function()
-        local dateTime = getSavedDateTime()
-        return dateTime.isSet
+        return isSet()
     end,
 }
 
