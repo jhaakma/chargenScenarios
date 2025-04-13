@@ -132,16 +132,15 @@ end
 function Loadouts.equipBestItemForEachSlot()
     logger:debug("Equipping best item for each slot")
 
+    local itemsToEquip = {}
+
     --clothing
     for _, slot in pairs(tes3.clothingSlot) do
         local item = Loadouts.getBestItemInSlot(tes3.objectType.clothing, slot)
         if item then
             if playerCanEquip(item) then
-                logger:debug("Equipping best armor %s to player", item.id)
-                tes3.equip{
-                    item = item,
-                    reference = tes3.player,
-                }
+                logger:debug("Adding best armor %s to equip list", item.id)
+                table.insert(itemsToEquip, item)
             else
                 logger:debug("Beast - cannot equip best clothing %s", item.id)
             end
@@ -155,11 +154,8 @@ function Loadouts.equipBestItemForEachSlot()
                 and item.slot == tes3.armorSlot.shield
 
             if playerCanEquip(item) and not isShield then
-                logger:debug("Equipping best armor %s to player", item.id)
-                tes3.equip{
-                    item = item,
-                    reference = tes3.player,
-                }
+                logger:debug("Adding best armor %s to equip list", item.id)
+                table.insert(itemsToEquip, item)
             else
                 logger:debug("not equipping armor %s", item.id)
             end
@@ -168,11 +164,31 @@ function Loadouts.equipBestItemForEachSlot()
     --weapon
     local item = Loadouts.getBestItemInSlot(tes3.objectType.weapon)
     if item then
-        logger:debug("Equipping best weapon %s to player", item.id)
-        tes3.equip{
-            item = item,
-            reference = tes3.player,
-        }
+        logger:debug("Adding best weapon %s to equip list", item.id)
+        table.insert(itemsToEquip, item)
+    end
+
+    --Stagger tes3.equip, one item at a time
+    local function processItem(item, index)
+        if item then
+            logger:debug("Equipping item %s", item.id)
+            tes3.equip{ reference = tes3.player, item = item.id }
+            timer.delayOneFrame(function()
+                if index < #itemsToEquip then
+                    processItem(itemsToEquip[index + 1], index + 1)
+                else
+                    logger:debug("Finished equipping items")
+                end
+            end)
+        else
+            logger:debug("Finished equipping items")
+        end
+    end
+    if #itemsToEquip > 0 then
+        logger:debug("Equipping %s items", #itemsToEquip)
+        processItem(itemsToEquip[1], 1)
+    else
+        logger:debug("No items to equip")
     end
 end
 

@@ -74,7 +74,6 @@ local menu = {
                 Loadouts.removeCommonClothing()
                 Loadouts.doItems()
                 Loadouts.equipBestItemForEachSlot()
-                --Loadouts.addAndEquipCommonClothing()
             end
         }
     end,
