@@ -4,7 +4,7 @@ description = "An alternate start / chargen overhaul mod for Morrowind."
 homepage = "https://www.nexusmods.com/morrowind/mods/56341"
 repository = "https://github.com/jhaakma/chargenScenarios"
 authors = [ "Merlord",]
-version = "1.1.1"
+version = "1.1.2"
 
 [dependencies]
 assets = [ "MWSE\\mods\\mer\\chargenScenarios",]
