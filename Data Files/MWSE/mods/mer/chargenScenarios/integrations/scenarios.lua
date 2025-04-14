@@ -1,6 +1,8 @@
 local TagManager = require("CraftingFramework").TagManager
 local Scenario = require("mer.chargenScenarios.component.Scenario")
 local itemPicks = require("mer.chargenScenarios.util.itemPicks")
+local common = require("mer.chargenScenarios.common")
+local logger = common.createLogger("Scenarios")
 
 local requiresBeastRace = {
     races = {"Argonian", "Khajiit"}
@@ -339,17 +341,22 @@ local scenarios = {
                 id = "ingred_saltrice_01",
                 count = 6
             },
-            {
-                id = "mer_cs_slave_bracer",
-                count = 1,
-                noDuplicates = true,
-            },
-            itemPicks.coinpurse,
             itemPicks.randomCommonPants,
-            itemPicks.randomCommonShirt,
-            itemPicks.randomCommonShoes,
         },
         requirements = requiresBeastRace,
+        onStart = function(self)
+            --equip the slave bracer
+            timer.start{
+                duration = 0.6,
+                callback = function()
+                    tes3.equip{
+                        item = "mer_cs_slave_bracer",
+                        reference = tes3.player,
+                        addItem = true,
+                    }
+                end
+            }
+        end,
     },
     {
         id = "gatheringMushrooms",
@@ -1706,11 +1713,12 @@ local scenarios = {
                 position = {-74003, 106003, 37},
                 orientation =0,
             },
-            { --Azura's Coast
-                name = "Azura's Coast",
-                position = {142783, -54841, 26},
-                orientation =-2,
-            },
+            -- Seems broken
+            -- { --Azura's Coast
+            --     name = "Azura's Coast",
+            --     position = {142783, -54841, 26},
+            --     orientation =-2,
+            -- },
             {
                 name = "Dragonhead Point",
                 position = {330424, -29432, 784},
@@ -2104,4 +2112,23 @@ timer.register("mer_scenarios_ghostTimer", function()
     }
     ghost.mobile:startCombat(tes3.player.mobile)
     tes3.messageBox("You feel a chill down your spine.")
+end)
+
+event.register("itemTileUpdated", function(itemTileUpdatedEventData)
+    itemTileUpdatedEventData.element:registerBefore("mouseClick", function(mouseclickEventData)
+        local currentScenario = Scenario:getSelectedScenario()
+        if not currentScenario then return end
+        if currentScenario.id ~= "workingInTheFields" then return end
+        local tileData = mouseclickEventData.source:getPropertyObject("MenuInventory_Thing", "tes3inventoryTile") --- @type tes3inventoryTile
+            if not tileData then return end
+
+        local isSlaveBracer = tileData.item and tileData.item.id:lower() == "mer_cs_slave_bracer"
+        if not isSlaveBracer then return end
+        logger:debug("Clicked on slave bracer")
+
+        local journalIndex = tes3.getJournalIndex{ id = "journal mer_cs_field"}
+        if journalIndex >= 100 then return end
+        logger:debug("Bracer still locked, blocking click")
+        return false
+    end, 10000)
 end)
