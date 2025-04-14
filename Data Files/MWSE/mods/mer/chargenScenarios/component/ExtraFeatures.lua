@@ -9,8 +9,8 @@ local ExtraFeatures = {
 ---@field goBack fun() call this in a back button to return to Extra Features Menu
 
 ---@class ChargenScenarios.ExtraFeature
----@field id string
----@field name string
+---@field id string -- Unique ID for the feature
+---@field name string -- Name of the feature, shown in the menu
 ---@field getTooltip? fun():string? -- Shown in tooltip on the Finalise menu
 ---@field showFeature? fun():boolean -- function to call to determine if the feature should be shown
 ---@field callback fun(e: ChargenScenarios.ExtraFeature.callbackParams) -- function to call when the feature is selected
@@ -101,8 +101,20 @@ function ExtraFeatures.openMenu(e)
     else
         tes3ui.showMessageMenu{
             header = "Extra Features:",
-            message = "Warning: Extra features are not balanced and may conflict or override scenario features. Use with caution.",
             buttons = featureButtons,
+            --create the message with justify center
+            customBlock = function(parent)
+                parent.minWidth = 350
+                parent.widthProportional = 1.0
+                parent.borderAllSides = 10
+                local message = parent:createLabel{
+                    text = "Warning: Extra features are not balanced and may conflict or override scenario features. Use with caution.",
+                }
+                message.justifyText = "center"
+                message.wrapText = true
+                message.autoHeight = true
+                message.widthProportional = 1.0
+            end
         }
     end
 end

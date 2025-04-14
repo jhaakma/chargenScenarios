@@ -74,6 +74,7 @@ local menu = {
                 Loadouts.removeCommonClothing()
                 Loadouts.doItems()
                 Loadouts.equipBestItemForEachSlot()
+                event.trigger("ChargenScenarios:Loadouts_Done")
             end
         }
     end,

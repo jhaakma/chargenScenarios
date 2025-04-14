@@ -53,13 +53,16 @@ local function createStartDateMenu(e)
     local block = menu:createBlock()
     block.widthProportional = 1.0
     block.autoHeight = true
-    block.paddingAllSides = 10
     block.flowDirection = "top_to_bottom"
     block.childAlignX = 0.5
 
-    local header = block:createLabel{ text = "Set the date and time that you will start the game." }
+    local header = block:createLabel{ text = "Select the Start Date/Time:" }
     header.color = tes3ui.getPalette("header_color")
-
+    header.autoHeight = true
+    header.widthProportional = 1.0
+    header.borderBottom = 10
+    header.justifyText = "center"
+    header.wrapText = true
 
     --Date
     local dateSlider = mwse.mcm.createSlider(block, {
@@ -115,7 +118,6 @@ local function createStartDateMenu(e)
     local okButton = buttonBlock:createButton{ text = "Confirm" }
     okButton:register("mouseClick", function()
         menu:destroy()
-        local dateTime = getSavedDateTime()
         e.okCallback()
     end)
 
@@ -144,7 +146,7 @@ local feature = {
             mwse.log("ChargenScenarios: Start Date set to %s", dateTime.daysPassed)
             local month, day = getMonthDay(dateTime.daysPassed)
             tes3.worldController.month.value = month
-            tes3.worldController.day.value = day
+            tes3.worldController.day.value = day+1
             mwse.log("ChargenScenarios: Start Time set to %s", dateTime.timeHours)
             tes3.worldController.hour.value = dateTime.timeHours
         end
