@@ -121,18 +121,6 @@ local ItemPicks = {
         noDuplicates = true,
         pickMethod = "bestForClass",
     },
-    hood = {
-        description = "Hood",
-        ids = {
-            "AB_c_CommonHood01",
-            "AB_c_CommonHood02",
-            "AB_c_CommonHood02h",
-            "AB_c_CommonHood03a",
-            "AB_c_CommonHoodBlack"
-        },
-        noSlotDuplicates = true,
-        pickMethod = "random"
-    },
     robe = {
         description = "Robe",
         ids = {
@@ -244,7 +232,7 @@ local ItemPicks = {
         noDuplicates = true,
         pickMethod = "all",
     },
-    randomShirt = {
+    randomCommonShirt = {
         description = "Common Shirt",
         ids = {
             "common_shirt_01",
@@ -270,7 +258,7 @@ local ItemPicks = {
         },
         noSlotDuplicates = true,
     },
-    randomPants = {
+    randomCommonPants = {
         description = "Common Pants",
         ids = {
             "common_pants_01",
@@ -289,7 +277,7 @@ local ItemPicks = {
         },
         noSlotDuplicates = true,
     },
-    randomShoes = {
+    randomCommonShoes = {
         description = "Common Shoes",
         ids = {
             "common_shoes_01",
@@ -299,7 +287,46 @@ local ItemPicks = {
             "common_shoes_05",
         },
         noSlotDuplicates = true,
-    }
+    },
+    randomCommonHood = {
+        description = "Hood",
+        ids = {
+            "AB_c_CommonHood01",
+            "AB_c_CommonHood02",
+            "AB_c_CommonHood02h",
+            "AB_c_CommonHood03a",
+            "AB_c_CommonHoodBlack"
+        },
+        noSlotDuplicates = true,
+    },
+
+    randomExpensiveShirt = {
+        description = "Expensive Shirt",
+        ids = {
+            "expensive_shirt_01",
+            "expensive_shirt_02",
+            "expensive_shirt_03",
+        },
+        noSlotDuplicates = true,
+    },
+    randomExpensivePants = {
+        description = "Expensive Pants",
+        ids = {
+            "expensive_pants_01",
+            "expensive_pants_02",
+            "expensive_pants_03",
+        },
+        noSlotDuplicates = true,
+    },
+    randomExpensiveShoes = {
+        description = "Expensive Shoes",
+        ids = {
+            "expensive_shoes_01",
+            "expensive_shoes_02",
+            "expensive_shoes_03",
+        },
+        noSlotDuplicates = true,
+    },
 }
 
 ---@class (exact) ChargenScenarios.Util.ItemPicks
@@ -315,7 +342,6 @@ local ItemPicks = {
 ---@field shield ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field weapon ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field silverWeapon ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
----@field hood ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field robe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field axe ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field fishingPole ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
@@ -327,9 +353,13 @@ local ItemPicks = {
 ---@field coinpurse ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field meat ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 ---@field fancyOutfit ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
----@field randomShirt ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
----@field randomPants ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
----@field randomShoes ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomCommonShirt ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomCommonPants ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomCommonShoes ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomCommonHood ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomExpensiveShirt ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomExpensivePants ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
+---@field randomExpensiveShoes ChargenScenariosItemPickInput | fun(count): ChargenScenariosItemPickInput
 local out = setmetatable({}, {
     __index = function(self, key)
         local itemList = table.deepcopy(ItemPicks[key])
