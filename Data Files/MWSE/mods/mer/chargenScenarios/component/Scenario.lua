@@ -208,8 +208,10 @@ function Scenario:doWeather()
         weather = table.choice(tes3.weather)
     end
     logger:debug("Setting weather to %s", table.find(tes3.weather, weather))
-    tes3.worldController.weatherController:switchImmediate(weather)
-    tes3.worldController.weatherController:updateVisuals()
+    tes3.changeWeather{
+        immediate = true,
+        id = weather,
+    }
 end
 
 ---Update the current game time to the scenario time

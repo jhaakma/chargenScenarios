@@ -101,7 +101,7 @@ end
 ---@param parent tes3uiElement The parent element to populate with spell buttons
 function SpellsFeature.populateSpells(parent)
     logger:debug("Populating spells")
-    parent:destroyChildren()
+    parent:getContentElement():destroyChildren()
 
     local selectedSpells = SpellsFeature.getSelectedSpells()
     ---@type string[]
@@ -147,14 +147,11 @@ function SpellsFeature.callback(e)
     local header = block:createLabel{ text = "Select Additional Spells:" }
     header.color = tes3ui.getPalette("header_color")
 
-    local spellsBlock = block:createThinBorder()
+    local spellsBlock = block:createVerticalScrollPane()
     spellsBlock.autoWidth = true
     spellsBlock.autoHeight = true
-    spellsBlock.paddingAllSides = 10
-    spellsBlock.borderAllSides = 10
-    spellsBlock.flowDirection = "top_to_bottom"
-    spellsBlock.childAlignX = 0.5
-
+    spellsBlock.minHeight = 300
+    spellsBlock.minWidth = 300
 
     SpellsFeature.populateSpells(spellsBlock)
 
