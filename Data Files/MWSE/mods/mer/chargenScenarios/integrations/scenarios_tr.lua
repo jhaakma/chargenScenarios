@@ -243,6 +243,18 @@ local scenarios = {
                 position = {4309, 4124, 15405},
                 orientation =-1.62,
                 cellId = "Old Ebonheart, Gul-Ei's Pantry"
+            },
+            {
+                name = "Vivec",
+                position = {4239, 3814, 15517},
+                orientation = 0,
+                cellId = "Vivec, Dyrian Sweetleaf: Baker",
+            },
+            {
+                name = "Suran",
+                position = { 2771, 3752, 12134 },
+                orientation = 4.71,
+                cellId = "Suran, The Amberloaf Bakery",
             }
         },
         items = {

@@ -2009,9 +2009,9 @@ local scenarios = {
         name = "Studying in the Library",
         description = "You are immersed in study at the Library of Vivec, surrounded by ancient tomes and scrolls.",
         journalEntry = "I've spent the day studying in the Library of Vivec.",
-        location = { --Vivec, Library of Vivec
-            position = {-509, 1713, -126},
-            orientation = 1.5,
+        location =     { --Vivec, Library of Vivec
+            position = {-251, 1373, -126},
+            orientation =1.58,
             cellId = "Vivec, Library of Vivec"
         },
         items = {
@@ -2096,19 +2096,9 @@ timer.register("mer_scenarios_ghostTimer", function()
 
     local distanceBehind = 128
 
-    -- Get the player's forward direction vector
-    local forwardVector = tes3.getPlayerEyeVector()
-    -- Invert it to get the backward direction
-    local backwardVector = -forwardVector
-    -- Calculate the new position
-    local position = tes3.player.position:copy() + backwardVector * distanceBehind
-
-    local ghost = tes3.createReference{
+    local ghost = common.placeBehindPlayer{
         object = object,
-        position = position,
-        --facing player
-        orientation = tes3.player.orientation:copy() + tes3vector3.new(0, 0, math.pi),
-        cell = tes3.player.cell
+        distanceBehind = distanceBehind,
     }
     ghost.mobile:startCombat(tes3.player.mobile)
     tes3.messageBox("You feel a chill down your spine.")

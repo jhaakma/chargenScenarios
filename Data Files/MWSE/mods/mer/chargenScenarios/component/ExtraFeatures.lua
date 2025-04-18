@@ -136,7 +136,7 @@ function ExtraFeatures.getTooltip()
     for _, feature in pairs(activeFeatures) do
         local featureTooltip = feature.getTooltip and feature.getTooltip()
         if featureTooltip then
-            tooltip = tooltip .. "- " .. featureTooltip .. "\n"
+            tooltip = tooltip .. featureTooltip .. "\n"
         end
     end
     if tooltip == "" then

@@ -132,7 +132,7 @@ end
 ---@type ChargenScenarios.ExtraFeature
 local feature = {
     id = "startDate",
-    name = "Set Start Date/Time",
+    name = "Date/Time",
     callback = function(e)
         createStartDateMenu{
             okCallback = function()

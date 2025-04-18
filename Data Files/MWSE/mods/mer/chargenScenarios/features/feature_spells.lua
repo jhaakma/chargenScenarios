@@ -6,24 +6,30 @@ local ExtraFeatures = require("mer.chargenScenarios.component.ExtraFeatures")
 ---@field selectedSpells table<string, boolean> A list of currently selected spells
 local SpellsFeature = {
     id = "startingSpells",
-    name = "Additional Spells",
+    name = "Spells",
     availableSpells = {
-        --offensive
         "fire bite",
         "frostbite",
         "viperbite",
         "shock",
-        --defensive
         "heal companion",
         "balyna's soothing balm",
-        --tactical
         "buoyancy",
         "crying eye",
         "frenzying touch",
         "water breathing",
         "noise",
+        "holy touch",
+        "night-eye",
+        "open",
+        "soul trap",
+        "jump"
     }
 }
+
+function SpellsFeature.addSpell(spellId)
+    table.insert(SpellsFeature.availableSpells, spellId)
+end
 
 ---Get list of available spells, which includes those on player.object.spells
 ---@return table<string, true> A list of available spells
@@ -85,16 +91,18 @@ function SpellsFeature.createSpellButton(e)
         local isSelected = SpellsFeature.getSelectedSpells()[e.spellId] or false
         logger:debug("Creating button for spell: %s. Selected: %s", spellObject.name, isSelected)
         local textSelect = e.parent:createTextSelect{ text = spellObject.name }
+        textSelect.widget.state = isSelected and tes3.uiState.active or tes3.uiState.normal
+
         textSelect:register("help", function()
             tes3ui.createTooltipMenu{ spell = spellObject }
         end)
         textSelect:register("mouseClick", function()
             logger:debug("Clicked on spell: %s", spellObject.name)
-            isSelected = not isSelected
-            SpellsFeature.setSelectedSpell(e.spellId, isSelected)
+            local selected = textSelect.widget.state == tes3.uiState.active
+            SpellsFeature.setSelectedSpell(e.spellId, (not selected))
             SpellsFeature.populateSpells(e.parent)
         end)
-        textSelect.widget.state = isSelected and tes3.uiState.active or tes3.uiState.normal
+
     end
 end
 
@@ -211,13 +219,10 @@ function SpellsFeature.getTooltip(e)
         return "No starting spells selected."
     end
 
-    local tooltipMessage = "Starting Spells:\n"
+    local tooltipMessage = "Starting Spells:"
     for _, spell in ipairs(spellObjects) do
-        tooltipMessage = tooltipMessage .. "   - " .. spell.name .. "\n"
+        tooltipMessage = tooltipMessage .. "\n - " .. spell.name
     end
-    --remove last newline
-    tooltipMessage = string.sub(tooltipMessage, 1, -2)
-
     return tooltipMessage
 end
 
@@ -250,3 +255,5 @@ end
 
 
 ExtraFeatures.registerFeature(SpellsFeature)
+
+return SpellsFeature

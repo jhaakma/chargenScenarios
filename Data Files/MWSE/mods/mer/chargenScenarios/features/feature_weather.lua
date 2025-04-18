@@ -33,7 +33,11 @@ end
 --Populate weather buttons
 function WeatherFeature.populateWeather(parent)
     parent:destroyChildren()
-    local weatherTypes = table.invert(tes3.weather)
+    local weatherTypes = {}
+    for weather, index in pairs(tes3.weather) do
+        weatherTypes[index+1] = weather
+    end
+
     for _, weatherId in ipairs(weatherTypes) do
         local weatherName = WeatherFeature.getWeatherName(weatherId)
         local button = parent:createTextSelect{ text = weatherName }
@@ -85,12 +89,17 @@ function WeatherFeature.callback(e)
     buttonsBlock.autoWidth = true
     buttonsBlock.autoHeight = true
 
-        ---Random button
+    ---Random button
     ---  Pick a number between 1 and the number of available spells
     ---  Select that many spells randomly from the available spells
     local randomButton = buttonsBlock:createButton{ text = "Random" }
     randomButton:register("mouseClick", function()
-        local _, choice = table.choice(tes3.weather)
+        local weathers = table.copy(tes3.weather)
+        if WeatherFeature.selectedWeather then
+            weathers[WeatherFeature.selectedWeather] = nil
+        end
+        local _, choice = table.choice(weathers)
+
         WeatherFeature.selectedWeather = choice
         WeatherFeature.populateWeather(weatherBlock)
         menu:updateLayout()

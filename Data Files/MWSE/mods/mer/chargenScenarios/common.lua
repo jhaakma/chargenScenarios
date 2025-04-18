@@ -33,11 +33,11 @@ end
 local function isLuaFile(file) return file:sub(-4, -1) == ".lua" end
 local function isInitFile(file) return file == "init.lua" end
 function common.initAll(path)
-    path = "Data Files/MWSE/mods/" .. path .. "/"
-    for file in lfs.dir(path) do
+    local fullPath = "Data Files/MWSE/mods/" .. path .. "/"
+    for file in lfs.dir(fullPath) do
         if isLuaFile(file) and not isInitFile(file) then
             logger:debug("Executing file: %s", file)
-            dofile(path .. file)
+            dofile(fullPath .. file)
         end
     end
 end
@@ -63,6 +63,24 @@ function common.convertListTypes(list, classType)
         table.insert(newList, item)
     end
     return newList
+end
+
+---Positions a reference behind the player
+---@param e { object: any, distanceBehind: number }
+---@return tes3reference #The created reference
+function common.placeBehindPlayer(e)
+    local forwardVector = tes3.getPlayerEyeVector()
+    -- Invert it to get the backward direction
+    local backwardVector = -forwardVector
+    -- Calculate the new position
+    local position = tes3.player.position:copy() + backwardVector * e.distanceBehind
+    return tes3.createReference{
+        object = e.object,
+        position = position,
+        --facing player
+        orientation = tes3.player.orientation:copy(),
+        cell = tes3.player.cell
+    }
 end
 
 return common

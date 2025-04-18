@@ -153,7 +153,7 @@ function CurseFeature.onStart()
 end
 
 function CurseFeature.getTooltip()
-    return CurseFeature.currentCurse and ("Curse: " .. CurseFeature.currentCurse.name) or "No curse selected."
+    return CurseFeature.currentCurse and ("Blood Curse: " .. CurseFeature.currentCurse.name) or "No curse selected."
 end
 
 function CurseFeature.isActive()
@@ -163,7 +163,7 @@ end
 ---@type ChargenScenarios.ExtraFeature
 local feature = {
     id = "curses",
-    name = "Vampirism/Lycanthropy",
+    name = "Blood Curses",
     callback = CurseFeature.callback,
     onStart = CurseFeature.onStart,
     getTooltip = CurseFeature.getTooltip,
