@@ -676,6 +676,15 @@ local scenarios = {
                     plugins = { "TR_Mainland.esm" }
                 }
             },
+            { --Narsis, Guild of Mages: Laboratories
+                name = "Narsis",
+                position = {4162, 4208, 12263},
+                orientation =-3.12,
+                cellId = "Narsis, Guild of Mages: Laboratories",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
+                }
+            },
         },
         items = {
             {
@@ -794,6 +803,15 @@ local scenarios = {
                 cellId = "Karthwasten, Guild of Fighters",
                 requirements = {
                     plugins = { "Sky_Main.esm" }
+                }
+            },
+            { --Narsis, Guild of Fighters
+                name = "Narsis",
+                position = {31, 758, -121},
+                orientation =-0.03,
+                cellId = "Narsis, Guild of Fighters",
+                requirements = {
+                    plugins = { "TR_Mainland.esm" }
                 }
             },
         },
@@ -1836,20 +1854,10 @@ local scenarios = {
         id = "bard",
         name = "Performer",
         description = "You are a bard performing in a tavern.",
-        journalEntry = "I've been practicing \"Beneath the Mushroom tree\" on my lute. I should speak to the innkeeper to see if I can perform at the tavern.",
+        journalEntry = "I've been practicing hard my lute and I'm ready to hit the stage. I should speak to the innkeeper to see if I can perform at the tavern.",
         locations = taverns,
         items = {
             itemPicks.gold(25),
-            {
-                id = "bk_bardic_inspiration",
-                count = 1,
-                noDuplicates = true,
-            },
-            {
-                id = "bk_bardic_inspiration_2",
-                count = 1,
-                noDuplicates = true,
-            },
             {
                 id = "bk_redbookofriddles",
                 count = 1,
@@ -1865,15 +1873,12 @@ local scenarios = {
             itemPicks.randomExpensiveShirt,
             itemPicks.randomExpensiveShoes,
         },
-        time = 17,
+        time = 16.5,
         onStart = function()
             local songController = include("mer.bardicInspiration.controllers.songController")
+            local songList = include("mer.bardicInspiration.data.songList")
             if songController then
-                songController.learnSong{
-                    name = "Beneath the Mushroom Tree",
-                    path = "mer_bard/beg/2.mp3",
-                    difficulty = "beginner",
-                }
+                songController.learnSong(table.choice(songList.beginner))
             end
         end
     },

@@ -77,6 +77,21 @@ end
 ---@type ChargenScenarios.CompanionsFeature.Companion[]
 local companions = {
     {
+        id = "mer_comp_archer"
+    },
+    {
+        id = "mer_comp_mage",
+    },
+    {
+        id = "mer_comp_thief",
+    },
+    {
+        id = "mer_comp_warrior",
+    },
+    {
+        id = "mer_guar_pack"
+    },
+    {
         id = "aa_latte_comp01",
         callback = function (ref)
             tes3.setJournalIndex{ id = "aa_lat_00_intro", index = 100 }
@@ -420,3 +435,22 @@ local companions = {
 for _, companion in ipairs(companions) do
     Companions.addCompanion(companion)
 end
+
+event.register("equip", function(e)
+    if e.item.id:lower() == "mer_cs_flute_01" then
+        --find guar ref and teleport to player
+        local guarRef = tes3.getReference("mer_guar_pack")
+        if guarRef then
+            tes3.positionCell{
+                reference = guarRef,
+                position = tes3.player.position,
+                orientation = tes3.player.orientation,
+                cell = tes3.player.cell,
+            }
+            tes3.messageBox("You summon your guar.")
+        else
+            logger:debug("Guar ref not found")
+            tes3.messageBox("Nothing happens.")
+        end
+    end
+end)

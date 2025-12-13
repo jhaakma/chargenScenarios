@@ -1,0 +1,10 @@
+mod_name: ChargenScenarios
+metadata_path: Data Files/Chargen Scenarios-metadata.toml
+repo_path: F:/Games/_RELEASES/ChargenScenarios/master
+archive_path: F:/Games/_RELEASES/ChargenScenarios/ChargenScenarios.7z
+morrowind_path: C:/games/Morrowind installs/Vanilla+/Morrowind
+data_files:
+  - MWSE/mods/mer/chargenScenarios
+  - Chargen Scenarios-metadata.toml
+  - Chargen Scenarios - quests.ESP
+  - Meshes/mer_cs/

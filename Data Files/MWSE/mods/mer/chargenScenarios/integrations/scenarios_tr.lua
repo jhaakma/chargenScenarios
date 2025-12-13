@@ -511,9 +511,9 @@ local scenarios = {
         name = "Astrological Society",
         description = "You are a prospective member of the Imperial Astrological Society in Anvil.",
         journalEntry = "I have arrived at the Imperial Astrological Society in Anvil. I should speak to Sarria Caviran about joining.",
-        location = { --Anvil, Imperial Astrological Society
-            position = {2311, 159, 17474},
-            orientation =0.43,
+        location =     { --Anvil, Imperial Astrological Society
+            position = {2195, 399, 17474},
+            orientation =1.59,
             cellId = "Anvil, Imperial Astrological Society"
         },
         items = {
@@ -577,6 +577,27 @@ local scenarios = {
             itemPicks.randomCommonShoes,
         }
     },
+    {
+        id = "janattaSyndicate",
+        name = "Faction: Ja-Natta Syndicate",
+        description = "You are a freshly initiated \"grub\" of the criminal faction known as the Ja-Natta Syndicate in Narsis.",
+        journalEntry = "I have been initiated into the Ja-Natta Syndicate. I should speak to Saldreni Andralor about my first job.",
+        topics = { "odd jobs", "Advancement", "work" },
+        factions = {
+            { id = "T_Mw_JaNattaSyndicate" },
+        },
+        location =     { --Narsis, Sewers: Ja-Natta Syndicate Hideout
+            position = {4174, 4278, 134},
+            orientation =-0.34,
+            cellId = "Narsis, Sewers: Ja-Natta Syndicate Hideout"
+        },
+        items = {
+            itemPicks.gold(50),
+            itemPicks.randomCommonPants,
+            itemPicks.randomCommonShirt,
+            itemPicks.randomCommonShoes,
+        },
+    }
 }
 
 for _, scenario in ipairs(scenarios) do
