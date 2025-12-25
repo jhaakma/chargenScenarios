@@ -11,8 +11,8 @@ local MWSELogger = require("logging.logger")
 common.loggers = {}
 function common.createLogger(serviceName)
     local logger = MWSELogger.new{
-        name = string.format("%s - %s",
-            common.config.metadata.package.name, serviceName),
+        name = common.config.metadata.package.name,
+        moduleName = serviceName,
         logLevel = common.config.mcm.logLevel,
         includeTimestamp = true,
     }
