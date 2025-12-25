@@ -67,15 +67,15 @@ end
 
 function CompanionsFeature.getTooltip()
     local companions = CompanionsFeature.getSelectedCompanions()
-        local tooltip = "Companions: "
-        for id in pairs(companions) do
-            local companion = CompanionsFeature.registeredCompanions[id]
-            if companion then
-                local object = tes3.getObject(id)
-                tooltip = tooltip .. "\n - " .. object.name
-            end
+    local tooltip = "Companions: "
+    for id in pairs(companions) do
+        local companion = CompanionsFeature.registeredCompanions[id]
+        if companion then
+            local object = tes3.getObject(id)
+            tooltip = tooltip .. "\n - " .. object.name
         end
-        return tooltip
+    end
+    return tooltip
 end
 
 ---@return string
@@ -101,84 +101,185 @@ end
 
 ---@param parent tes3uiElement
 ---@param companion ChargenScenarios.CompanionsFeature.AvailableCompanion
-function CompanionsFeature.createCompanionButton(parent, companion)
+---@param detailsPane tes3uiElement
+function CompanionsFeature.createCompanionButton(parent, companion, detailsPane)
     local onClick = function ()
         logger:debug("Clicked on companion: %s", companion.id)
-        CompanionsFeature.selectedCompanions[companion.id] = not CompanionsFeature.selectedCompanions[companion.id]
-        CompanionsFeature.populateCompanionList(parent)
+        CompanionsFeature.updateDetailsPane(detailsPane, companion)
+        tes3.playSound{ sound = "Menu Click" }
     end
 
     local block = parent:createThinBorder()
     block.autoHeight = true
     block.widthProportional = 1.0
-    block.flowDirection = "top_to_bottom"
-    block.paddingAllSides = 10
+    block.flowDirection = "left_to_right"
+    block.paddingAllSides = 6
+    block:register("mouseClick", onClick)
+
+    local function setWidgetState(textSelectLabel)
+        textSelectLabel.widget.state = CompanionsFeature.isSelected(companion) and tes3.uiState.active or tes3.uiState.normal
+    end
 
     --Name
-    local isSelected = CompanionsFeature.isSelected(companion)
     local nameLabel = block:createTextSelect{ text = companion.object.name }
-    nameLabel.widget.state = isSelected and tes3.uiState.active or tes3.uiState.normal
+    nameLabel.widthProportional = 1.0
+    setWidgetState(nameLabel)
     nameLabel:register("mouseClick", onClick)
 
-    --Level
-    block:createLabel{ text = string.format("Level %s", companion.object.level) }
+end
 
-    --Race, Sex, and class if objectType == NPC
-    if companion.object.objectType == tes3.objectType.npc then
-        local raceSexLabel = string.format("%s, %s\nClass: %s",
-            companion.object.race.name,
-            companion.object.female and "Female" or "Male",
-            companion.object.class.name)
-        block:createLabel{ text = raceSexLabel }
+---@param detailsPane tes3uiElement
+---@param companion ChargenScenarios.CompanionsFeature.AvailableCompanion
+function CompanionsFeature.updateDetailsPane(detailsPane, companion)
+    logger:debug("Updating details pane for companion: %s", companion.id)
+    detailsPane:destroyChildren()
+
+    detailsPane.flowDirection = "top_to_bottom"
+    detailsPane.paddingAllSides = 10
+    detailsPane.autoHeight = true
+    detailsPane.widthProportional = 1.0
+
+    local contentBlock = detailsPane:createBlock{ id = "ChargenScenarios:CompanionDetailsContentBlock" }
+    contentBlock.flowDirection = "top_to_bottom"
+    contentBlock.widthProportional = 1.0
+    contentBlock.heightProportional = 1.0
+
+    -- Name header
+    local nameLabel = contentBlock:createLabel{ text = companion.object.name }
+    nameLabel.color = tes3ui.getPalette(tes3.palette.headerColor)
+    nameLabel.borderBottom = 5
+
+    -- Level
+    local levelLabel = contentBlock:createLabel{ text = string.format("Level: %s", companion.object.level) }
+    levelLabel.borderBottom = 3
+
+    local isNPC = companion.object.objectType == tes3.objectType.npc
+
+    -- Race and Sex for NPCs
+    if isNPC then
+        local raceLabel = contentBlock:createLabel{ text = string.format("Race: %s", companion.object.race.name) }
+        local sexLabel = contentBlock:createLabel{ text = string.format("Sex: %s", companion.object.female and "Female" or "Male") }
+        local classLabel = contentBlock:createLabel{ text = string.format("Class: %s", companion.object.class.name) }
+        classLabel.borderBottom = 3
+    else
+        -- For creatures, show type
+        local typeLabel = contentBlock:createLabel{ text = "Type: Creature" }
+        typeLabel.borderBottom = 3
     end
 
+    -- Custom description
     if companion.description then
-        local descriptionLabel = block:createLabel{ text = companion.description }
-        descriptionLabel.widthProportional = 1.0
+        local descriptionHeader = contentBlock:createLabel{ text = "Description:" }
+        descriptionHeader.color = tes3ui.getPalette(tes3.palette.headerColor)
+        descriptionHeader.borderTop = 5
+        descriptionHeader.borderBottom = 3
+
+        local descriptionLabel = contentBlock:createLabel{ text = companion.description }
         descriptionLabel.wrapText = true
+        descriptionLabel.borderBottom = 5
     end
+
+
+    -- Select button
+    local buttonBlock = detailsPane:createBlock()
+    buttonBlock.widthProportional = 1.0
+    buttonBlock.autoHeight = true
+    buttonBlock.autoWidth = true
+    buttonBlock.borderTop = 10
+    buttonBlock.childAlignX = 0.5
+
+    local isSelected = CompanionsFeature.isSelected(companion)
+    local selectButton = buttonBlock:createButton{ text = isSelected and "Selected" or "Select" }
+    selectButton:register("mouseClick", function()
+        CompanionsFeature.selectedCompanions[companion.id] = not CompanionsFeature.selectedCompanions[companion.id]
+        -- Find the companion list parent to refresh it
+        local companionsList = detailsPane:getTopLevelMenu():findChild("ChargenScenarios:CompanionsList")
+        if companionsList then
+            CompanionsFeature.populateCompanionList(companionsList, detailsPane)
+        end
+        CompanionsFeature.updateDetailsPane(detailsPane, companion)
+        tes3.playSound{ sound = "Menu Click" }
+    end)
+
+    detailsPane:getTopLevelMenu():updateLayout()
 end
 
 ---@param parent tes3uiElement
-function CompanionsFeature.populateCompanionList(parent)
+---@param detailsPane tes3uiElement
+function CompanionsFeature.populateCompanionList(parent, detailsPane)
     parent:getContentElement():destroyChildren()
     local companions = CompanionsFeature.getAvailableCompanions()
     for _, companion in pairs(companions) do
-        CompanionsFeature.createCompanionButton(parent, companion)
+        CompanionsFeature.createCompanionButton(parent, companion, detailsPane)
     end
     parent.widget:contentsChanged()
+
+    -- Update details pane with first companion if available
+    if #companions > 0 then
+        CompanionsFeature.updateDetailsPane(detailsPane, companions[1])
+    end
 end
 
 ---@param e ChargenScenarios.ExtraFeature.callbackParams
 CompanionsFeature.callback = function(e)
     local menu = tes3ui.createMenu{ id = "ChargenScenarios:CompanionsMenu", fixedFrame = true }
-    menu.autoWidth = true
-    menu:updateLayout()
+    menu.minWidth = 700
+    menu.minHeight = 500
+    menu.autoHeight = true
 
-    local block = menu:createBlock()
-    block.autoHeight = true
-    block.autoWidth = true
-    block.flowDirection = "top_to_bottom"
-    block.childAlignX = 0.5
+    local mainBlock = menu:createBlock()
+    mainBlock.flowDirection = "top_to_bottom"
+    mainBlock.autoHeight = true
+    mainBlock.widthProportional = 1.0
+    mainBlock.childAlignX = 0.5
 
-    local header = block:createLabel{ text = "Select Companions:" }
+    local header = mainBlock:createLabel{ text = "Select Companions:" }
     header.color = tes3ui.getPalette(tes3.palette.headerColor)
     header.borderBottom = 5
 
-    local companionsList = block:createVerticalScrollPane()
-    companionsList.autoHeight = true
-    companionsList.autoWidth = true
+    -- Container for the two-panel layout
+    local contentBlock = mainBlock:createBlock()
+    contentBlock.flowDirection = "left_to_right"
+    contentBlock.autoHeight = true
+    contentBlock.autoWidth = true
+    contentBlock.widthProportional = 1.0
+
+    -- Left panel: Companion list
+    local leftPanel = contentBlock:createBlock()
+    leftPanel.flowDirection = "top_to_bottom"
+    leftPanel.autoHeight = true
+    leftPanel.widthProportional = 1.0
+
+    local listLabel = leftPanel:createLabel{ text = "Companions:" }
+    listLabel.borderBottom = 3
+
+    local companionsList = leftPanel:createVerticalScrollPane{ id = "ChargenScenarios:CompanionsList" }
     companionsList.minHeight = 400
-    companionsList.minWidth = 250
     companionsList.widthProportional = 1.0
 
-    CompanionsFeature.populateCompanionList(companionsList)
+    -- Right panel: Details
+    local rightPanel = contentBlock:createBlock()
+    rightPanel.flowDirection = "top_to_bottom"
+    rightPanel.autoHeight = true
+    rightPanel.widthProportional = 1.0
+    rightPanel.borderLeft = 10
+
+    local detailsLabel = rightPanel:createLabel{ text = "Details:" }
+    detailsLabel.borderBottom = 3
+
+    local detailsPane = rightPanel:createThinBorder()
+    detailsPane.minHeight = 400
+    detailsPane.autoHeight = true
+    detailsPane.widthProportional = 1.0
+
+    CompanionsFeature.updateDetailsPane(detailsPane, CompanionsFeature.getAvailableCompanions()[1])
+    CompanionsFeature.populateCompanionList(companionsList, detailsPane)
 
     --buttons
-    local buttonBlock = block:createBlock()
-    buttonBlock.autoWidth = true
+    local buttonBlock = mainBlock:createBlock()
+    buttonBlock.widthProportional = 1.0
     buttonBlock.autoHeight = true
-
+    buttonBlock.borderTop = 10
 
     --Random - pick one random companion
     local randomButton = buttonBlock:createButton{ text = "Random" }
@@ -188,7 +289,7 @@ CompanionsFeature.callback = function(e)
         local selectedCompanion = table.choice(availableCompanions)
         if selectedCompanion then
             CompanionsFeature.selectedCompanions[selectedCompanion.id] = true
-            CompanionsFeature.populateCompanionList(companionsList)
+            CompanionsFeature.populateCompanionList(companionsList, detailsPane)
         end
     end)
 
@@ -196,7 +297,7 @@ CompanionsFeature.callback = function(e)
     local resetButton = buttonBlock:createButton{ text = "Reset" }
     resetButton:register("mouseClick", function()
         CompanionsFeature.selectedCompanions = {}
-        CompanionsFeature.populateCompanionList(companionsList)
+        CompanionsFeature.populateCompanionList(companionsList, detailsPane)
     end)
 
     --Confirm
@@ -207,7 +308,6 @@ CompanionsFeature.callback = function(e)
     end)
 
     menu:updateLayout()
-    companionsList.widget:contentsChanged()
 end
 
 function CompanionsFeature.isActive()
