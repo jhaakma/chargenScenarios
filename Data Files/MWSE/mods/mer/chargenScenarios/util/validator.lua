@@ -1,7 +1,7 @@
 local Validator = {}
 
 local logger = require("logging.logger").new{
-    name = string.format("Validator"),
+    moduleName = string.format("Validator"),
     logLevel = "INFO"
 }
 
