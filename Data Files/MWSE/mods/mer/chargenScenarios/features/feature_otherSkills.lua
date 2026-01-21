@@ -11,15 +11,15 @@ local OtherSkillsFeature = {
 
 ---@return table<string, number> selectedSkills
 local function getSkillBonuses()
-    return tes3.player.tempData.ChargenScenarios_selectedOtherSkills or {}
+    return tes3.player.data.ChargenScenarios_selectedOtherSkills or {}
 end
 
 ---Set or clear a skill bonus
 ---@param skillId string The SkillsModule skill ID
 ---@param bonus number|nil
 local function setSkillBonus(skillId, bonus)
-    tes3.player.tempData.ChargenScenarios_selectedOtherSkills = tes3.player.tempData.ChargenScenarios_selectedOtherSkills or {}
-    tes3.player.tempData.ChargenScenarios_selectedOtherSkills[skillId] = (bonus ~= 0) and bonus or nil
+    tes3.player.data.ChargenScenarios_selectedOtherSkills = tes3.player.data.ChargenScenarios_selectedOtherSkills or {}
+    tes3.player.data.ChargenScenarios_selectedOtherSkills[skillId] = (bonus ~= 0) and bonus or nil
 end
 
 
@@ -181,3 +181,19 @@ function OtherSkillsFeature.isActive()
 end
 
 ExtraFeatures.registerFeature(OtherSkillsFeature)
+
+event.register("loaded", function()
+    --Reapply skill modifiers on load
+    if OtherSkillsFeature.isActive() then
+        local skillBonuses = getSkillBonuses()
+        for skillId, bonus in pairs(skillBonuses) do
+            SkillsModule.registerBaseModifier{
+                id = "chargenScenarios_otherSkill_" .. skillId,
+                skill = skillId,
+                callback = function()
+                    return getSkillBonuses()[skillId] or 0
+                end
+            }
+        end
+    end
+end)
